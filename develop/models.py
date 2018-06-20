@@ -55,4 +55,3 @@ class Development(models.Model):
 
     def __str__(self):
         return u"%s - %s (%s)" % (self.plan_name, self.devplan_id, self.submitted_yr)
-    

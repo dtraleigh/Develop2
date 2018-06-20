@@ -2,6 +2,7 @@ import logging, json, requests
 from datetime import datetime
 
 from develop.models import *
+from django.core.mail import send_mail
 
 logger = logging.getLogger("django")
 
@@ -177,3 +178,39 @@ def api_object_is_different(known_dev_object, dev_json):
         return True
 
     return False
+
+
+# def send_email():
+#     subject = "This is a test from develop2"
+#     message = "This is the message from develop2"
+#     email_from = "develop2@dtraleigh.com"
+#     all_active_subscribers = Subscriber.objects.filter(send_emails=True)
+#
+#     notification = EmailMessage(
+#         subject,
+#         message,
+#         email_from,
+#         [sub.email for sub in all_active_subscribers],
+#         reply_to=['leo@dtraleigh.com'],
+#     )
+#     return [notification]
+
+def send_email_test():
+    subject = "This is a test from develop2"
+    message = "This is the message from develop2"
+    email_from = "develop@dtraleigh.com"
+    all_active_subscribers = Subscriber.objects.filter(send_emails=True)
+
+    try:
+        send_mail(
+            subject,
+            message,
+            email_from,
+            [sub.email for sub in all_active_subscribers],
+            fail_silently=False,
+        )
+        n = datetime.now()
+        logger.info("Email sent at " + n.strftime("%H:%M %m-%d-%y"))
+    except:
+        n = datetime.now()
+        logger.info("Problem sending email at " + n.strftime("%H:%M %m-%d-%y"))
