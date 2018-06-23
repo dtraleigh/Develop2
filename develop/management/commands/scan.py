@@ -2,7 +2,6 @@
 # This command is used to query the API, compare the results with the DB and make appropriate changes.
 # \\\
 import logging
-from datetime import datetime
 
 from django.core.management.base import BaseCommand
 from django.core.mail import send_mail
@@ -128,8 +127,3 @@ class Command(BaseCommand):
                                                EditDate=dev["EditDate"],
                                                Editor=dev["Editor"])
                     # print("Does not exist. Creating one.")
-
-        # print("Total Devs: " + str(get_total_developments()))
-
-        # Create our EmailMessage objects
-        # send_email_test()

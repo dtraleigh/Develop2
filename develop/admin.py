@@ -8,11 +8,11 @@ from simple_history.admin import SimpleHistoryAdmin
 
 
 class SubscriberAdmin(admin.ModelAdmin):
-    list_display = ("name", "email", "date_created", "send_emails")
+    list_display = ("name", "email", "created_date", "modified_date", "send_emails")
 
 
 class DevelopmentsAdmin(SimpleHistoryAdmin):
-    list_display = ("devplan_id", "updated_date", "submitted_yr", "status", "major_street", "cac", "plan_name", "plan_number")
+    list_display = ("devplan_id", "updated_date", "submitted_yr", "status", "major_street", "cac", "plan_name", "plan_number", "modified_date", "created_date")
     history_list_display = ["status"]
 
     def updated_date(self, obj):

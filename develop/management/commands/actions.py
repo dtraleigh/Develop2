@@ -1,8 +1,11 @@
-import logging, json, requests
+import logging, json, requests, pytz
 from datetime import datetime
+from datetime import timedelta
 
 from develop.models import *
 from django.core.mail import send_mail
+from django.utils import timezone
+from django.conf import settings
 
 logger = logging.getLogger("django")
 
@@ -180,21 +183,6 @@ def api_object_is_different(known_dev_object, dev_json):
     return False
 
 
-# def send_email():
-#     subject = "This is a test from develop2"
-#     message = "This is the message from develop2"
-#     email_from = "develop2@dtraleigh.com"
-#     all_active_subscribers = Subscriber.objects.filter(send_emails=True)
-#
-#     notification = EmailMessage(
-#         subject,
-#         message,
-#         email_from,
-#         [sub.email for sub in all_active_subscribers],
-#         reply_to=['leo@dtraleigh.com'],
-#     )
-#     return [notification]
-
 def send_email_test():
     subject = "This is a test from develop2"
     message = "This is the message from develop2"
@@ -214,3 +202,109 @@ def send_email_test():
     except:
         n = datetime.now()
         logger.info("Problem sending email at " + n.strftime("%H:%M %m-%d-%y"))
+
+
+def create_email_message(devs_that_changed):
+    # /// Header
+    email_header = "=========================\n"
+    email_header += "The latest updates from\n"
+    email_header += "THE RALEIGH WIRE SERVICE\n"
+
+    if settings.DEVELOP_INSTANCE == "Develop":
+        email_header += "[Develop version]\n"
+    email_header += "=========================\n\n"
+
+    # \\\\ End Header
+
+    # //// New Devs Section
+    # If the dev's created date was in the last hour, we assume it's a new dev
+    new_devs = []
+    updated_devs = []
+
+    for dev in devs_that_changed:
+        if dev.created_date > timezone.now() - timedelta(hours=1):
+            new_devs.append(dev)
+        else:
+            updated_devs.append(dev)
+
+    new_devs_message = "--------------New Developments---------------\n\n"
+
+    if new_devs:
+        for new_dev in new_devs:
+            search_url = "http://gsa.raleighnc.gov/search?q=" + str(new_dev.plan_number) + "&client=COR_WEB&proxystylesheet=COR_WEB&site=portalprd"
+
+            new_devs_message += "***" + str(new_dev.plan_name) + ", " + str(new_dev.plan_number) + "***\n"
+            new_devs_message += "    Submitted year: " + str(new_dev.submitted_yr) + "\n"
+            new_devs_message += "    Plan type: " + str(new_dev.plan_type) + "\n"
+            new_devs_message += "    Status: " + str(new_dev.status) + "\n"
+            new_devs_message += "    Major Street: " + str(new_dev.major_street) + "\n"
+            new_devs_message += "    CAC: " + str(new_dev.cac) + "\n"
+            new_devs_message += "    URL: " + str(new_dev.planurl) + "\n\n"
+            new_devs_message += "    Search for more info: " + search_url + "\n\n"
+    else:
+        new_devs_message += "No new developments at this time.\n\n"
+
+    # \\\ End New Devs Section
+
+    # /// Dev Updates Section
+    updated_devs_message = "-------------Existing Dev Updates------------\n\n"
+
+    if updated_devs:
+        for updated_dev in updated_devs:
+            # Need to look at the history and compare the most recent update with the one before it.
+
+            search_url = "http://gsa.raleighnc.gov/search?q=" + str(updated_dev.plan_number) + "&client=COR_WEB&proxystylesheet=COR_WEB&site=portalprd"
+
+            updated_devs_message += "***" + str(updated_dev.plan_name) + ", " + str(updated_dev.plan_number) + "***\n"
+            updated_devs_message += "    Updated: " + str(updated_dev.updated) + "\n"
+            updated_devs_message += "    Status: " + str(updated_dev.status) + "\n"
+            updated_devs_message += "    CAC: " + str(updated_dev.cac) + "\n"
+            updated_devs_message += "    URL: " + str(updated_dev.planurl) + "\n\n"
+            updated_devs_message += "  *UPDATES*\n"
+            updated_devs_message += difference_email_output(updated_dev)
+
+            updated_devs_message += "    Search for more info: " + search_url + "\n\n"
+            updated_devs_message += "\n"
+    else:
+        updated_devs_message += "No updates to existing developments at this time.\n\n"
+
+    # \\\ End Dev Updates Section
+
+    # /// Footer
+    email_footer = "*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*\n"
+    email_footer += "*NOTE: Some search urls result in 0 results. Check in later when the city has uploaded documents to their site.\n"
+    email_footer += "\n"
+    email_footer += "You are subscribed to THE RALEIGH WIRE SERVICE\n"
+    email_footer += "This is a service of DTRaleigh.com\n"
+    email_footer += "*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*\n"
+
+    # \\\ End Footer
+
+    message = email_header + new_devs_message + updated_devs_message + email_footer
+
+    return message
+
+
+def difference_email_output(dev):
+    output = ""
+
+    # Get the most recent version of the dev and the one previously
+    dev_most_recent = dev.history.first()
+    dev_previous = dev_most_recent.prev_record
+
+    # Get all the dev fields
+    fields = dev._meta.get_fields()
+
+    # Loop through each field, except created_date, modified_date, and id.
+    # If the fields are not equal, add it to output.
+    for field in fields:
+        if field.name != "created_date" and field.name != "modified_date" and field.name != "id":
+            dev_most_recent_field = getattr(dev_most_recent, field.name)
+            dev_old_field = getattr(dev_previous, field.name)
+
+            # If there is a difference...
+            if dev_most_recent_field != dev_old_field:
+                output += "    " + field.verbose_name + " changed from \"" + str(dev_old_field) + "\" to \"" + str(
+                    dev_most_recent_field) + "\"\n"
+
+    return output
