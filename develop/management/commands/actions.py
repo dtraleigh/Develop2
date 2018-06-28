@@ -304,7 +304,15 @@ def difference_email_output(dev):
 
             # If there is a difference...
             if dev_most_recent_field != dev_old_field:
-                output += "    " + field.verbose_name + " changed from \"" + str(dev_old_field) + "\" to \"" + str(
-                    dev_most_recent_field) + "\"\n"
+                # If it's a date field, we need to convert it to a human readable string
+                if field.get_internal_type() == "BigIntegerField":
+                    before_date_hr = datetime.fromtimestamp(dev_old_field / 1000).strftime('%Y-%m-%d %H:%M:%S')
+                    after_date_hr = datetime.fromtimestamp(dev_most_recent_field / 1000).strftime('%Y-%m-%d %H:%M:%S')
+
+                    output += "    " + field.verbose_name + " changed from \"" + before_date_hr + "\" to \"" + \
+                              after_date_hr + "\"\n"
+                else:
+                    output += "    " + field.verbose_name + " changed from \"" + str(dev_old_field) + "\" to \"" + \
+                              str(dev_most_recent_field) + "\"\n"
 
     return output
