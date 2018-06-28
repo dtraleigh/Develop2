@@ -2,7 +2,7 @@ import datetime
 
 from django.contrib import admin
 
-from develop.models import Development, Subscriber
+from develop.models import *
 
 from simple_history.admin import SimpleHistoryAdmin
 
@@ -25,5 +25,11 @@ class DevelopmentsAdmin(SimpleHistoryAdmin):
     updated_date.admin_order_field = 'updated'
 
 
+class SiteReviewCasesAdmin(SimpleHistoryAdmin):
+    list_display = ("case_number", "project_name", "cac", "status", "contact", "modified_date", "created_date")
+    history_list_display = ["status"]
+
+
+admin.site.register(SiteReviewCases, SiteReviewCasesAdmin)
 admin.site.register(Subscriber, SubscriberAdmin)
 admin.site.register(Development, DevelopmentsAdmin)
