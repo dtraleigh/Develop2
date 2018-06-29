@@ -49,7 +49,7 @@ class Command(BaseCommand):
                 contact_url = page_link + row_tds[4].find("a")["href"]
 
                 try:
-                    
+
         else:
             # Send email alert saying that we could not reach the development page, did not get 200
             pass
