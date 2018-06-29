@@ -305,7 +305,8 @@ def difference_email_output(dev):
             # If there is a difference...
             if dev_most_recent_field != dev_old_field:
                 # If it's a date field, we need to convert it to a human readable string
-                if field.get_internal_type() == "BigIntegerField":
+                # Let's ignore EditDate
+                if field.get_internal_type() == "BigIntegerField" and field.name != "EditDate":
                     before_date_hr = datetime.fromtimestamp(dev_old_field / 1000).strftime('%Y-%m-%d %H:%M:%S')
                     after_date_hr = datetime.fromtimestamp(dev_most_recent_field / 1000).strftime('%Y-%m-%d %H:%M:%S')
 
