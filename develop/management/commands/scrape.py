@@ -4,6 +4,7 @@
 import logging, requests
 from bs4 import BeautifulSoup
 from fuzzywuzzy import fuzz
+from datetime import datetime
 
 from django.core.management.base import BaseCommand
 from django.core.mail import send_mail
@@ -19,6 +20,9 @@ class Command(BaseCommand):
         # ////
         # Development Site Scraper
         # \\\\
+        n = datetime.now()
+        logger.info(n.strftime("%H:%M %m-%d-%y") + ": Web scrape started.")
+
         page_link = "https://www.raleighnc.gov/development"
 
         page_response = requests.get(page_link, timeout=10)
@@ -27,13 +31,19 @@ class Command(BaseCommand):
             page_content = BeautifulSoup(page_response.content, "html.parser")
 
             # Site Reviews
-            site_review_title = page_content.find("h3", {"id": "SiteReviewCases(SR)"})
+            try:
+                site_review_title = page_content.find("h3", {"id": "SiteReviewCases(SR)"})
+            except:
+                logger.info("Couldn't find #SiteReviewCases(SR)")
 
             # drill down
-            site_review_section = site_review_title.findNext("div")
-            sr_table = site_review_section.find("table")
-            sr_table_tbody = sr_table.find("tbody")
-            sr_rows = sr_table_tbody.findAll("tr")
+            try:
+                site_review_section = site_review_title.findNext("div")
+                sr_table = site_review_section.find("table")
+                sr_table_tbody = sr_table.find("tbody")
+                sr_rows = sr_table_tbody.findAll("tr")
+            except:
+                logger.info("Problem getting to the #SiteReviewCases(SR) table trs")
 
             # For each row, get the values then check if we already know about this item
             # If we do not, then add it to the DB
@@ -49,42 +59,67 @@ class Command(BaseCommand):
                 contact = row_tds[4].find("a").string
                 contact_url = page_link + row_tds[4].find("a")["href"]
 
-                try:
-                    known_sr_cases = SiteReviewCases.objects.all()
+                # If any of these variables are None, log it and move on.
+                if not case_number or not case_url or not project_name or not cac or not status or not contact or not contact_url:
+                    logger.info("********** Problem scraping this row **********")
+                    logger.info(str(row_tds))
+                    logger.info("case_number scrape: " + str(case_number))
+                    logger.info("case_url scrape: " + str(case_url))
+                    logger.info("project_name scrape: " + str(project_name))
+                    logger.info("cac scrape: " + str(cac))
+                    logger.info("status scrape: " + str(status))
+                    logger.info("contact scrape: " + str(contact))
+                    logger.info("contact_url scrape: " + str(contact_url))
 
-                    # go through all of them. Criteria of a match:
-                    # 1. fuzz.ratio(case_number, sr_case.case_number) > 90
-                    # 2. fuzz.ratio(project_name, sr_case.project_name) > 90
-                    # 3. fuzz.ratio(cac, sr_case.cac) > 90
-                    # 2 of 3 need to be true
-                    for sr_case in known_sr_cases:
-                        case_number_score = fuzz.ratio(case_number, sr_case.case_number) > 90
-                        project_name_score = fuzz.ratio(project_name, sr_case.project_name) > 90
-                        cac_score = fuzz.ratio(cac, sr_case.cac) > 90
-
-                        total_score = 0
-
-                        if case_number_score >= 90:
-                            total_score += 1
-                        if project_name_score >= 90:
-                            total_score += 1
-                        if cac_score >= 90:
-                            total_score += 1
-
-                        # sr_case is indeed the same as the scanned info
-                        if total_score >= 2:
-                            known_sr_case = sr_case
-                            break
-
-                    # if known_sr_case was found, check for differences
-                    # if known_sr_case was not found, then we assume a new one was added
-                    # need to create
-                    if known_sr_case:
-                        # check for difference between known_sr_case and the variables
-                    else:
-                        # create a new instance
+                    continue
 
 
+                known_sr_cases = SiteReviewCases.objects.all()
+
+                # go through all of them. Criteria of a match:
+                # 1. fuzz.ratio(case_number, sr_case.case_number) > 90
+                # 2. fuzz.ratio(project_name, sr_case.project_name) > 90
+                # 3. fuzz.ratio(cac, sr_case.cac) > 90
+                # 2 of 3 need to be true
+                total_score = 0
+                known_sr_case = None
+
+                for sr_case in known_sr_cases:
+                    case_number_score = fuzz.ratio(case_number, sr_case.case_number)
+                    project_name_score = fuzz.ratio(project_name, sr_case.project_name)
+                    cac_score = fuzz.ratio(cac, sr_case.cac)
+
+                    if case_number_score >= 90:
+                        total_score += 1
+                    if project_name_score >= 90:
+                        total_score += 1
+                    if cac_score >= 90:
+                        total_score += 1
+
+                    # sr_case is indeed the same as the scanned info
+                    if total_score >= 2:
+                        known_sr_case = sr_case
+                        break
+
+                # if known_sr_case was found, check for differences
+                # if known_sr_case was not found, then we assume a new one was added
+                # need to create
+                if known_sr_case:
+                    # check for difference between known_sr_case and the variables
+                    print("We already know about this site case")
+                else:
+                    # create a new instance
+                    print("Creating new site case")
+                    SiteReviewCases.objects.create(case_number=case_number,
+                                                   case_url=case_url,
+                                                   project_name=project_name,
+                                                   cac=cac,
+                                                   status=status,
+                                                   contact=contact,
+                                                   contact_url=contact_url)
         else:
             # Send email alert saying that we could not reach the development page, did not get 200
             pass
+
+        n = datetime.now()
+        logger.info(n.strftime("%H:%M %m-%d-%y") + ": Web scrape finished.")
