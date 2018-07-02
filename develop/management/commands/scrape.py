@@ -73,7 +73,6 @@ class Command(BaseCommand):
 
                     continue
 
-
                 known_sr_cases = SiteReviewCases.objects.all()
 
                 # go through all of them. Criteria of a match:
@@ -108,17 +107,19 @@ class Command(BaseCommand):
                     # check for difference between known_sr_case and the variables
                     print("We already know about this site case")
 
-                    print(case_number)
-                    print(project_name)
-                    print(cac)
-                    print("case_number_score: " + str(case_number_score))
-                    print("project_name_score: " + str(project_name_score))
-                    print("cac_score: " + str(cac_score))
-                    print("total_score: " + str(total_score))
-                    print(known_sr_case)
                 else:
                     # create a new instance
-                    print("Creating new site case")
+                    logger.info("**********************")
+                    logger.info("Creating new site case")
+                    logger.info("case_number:" + case_number)
+                    logger.info("project_name:" + project_name)
+                    logger.info("cac: " + cac)
+                    logger.info("case_number_score: " + str(case_number_score))
+                    logger.info("project_name_score: " + str(project_name_score))
+                    logger.info("cac_score: " + str(cac_score))
+                    logger.info("total_score: " + str(total_score))
+                    logger.info("**********************")
+
                     SiteReviewCases.objects.create(case_number=case_number,
                                                    case_url=case_url,
                                                    project_name=project_name,
