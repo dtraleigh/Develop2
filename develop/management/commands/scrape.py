@@ -53,10 +53,10 @@ class Command(BaseCommand):
 
                 case_number = row_tds[0].find("a").string
                 case_url = page_link + row_tds[0].find("a")["href"]
-                project_name = row_tds[1].string
-                cac = row_tds[2].string
-                status = row_tds[3].string
-                contact = row_tds[4].find("a").string
+                project_name = row_tds[1].get_text()
+                cac = row_tds[2].get_text()
+                status = row_tds[3].get_text()
+                contact = row_tds[4].find("a").get_text()
                 contact_url = page_link + row_tds[4].find("a")["href"]
 
                 # If any of these variables are None, log it and move on.
@@ -81,10 +81,10 @@ class Command(BaseCommand):
                 # 2. fuzz.ratio(project_name, sr_case.project_name) > 90
                 # 3. fuzz.ratio(cac, sr_case.cac) > 90
                 # 2 of 3 need to be true
-                total_score = 0
                 known_sr_case = None
 
                 for sr_case in known_sr_cases:
+                    total_score = 0
                     case_number_score = fuzz.ratio(case_number, sr_case.case_number)
                     project_name_score = fuzz.ratio(project_name, sr_case.project_name)
                     cac_score = fuzz.ratio(cac, sr_case.cac)
@@ -97,7 +97,7 @@ class Command(BaseCommand):
                         total_score += 1
 
                     # sr_case is indeed the same as the scanned info
-                    if total_score >= 2:
+                    if total_score >= 2 and project_name_score > 50:
                         known_sr_case = sr_case
                         break
 
@@ -107,6 +107,15 @@ class Command(BaseCommand):
                 if known_sr_case:
                     # check for difference between known_sr_case and the variables
                     print("We already know about this site case")
+
+                    print(case_number)
+                    print(project_name)
+                    print(cac)
+                    print("case_number_score: " + str(case_number_score))
+                    print("project_name_score: " + str(project_name_score))
+                    print("cac_score: " + str(cac_score))
+                    print("total_score: " + str(total_score))
+                    print(known_sr_case)
                 else:
                     # create a new instance
                     print("Creating new site case")
