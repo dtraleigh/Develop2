@@ -104,8 +104,9 @@ def api_object_is_different(known_dev_object, dev_json):
     if not fields_are_same(known_dev_object.appealperiodends, dev_json["appealperiodends"]):
         return True
 
-    if not fields_are_same(known_dev_object.updated, dev_json["updated"]):
-        return True
+    # Ignoring updated for now.
+    # if not fields_are_same(known_dev_object.updated, dev_json["updated"]):
+    #     return True
 
     if not fields_are_same(known_dev_object.sunset_date, dev_json["sunset_date"]):
         return True
@@ -174,8 +175,9 @@ def api_object_is_different(known_dev_object, dev_json):
     if not fields_are_same(known_dev_object.Creator, dev_json["Creator"]):
         return True
 
-    if not fields_are_same(known_dev_object.EditDate, dev_json["EditDate"]):
-        return True
+    # Ignoring EditDate for now as some changes come in with EditDate being the only change
+    # if not fields_are_same(known_dev_object.EditDate, dev_json["EditDate"]):
+    #     return True
 
     if not fields_are_same(known_dev_object.Editor, dev_json["Editor"]):
         return True
