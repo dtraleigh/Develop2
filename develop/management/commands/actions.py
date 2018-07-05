@@ -68,12 +68,12 @@ def get_test_data():
     return json.loads(single_object_json)
 
 
-def fields_are_same(object_item, json_item):
+def fields_are_same(object_item, api_or_web_scrape_item):
     try:
-        return object_item == json_item
+        return object_item == api_or_web_scrape_item
     except:
         n = datetime.datetime.now()
-        logger.info(n.strftime("%H:%M %m-%d-%y") + ": Error comparing object_item, " + str(object_item) + ", with json_item, " + str(json_item))
+        logger.info(n.strftime("%H:%M %m-%d-%y") + ": Error comparing object_item, " + str(object_item) + ", with json_item, " + str(api_or_web_scrape_item))
 
 
 def api_object_is_different(known_dev_object, dev_json):

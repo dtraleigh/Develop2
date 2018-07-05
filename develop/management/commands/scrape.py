@@ -104,8 +104,31 @@ class Command(BaseCommand):
                 # if known_sr_case was not found, then we assume a new one was added
                 # need to create
                 if known_sr_case:
-                    # check for difference between known_sr_case and the variables
-                    print("We already know about this site case")
+                    # Check for difference between known_sr_case and the variables
+                    # Assume that the sr_case number doesn't change.
+                    if (
+                        not fields_are_same(known_sr_case.case_url, case_url) or
+                        not fields_are_same(known_sr_case.project_name, project_name) or
+                        not fields_are_same(known_sr_case.cac, cac) or
+                        not fields_are_same(known_sr_case.status, status) or
+                        not fields_are_same(known_sr_case.contact, contact) or
+                        not fields_are_same(known_sr_case.contact_url, contact_url)
+                    ):
+                            known_sr_case.case_url = case_url
+                            known_sr_case.project_name = project_name
+                            known_sr_case.cac = cac
+                            known_sr_case.status = status
+                            known_sr_case.contact = contact
+                            known_sr_case.contact_url = contact_url
+
+                            known_sr_case.save()
+                            logger.info("**********************")
+                            logger.info("Updating a site case")
+                            logger.info("case_number:" + case_number)
+                            logger.info("project_name:" + project_name)
+                            logger.info("cac: " + cac)
+                            logger.info("**********************")
+
 
                 else:
                     # create a new instance
