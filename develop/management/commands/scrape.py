@@ -44,6 +44,14 @@ class Command(BaseCommand):
                 sr_rows = sr_table_tbody.findAll("tr")
             except:
                 logger.info("Problem getting to the #SiteReviewCases(SR) table trs")
+                if site_review_section:
+                    logger.info("site_review_section:" + site_review_section)
+                if sr_table:
+                    logger.info("sr_table: " + sr_table)
+                if sr_table_tbody:
+                    logger.info("sr_table_tbody: " + sr_table_tbody)
+                if sr_rows:
+                    logger.info("sr_rows: " + sr_rows)
 
             # For each row, get the values then check if we already know about this item
             # If we do not, then add it to the DB
