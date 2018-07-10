@@ -300,7 +300,7 @@ def difference_email_output(dev):
     # Loop through each field, except created_date, modified_date, and id.
     # If the fields are not equal, add it to output.
     for field in fields:
-        if field.name != "created_date" and field.name != "modified_date" and field.name != "id":
+        if field.name != "created_date" and field.name != "modified_date" and field.name != "id" and field.name != "EditDate":
             dev_most_recent_field = getattr(dev_most_recent, field.name)
             dev_old_field = getattr(dev_previous, field.name)
 
