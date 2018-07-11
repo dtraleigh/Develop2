@@ -137,7 +137,6 @@ class Command(BaseCommand):
                             logger.info("cac: " + cac)
                             logger.info("**********************")
 
-
                 else:
                     # create a new instance
                     logger.info("**********************")

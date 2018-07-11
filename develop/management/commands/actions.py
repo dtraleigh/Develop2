@@ -231,16 +231,19 @@ def create_email_message(devs_that_changed):
 
     if new_devs:
         for new_dev in new_devs:
-            search_url = "http://gsa.raleighnc.gov/search?q=" + str(new_dev.plan_number) + "&client=COR_WEB&proxystylesheet=COR_WEB&site=portalprd"
-
-            new_devs_message += "***" + str(new_dev.plan_name) + ", " + str(new_dev.plan_number) + "***\n"
-            new_devs_message += "    Submitted year: " + str(new_dev.submitted_yr) + "\n"
-            new_devs_message += "    Plan type: " + str(new_dev.plan_type) + "\n"
-            new_devs_message += "    Status: " + str(new_dev.status) + "\n"
-            new_devs_message += "    Major Street: " + str(new_dev.major_street) + "\n"
-            new_devs_message += "    CAC: " + str(new_dev.cac) + "\n"
-            new_devs_message += "    URL: " + str(new_dev.planurl) + "\n\n"
-            new_devs_message += "    Search for more info: " + search_url + "\n\n"
+            if isinstance(new_dev, Development):
+                new_devs_message += "***" + str(new_dev.plan_name) + ", " + str(new_dev.plan_number) + "***\n"
+                new_devs_message += "    Submitted year: " + str(new_dev.submitted_yr) + "\n"
+                new_devs_message += "    Plan type: " + str(new_dev.plan_type) + "\n"
+                new_devs_message += "    Status: " + str(new_dev.status) + "\n"
+                new_devs_message += "    Major Street: " + str(new_dev.major_street) + "\n"
+                new_devs_message += "    CAC: " + str(new_dev.cac) + "\n"
+                new_devs_message += "    URL: " + str(new_dev.planurl) + "\n\n"
+            if isinstance(new_dev, SiteReviewCases):
+                new_devs_message += "***" + str(new_dev.project_name) + ", " + str(new_dev.case_number) + "***\n"
+                new_devs_message += "    Status: " + str(new_dev.status) + "\n"
+                new_devs_message += "    CAC: " + str(new_dev.cac) + "\n"
+                new_devs_message += "    URL: " + str(new_dev.case_url) + "\n\n"
     else:
         new_devs_message += "No new developments at this time.\n\n"
 
@@ -252,18 +255,23 @@ def create_email_message(devs_that_changed):
     if updated_devs:
         for updated_dev in updated_devs:
             # Need to look at the history and compare the most recent update with the one before it.
+            if isinstance(updated_dev, Development):
+                updated_devs_message += "***" + str(updated_dev.plan_name) + ", " + str(updated_dev.plan_number) + "***\n"
+                updated_devs_message += "    Updated: " + str(updated_dev.updated) + "\n"
+                updated_devs_message += "    Status: " + str(updated_dev.status) + "\n"
+                updated_devs_message += "    CAC: " + str(updated_dev.cac) + "\n"
+                updated_devs_message += "    URL: " + str(updated_dev.planurl) + "\n\n"
+                updated_devs_message += "  *UPDATES*\n"
+                updated_devs_message += difference_email_output(updated_dev)
+            if isinstance(updated_dev, SiteReviewCases):
+                updated_devs_message += "***" + str(updated_dev.project_name) + ", " + str(updated_dev.case_number) + "***\n"
+                updated_devs_message += "    Updated: " + str(updated_dev.modified_date) + "\n"
+                updated_devs_message += "    Status: " + str(updated_dev.status) + "\n"
+                updated_devs_message += "    CAC: " + str(updated_dev.cac) + "\n"
+                updated_devs_message += "    URL: " + str(updated_dev.case_url) + "\n\n"
+                updated_devs_message += "  *UPDATES*\n"
+                updated_devs_message += difference_email_output(updated_dev)
 
-            search_url = "http://gsa.raleighnc.gov/search?q=" + str(updated_dev.plan_number) + "&client=COR_WEB&proxystylesheet=COR_WEB&site=portalprd"
-
-            updated_devs_message += "***" + str(updated_dev.plan_name) + ", " + str(updated_dev.plan_number) + "***\n"
-            updated_devs_message += "    Updated: " + str(updated_dev.updated) + "\n"
-            updated_devs_message += "    Status: " + str(updated_dev.status) + "\n"
-            updated_devs_message += "    CAC: " + str(updated_dev.cac) + "\n"
-            updated_devs_message += "    URL: " + str(updated_dev.planurl) + "\n\n"
-            updated_devs_message += "  *UPDATES*\n"
-            updated_devs_message += difference_email_output(updated_dev)
-
-            updated_devs_message += "    Search for more info: " + search_url + "\n\n"
             updated_devs_message += "\n"
     else:
         updated_devs_message += "No updates to existing developments at this time.\n\n"
@@ -272,8 +280,6 @@ def create_email_message(devs_that_changed):
 
     # /// Footer
     email_footer = "*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*\n"
-    email_footer += "*NOTE: Some search urls result in 0 results. Check in later when the city has uploaded documents to their site.\n"
-    email_footer += "\n"
     email_footer += "You are subscribed to THE RALEIGH WIRE SERVICE\n"
     email_footer += "This is a service of DTRaleigh.com\n"
     email_footer += "*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*\n"
