@@ -17,12 +17,20 @@ logger = logging.getLogger("django")
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
-        # Get developments that have changed in the last hour
+        # Get everything that have changed in the last hour
         devs_that_changed = Development.objects.filter(modified_date__range=[timezone.now() - timedelta(hours=1), timezone.now()])
+        SRs_that_changed = SiteReviewCases.objects.filter(modified_date__range=[timezone.now() - timedelta(hours=1), timezone.now()])
 
-        if devs_that_changed:
+        everything_that_changed = []
+
+        for dev in devs_that_changed:
+            everything_that_changed.append(dev)
+        for SR in SRs_that_changed:
+            everything_that_changed.append(SR)
+
+        if everything_that_changed:
             subject = "Update on Development Tracker"
-            message = create_email_message(devs_that_changed)
+            message = create_email_message(everything_that_changed)
             email_from = "develop@dtraleigh.com"
             all_active_subscribers = Subscriber.objects.filter(send_emails=True)
 
