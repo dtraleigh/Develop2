@@ -265,7 +265,7 @@ def create_email_message(devs_that_changed):
                 updated_devs_message += difference_email_output(updated_dev)
             if isinstance(updated_dev, SiteReviewCases):
                 updated_devs_message += "***" + str(updated_dev.project_name) + ", " + str(updated_dev.case_number) + "***\n"
-                updated_devs_message += "    Updated: " + str(updated_dev.modified_date) + "\n"
+                updated_devs_message += "    Updated: " + updated_dev.modified_date.strftime("%m-%d-%y %H:%M") + "\n"
                 updated_devs_message += "    Status: " + str(updated_dev.status) + "\n"
                 updated_devs_message += "    CAC: " + str(updated_dev.cac) + "\n"
                 updated_devs_message += "    URL: " + str(updated_dev.case_url) + "\n\n"
