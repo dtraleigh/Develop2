@@ -315,11 +315,26 @@ def difference_email_output(dev):
                 # If it's a date field, we need to convert it to a human readable string
                 # Let's ignore EditDate
                 if field.get_internal_type() == "BigIntegerField" and field.name != "EditDate":
-                    before_date_hr = datetime.fromtimestamp(dev_old_field / 1000).strftime('%Y-%m-%d %H:%M:%S')
-                    after_date_hr = datetime.fromtimestamp(dev_most_recent_field / 1000).strftime('%Y-%m-%d %H:%M:%S')
+                    try:
+                        before_date_hr = datetime.fromtimestamp(dev_old_field / 1000).strftime('%Y-%m-%d %H:%M:%S')
+                        after_date_hr = datetime.fromtimestamp(dev_most_recent_field / 1000).strftime('%Y-%m-%d %H:%M:%S')
 
-                    output += "    " + field.verbose_name + " changed from \"" + before_date_hr + "\" to \"" + \
-                              after_date_hr + "\"\n"
+                        output += "    " + field.verbose_name + " changed from \"" + before_date_hr + "\" to \"" + \
+                                  after_date_hr + "\"\n"
+                    except:
+                        logger.info("Problem calculating the datetime")
+                        logger.info("field is " + str(field))
+                        if dev_old_field:
+                            logger.info("dev_old_field: " + str(dev_old_field))
+                        else:
+                            logger.info("dev_old_field: None")
+
+                        if dev_old_field:
+                            logger.info("dev_most_recent_field: " + str(dev_old_field))
+                        else:
+                            logger.info("dev_most_recent_field: None")
+
+
                 else:
                     output += "    " + field.verbose_name + " changed from \"" + str(dev_old_field) + "\" to \"" + \
                               str(dev_most_recent_field) + "\"\n"
