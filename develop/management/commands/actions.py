@@ -76,6 +76,12 @@ def fields_are_same(object_item, api_or_web_scrape_item):
         logger.info(n.strftime("%H:%M %m-%d-%y") + ": Error comparing object_item, " + str(object_item) + ", with json_item, " + str(api_or_web_scrape_item))
 
 
+def string_output_unix_datetime(unix_datetime):
+    if unix_datetime:
+        return datetime.fromtimestamp(unix_datetime / 1000).strftime('%Y-%m-%d %H:%M:%S')
+    return str("None")
+
+
 def api_object_is_different(known_dev_object, dev_json):
     # Return False unless if any of the individual field compare
     # functions return True, return True
@@ -259,7 +265,7 @@ def create_email_message(devs_that_changed):
             # Need to look at the history and compare the most recent update with the one before it.
             if isinstance(updated_dev, Development):
                 updated_devs_message += "***" + str(updated_dev.plan_name) + ", " + str(updated_dev.plan_number) + "***\n"
-                updated_devs_message += "    Updated: " + str(updated_dev.updated) + "\n"
+                updated_devs_message += "    Updated: " + string_output_unix_datetime(updated_dev.updated) + "\n"
                 updated_devs_message += "    Status: " + str(updated_dev.status) + "\n"
                 updated_devs_message += "    CAC: " + str(updated_dev.cac) + "\n"
                 updated_devs_message += "    URL: " + str(updated_dev.planurl) + "\n\n"
