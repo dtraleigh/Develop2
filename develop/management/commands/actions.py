@@ -1,4 +1,5 @@
 import logging, json, requests, pytz
+from bs4 import BeautifulSoup
 from datetime import datetime
 from datetime import timedelta
 
@@ -80,6 +81,26 @@ def string_output_unix_datetime(unix_datetime):
     if unix_datetime:
         return datetime.fromtimestamp(unix_datetime / 1000).strftime('%Y-%m-%d %H:%M:%S')
     return str("None")
+
+
+def get_status_legend():
+    page_link = "https://www.raleighnc.gov/development"
+
+    page_response = requests.get(page_link, timeout=10)
+
+    if page_response.status_code == 200:
+        page_content = BeautifulSoup(page_response.content, "html.parser")
+
+        # Status Abbreviations
+        status_abbreviations_title = page_content.find("h3", {"id": "*StatusAbbreviations"})
+
+        status_section = status_abbreviations_title.findNext("div")
+
+        status_ul = status_section.find("ul")
+
+        return status_ul.get_text()
+
+    return "Unable to scrape the status legend."
 
 
 def api_object_is_different(known_dev_object, dev_json):
@@ -288,6 +309,7 @@ def create_email_message(devs_that_changed):
 
     # /// Footer
     email_footer = "*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*\n"
+    email_footer += get_status_legend() + "\n\n"
     email_footer += "You are subscribed to THE RALEIGH WIRE SERVICE\n"
     email_footer += "This is a service of DTRaleigh.com\n"
     email_footer += "*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*\n"
