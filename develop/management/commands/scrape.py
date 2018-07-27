@@ -61,10 +61,10 @@ class Command(BaseCommand):
 
                 case_number = row_tds[0].find("a").string
                 case_url = page_link + row_tds[0].find("a")["href"]
-                project_name = row_tds[1].get_text()
-                cac = row_tds[2].get_text()
-                status = row_tds[3].get_text()
-                contact = row_tds[4].find("a").get_text()
+                project_name = row_tds[1].get_text().strip()
+                cac = row_tds[2].get_text().strip()
+                status = row_tds[3].get_text().strip()
+                contact = row_tds[4].find("a").get_text().strip()
                 contact_url = page_link + row_tds[4].find("a")["href"]
 
                 # If any of these variables are None, log it and move on.
