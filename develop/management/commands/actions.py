@@ -97,8 +97,12 @@ def get_status_legend():
         status_section = status_abbreviations_title.findNext("div")
 
         status_ul = status_section.find("ul")
+        status_legend = ""
 
-        return status_ul.get_text()
+        for li in status_ul.findAll('li'):
+            status_legend += li.get_text() + "\n"
+
+        return status_legend
 
     return "Unable to scrape the status legend."
 
