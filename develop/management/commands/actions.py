@@ -332,6 +332,8 @@ def create_email_message(items_that_changed):
     # If the dev's created date was in the last hour, we assume it's a new dev
     new_devs = []
     updated_devs = []
+    new_zons = []
+    updated_zons = []
 
     for item in items_that_changed:
         if isinstance(item, Development):
@@ -339,6 +341,14 @@ def create_email_message(items_that_changed):
                 new_devs.append(item)
             else:
                 updated_devs.append(item)
+        if isinstance(item, Zoning):
+            if item.created_date > timezone.now() - timedelta(hours=1):
+                new_zons.append(item)
+            else:
+                updated_zons.append(item)
+
+    # /// New Devs section
+
     if new_devs:
         new_devs_message = "--------------New Developments---------------\n\n"
         new_devs_message += get_new_dev_text(new_devs)
@@ -358,6 +368,26 @@ def create_email_message(items_that_changed):
 
     # \\\ End Dev Updates Section
 
+    # /// New Zons section
+
+    if new_zons:
+        new_zons_message = "-----------New Zoning Requests------------\n\n"
+        new_zons_message += get_new_zon_text(new_zons)
+    else:
+        new_zons_message = ""
+
+    # \\\ End New Devs Section
+
+    # /// Dev Updates Section
+
+    if updated_zons:
+        updated_zons_message = "--------Existing Zoning Request Updates-------\n\n"
+        updated_zons_message += get_updated_zon_text(updated_zons)
+    else:
+        updated_zons_message = ""
+
+    # \\\ End Dev Updates Section
+
     # /// Footer
     email_footer = "*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*\n"
     email_footer += get_status_legend() + "\n\n"
@@ -367,6 +397,6 @@ def create_email_message(items_that_changed):
 
     # \\\ End Footer
 
-    message = email_header + new_devs_message + updated_devs_message + email_footer
+    message = email_header + new_devs_message + updated_devs_message + new_zons_message + updated_zons_message + email_footer
 
     return message

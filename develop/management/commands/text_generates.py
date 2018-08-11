@@ -12,51 +12,51 @@ def string_output_unix_datetime(unix_datetime):
     return str("None")
 
 
-def difference_email_output(dev):
+def difference_email_output(item):
     output = ""
 
-    # Get the most recent version of the dev and the one previously
-    dev_most_recent = dev.history.first()
-    dev_previous = dev_most_recent.prev_record
+    # Get the most recent version of the item and the one previously
+    item_most_recent = item.history.first()
+    item_previous = item_most_recent.prev_record
 
-    # Get all the dev fields
-    fields = dev._meta.get_fields()
+    # Get all the item fields
+    fields = item._meta.get_fields()
 
     # Loop through each field, except created_date, modified_date, and id.
     # If the fields are not equal, add it to output.
     for field in fields:
         if field.name != "created_date" and field.name != "modified_date" and field.name != "id" and field.name != "EditDate":
-            dev_most_recent_field = getattr(dev_most_recent, field.name)
-            dev_old_field = getattr(dev_previous, field.name)
+            item_most_recent_field = getattr(item_most_recent, field.name)
+            item_old_field = getattr(item_previous, field.name)
 
             # If there is a difference...
-            if dev_most_recent_field != dev_old_field:
+            if item_most_recent_field != item_old_field:
                 # If it's a date field, we need to convert it to a human readable string
                 # Let's ignore EditDate
                 if field.get_internal_type() == "BigIntegerField" and field.name != "EditDate":
                     try:
-                        before_date_hr = datetime.fromtimestamp(dev_old_field / 1000).strftime('%Y-%m-%d %H:%M:%S')
-                        after_date_hr = datetime.fromtimestamp(dev_most_recent_field / 1000).strftime('%Y-%m-%d %H:%M:%S')
+                        before_date_hr = datetime.fromtimestamp(item_old_field / 1000).strftime('%Y-%m-%d %H:%M:%S')
+                        after_date_hr = datetime.fromtimestamp(item_most_recent_field / 1000).strftime('%Y-%m-%d %H:%M:%S')
 
                         output += "    " + field.verbose_name + " changed from \"" + before_date_hr + "\" to \"" + \
                                   after_date_hr + "\"\n"
                     except:
                         logger.info("Problem calculating the datetime")
                         logger.info("field is " + str(field))
-                        if dev_old_field:
-                            logger.info("dev_old_field: " + str(dev_old_field))
+                        if item_old_field:
+                            logger.info("item_old_field: " + str(item_old_field))
                         else:
-                            logger.info("dev_old_field: None")
+                            logger.info("item_old_field: None")
 
-                        if dev_old_field:
-                            logger.info("dev_most_recent_field: " + str(dev_old_field))
+                        if item_old_field:
+                            logger.info("item_most_recent_field: " + str(item_old_field))
                         else:
-                            logger.info("dev_most_recent_field: None")
+                            logger.info("item_most_recent_field: None")
 
 
                 else:
-                    output += "    " + field.verbose_name + " changed from \"" + str(dev_old_field) + "\" to \"" + \
-                              str(dev_most_recent_field) + "\"\n"
+                    output += "    " + field.verbose_name + " changed from \"" + str(item_old_field) + "\" to \"" + \
+                              str(item_most_recent_field) + "\"\n"
 
     return output
 
@@ -103,3 +103,27 @@ def get_updated_dev_text(updated_devs):
         updated_devs_message += "\n"
 
     return updated_devs_message
+
+
+def get_new_zon_text(new_zons):
+    for new_zon in new_zons:
+        new_zons_message = "***" + str(new_zon.zpyear) + "-" + str(new_zon.zpnum) + "***\n"
+        new_zons_message += "    Location: " + str(new_zon.location) + "\n"
+        new_zons_message += "    Remarks: " + str(new_zon.remarks) + "\n"
+        new_zons_message += "    CAC: " + str(new_zon.advisory_committee_areas) + "\n\n"
+
+    return new_zons_message
+
+
+def get_updated_zon_text(updated_zons):
+    for updated_zon in updated_zons:
+        updated_zon_message = "***" + str(updated_zon.zpyear) + "-" + str(updated_zon.zpnum) + "***\n"
+        updated_zon_message += "    Location: " + str(updated_zon.location) + "\n"
+        updated_zon_message += "    Remarks: " + str(updated_zon.remarks) + "\n"
+        updated_zon_message += "    CAC: " + str(updated_zon.advisory_committee_areas) + "\n\n"
+        updated_zon_message += "  *UPDATES*\n"
+        updated_zon_message += difference_email_output(updated_zon)
+
+        updated_zon_message += "\n"
+
+    return updated_zon_message
