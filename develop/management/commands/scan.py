@@ -1,5 +1,5 @@
 # ///
-# This command is used to query the API, compare the results with the DB and make appropriate changes.
+# This command is used to query the APIs, compare the results with the DB and make appropriate changes.
 # \\\
 import logging
 
@@ -13,3 +13,4 @@ logger = logging.getLogger("django")
 class Command(BaseCommand):
     def handle(self, *args, **options):
         development_api_scan()
+        zoning_api_scan()

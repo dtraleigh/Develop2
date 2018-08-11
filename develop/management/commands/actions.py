@@ -39,7 +39,7 @@ def get_total_developments():
     return json_count["count"]
 
 
-def get_all_dev_ids(url):
+def get_all_ids(url):
     # Example:
     # {
     #     "objectIdFieldName": "OBJECTID",
@@ -107,111 +107,194 @@ def get_status_legend():
     return "Unable to scrape the status legend."
 
 
-def api_object_is_different(known_dev_object, dev_json):
+def api_object_is_different(known_object, item_json):
     # Return False unless if any of the individual field compare
     # functions return True, return True
+    n = datetime.now()
 
-    if not fields_are_same(known_dev_object.OBJECTID, dev_json["OBJECTID"]):
-        return True
+    if known_object.__class__.__name__ == "Development":
+        if not fields_are_same(known_object.OBJECTID, item_json["OBJECTID"]):
+            return True
 
-    if not fields_are_same(known_dev_object.submitted, dev_json["submitted"]):
-        return True
+        if not fields_are_same(known_object.submitted, item_json["submitted"]):
+            return True
 
-    if not fields_are_same(known_dev_object.submitted_yr, dev_json["submitted_yr"]):
-        return True
+        if not fields_are_same(known_object.submitted_yr, item_json["submitted_yr"]):
+            return True
 
-    if not fields_are_same(known_dev_object.approved, dev_json["approved"]):
-        return True
+        if not fields_are_same(known_object.approved, item_json["approved"]):
+            return True
 
-    if not fields_are_same(known_dev_object.daystoapprove, dev_json["daystoapprove"]):
-        return True
+        if not fields_are_same(known_object.daystoapprove, item_json["daystoapprove"]):
+            return True
 
-    if not fields_are_same(known_dev_object.plan_type, dev_json["plan_type"]):
-        return True
+        if not fields_are_same(known_object.plan_type, item_json["plan_type"]):
+            return True
 
-    if not fields_are_same(known_dev_object.status, dev_json["status"]):
-        return True
+        if not fields_are_same(known_object.status, item_json["status"]):
+            return True
 
-    if not fields_are_same(known_dev_object.appealperiodends, dev_json["appealperiodends"]):
-        return True
+        if not fields_are_same(known_object.appealperiodends, item_json["appealperiodends"]):
+            return True
 
-    # Ignoring updated for now.
-    # if not fields_are_same(known_dev_object.updated, dev_json["updated"]):
-    #     return True
+        # Ignoring updated for now.
+        # if not fields_are_same(known_object.updated, item_json["updated"]):
+        #     return True
 
-    if not fields_are_same(known_dev_object.sunset_date, dev_json["sunset_date"]):
-        return True
+        if not fields_are_same(known_object.sunset_date, item_json["sunset_date"]):
+            return True
 
-    if not fields_are_same(known_dev_object.acreage, str(dev_json["acreage"])):
-        return True
+        if not fields_are_same(known_object.acreage, str(item_json["acreage"])):
+            return True
 
-    # Need to convert the decimal field to a char
-    if not fields_are_same(known_dev_object.major_street, dev_json["major_street"]):
-        return True
+        # Need to convert the decimal field to a char
+        if not fields_are_same(known_object.major_street, item_json["major_street"]):
+            return True
 
-    if not fields_are_same(known_dev_object.cac, dev_json["cac"]):
-        return True
+        if not fields_are_same(known_object.cac, item_json["cac"]):
+            return True
 
-    if not fields_are_same(known_dev_object.engineer, dev_json["engineer"]):
-        return True
+        if not fields_are_same(known_object.engineer, item_json["engineer"]):
+            return True
 
-    if not fields_are_same(known_dev_object.engineer_phone, dev_json["engineer_phone"]):
-        return True
+        if not fields_are_same(known_object.engineer_phone, item_json["engineer_phone"]):
+            return True
 
-    if not fields_are_same(known_dev_object.developer, dev_json["developer"]):
-        return True
+        if not fields_are_same(known_object.developer, item_json["developer"]):
+            return True
 
-    if not fields_are_same(known_dev_object.developer_phone, dev_json["developer_phone"]):
-        return True
+        if not fields_are_same(known_object.developer_phone, item_json["developer_phone"]):
+            return True
 
-    if not fields_are_same(known_dev_object.plan_name, dev_json["plan_name"]):
-        return True
+        if not fields_are_same(known_object.plan_name, item_json["plan_name"]):
+            return True
 
-    if not fields_are_same(known_dev_object.planurl, dev_json["planurl"]):
-        return True
+        if not fields_are_same(known_object.planurl, item_json["planurl"]):
+            return True
 
-    if not fields_are_same(known_dev_object.planurl_approved, dev_json["planurl_approved"]):
-        return True
+        if not fields_are_same(known_object.planurl_approved, item_json["planurl_approved"]):
+            return True
 
-    if not fields_are_same(known_dev_object.planner, dev_json["planner"]):
-        return True
+        if not fields_are_same(known_object.planner, item_json["planner"]):
+            return True
 
-    if not fields_are_same(known_dev_object.lots_req, dev_json["lots_req"]):
-        return True
+        if not fields_are_same(known_object.lots_req, item_json["lots_req"]):
+            return True
 
-    if not fields_are_same(known_dev_object.lots_rec, dev_json["lots_rec"]):
-        return True
+        if not fields_are_same(known_object.lots_rec, item_json["lots_rec"]):
+            return True
 
-    if not fields_are_same(known_dev_object.lots_apprv, dev_json["lots_apprv"]):
-        return True
+        if not fields_are_same(known_object.lots_apprv, item_json["lots_apprv"]):
+            return True
 
-    if not fields_are_same(known_dev_object.sq_ft_req, dev_json["sq_ft_req"]):
-        return True
+        if not fields_are_same(known_object.sq_ft_req, item_json["sq_ft_req"]):
+            return True
 
-    if not fields_are_same(known_dev_object.units_apprv, dev_json["units_apprv"]):
-        return True
+        if not fields_are_same(known_object.units_apprv, item_json["units_apprv"]):
+            return True
 
-    if not fields_are_same(known_dev_object.units_req, dev_json["units_req"]):
-        return True
+        if not fields_are_same(known_object.units_req, item_json["units_req"]):
+            return True
 
-    if not fields_are_same(known_dev_object.zoning, dev_json["zoning"]):
-        return True
+        if not fields_are_same(known_object.zoning, item_json["zoning"]):
+            return True
 
-    if not fields_are_same(known_dev_object.plan_number, str(dev_json["plan_number"])):
-        return True
+        if not fields_are_same(known_object.plan_number, str(item_json["plan_number"])):
+            return True
 
-    if not fields_are_same(known_dev_object.CreationDate, dev_json["CreationDate"]):
-        return True
+        if not fields_are_same(known_object.CreationDate, item_json["CreationDate"]):
+            return True
 
-    if not fields_are_same(known_dev_object.Creator, dev_json["Creator"]):
-        return True
+        if not fields_are_same(known_object.Creator, item_json["Creator"]):
+            return True
 
-    # Ignoring EditDate for now as some changes come in with EditDate being the only change
-    # if not fields_are_same(known_dev_object.EditDate, dev_json["EditDate"]):
-    #     return True
+        # Ignoring EditDate for now as some changes come in with EditDate being the only change
+        # if not fields_are_same(known_object.EditDate, item_json["EditDate"]):
+        #     return True
 
-    if not fields_are_same(known_dev_object.Editor, dev_json["Editor"]):
-        return True
+        if not fields_are_same(known_object.Editor, item_json["Editor"]):
+            return True
+
+    if known_object.__class__.__name__ == "Zoning":
+        if not fields_are_same(known_object.submittal_date, item_json["submittal_date"]):
+            logger.info(n.strftime("%H:%M %m-%d-%y") + ": Difference found with submittal_date")
+            return True
+
+        if not fields_are_same(known_object.petitioner, item_json["petitioner"]):
+            logger.info(n.strftime("%H:%M %m-%d-%y") + ": Difference found with petitioner")
+            return True
+
+        if not fields_are_same(known_object.location, item_json["location"]):
+            logger.info(n.strftime("%H:%M %m-%d-%y") + ": Difference found with location")
+            return True
+
+        if not fields_are_same(known_object.remarks, item_json["remarks"]):
+            logger.info(n.strftime("%H:%M %m-%d-%y") + ": Difference found with remarks")
+            return True
+
+        if not fields_are_same(known_object.zp_petition_acres, str(item_json["zp_petition_acres"])):
+            logger.info(n.strftime("%H:%M %m-%d-%y") + ": Difference found with zp_petition_acres")
+            return True
+
+        if not fields_are_same(known_object.planning_commission_action, item_json["planning_commission_action"]):
+            logger.info(n.strftime("%H:%M %m-%d-%y") + ": Difference found with planning_commission_action")
+            return True
+
+        if not fields_are_same(known_object.city_council_action, item_json["city_council_action"]):
+            logger.info(n.strftime("%H:%M %m-%d-%y") + ": Difference found with city_council_action")
+            return True
+
+        if not fields_are_same(known_object.ph_date, item_json["ph_date"]):
+            logger.info(n.strftime("%H:%M %m-%d-%y") + ": Difference found with ph_date")
+            return True
+
+        if not fields_are_same(known_object.withdraw_date, item_json["withdraw_date"]):
+            logger.info(n.strftime("%H:%M %m-%d-%y") + ": Difference found with withdraw_date")
+            return True
+
+        if not fields_are_same(known_object.exp_date_120_days, item_json["exp_date_120_days"]):
+            logger.info(n.strftime("%H:%M %m-%d-%y") + ": Difference found with exp_date_120_days")
+            return True
+
+        if not fields_are_same(known_object.exp_date_2_year, item_json["exp_date_2_year"]):
+            logger.info(n.strftime("%H:%M %m-%d-%y") + ": Difference found with exp_date_2_year")
+            return True
+
+        if not fields_are_same(known_object.ordinance_number, item_json["ordinance_number"]):
+            logger.info(n.strftime("%H:%M %m-%d-%y") + ": Difference found with ordinance_number")
+            return True
+
+        if not fields_are_same(known_object.received_by, item_json["received_by"]):
+            logger.info(n.strftime("%H:%M %m-%d-%y") + ": Difference found with received_by")
+            return True
+
+        if not fields_are_same(known_object.last_revised, item_json["last_revised"]):
+            logger.info(n.strftime("%H:%M %m-%d-%y") + ": Difference found with last_revised")
+            return True
+
+        if not fields_are_same(known_object.drain_basin, item_json["drain_basin"]):
+            logger.info(n.strftime("%H:%M %m-%d-%y") + ": Difference found with drain_basin")
+            return True
+
+        if not fields_are_same(known_object.advisory_committee_areas, item_json["advisory_committee_areas"]):
+            logger.info(n.strftime("%H:%M %m-%d-%y") + ": Difference found with advisory_committee_areas")
+            return True
+
+        if not fields_are_same(known_object.comprehensive_plan_districts, item_json["comprehensive_plan_districts"]):
+            logger.info(n.strftime("%H:%M %m-%d-%y") + ": Difference found with comprehensive_plan_districts")
+            return True
+
+        if not fields_are_same(known_object.GlobalID, item_json["GlobalID"]):
+            logger.info(n.strftime("%H:%M %m-%d-%y") + ": Difference found with GlobalID")
+            return True
+
+        if not fields_are_same(known_object.CreationDate, item_json["CreationDate"]):
+            logger.info(n.strftime("%H:%M %m-%d-%y") + ": Difference found with CreationDate")
+            return True
+
+        if not fields_are_same(known_object.EditDate, item_json["EditDate"]):
+            logger.info(n.strftime("%H:%M %m-%d-%y") + ": Difference found with EditDate")
+            return True
 
     return False
 
