@@ -5,7 +5,7 @@ import logging
 
 from django.core.management.base import BaseCommand
 
-from develop.management.commands.api_scans import *
+from .api_scans import development_api_scan, zoning_api_scan
 
 logger = logging.getLogger("django")
 

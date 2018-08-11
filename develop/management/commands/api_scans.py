@@ -1,6 +1,6 @@
 import logging
 
-from develop.management.commands.actions import *
+from .actions import *
 from develop.models import *
 
 logger = logging.getLogger("django")
