@@ -91,7 +91,7 @@ class Zoning(models.Model):
     petitioner = models.CharField(blank=True, max_length=300, null=True, verbose_name="Petitioner")
     location = models.CharField(blank=True, max_length=300, null=True, verbose_name="Location")
     remarks = models.CharField(blank=True, max_length=300, null=True, verbose_name="Remarks")
-    zp_petition_acres = models.CharField(blank=True, max_length=100, null=True, verbose_name="Acreage") #Need to convert from decimal to char
+    zp_petition_acres = models.CharField(blank=True, max_length=100, null=True, verbose_name="Acreage") # Need to convert from decimal to char
     planning_commission_action = models.CharField(blank=True, max_length=300, null=True, verbose_name="PC Action")
     city_council_action = models.CharField(blank=True, max_length=300, null=True, verbose_name="CC Action")
     ph_date = models.BigIntegerField(blank=True, null=True, verbose_name="Submitted")
