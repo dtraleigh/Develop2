@@ -150,7 +150,7 @@ def zoning_api_scan():
 
             # If the new object is not the same as the one in the DB, update it.
             if api_object_is_different(known_zon, zon):
-                print("Object " + str(known_zon) + "is in the DB and is different. Updating it.")
+                # print("Object " + str(known_zon) + "is in the DB and is different. Updating it.")
 
                 known_zon.OBJECTID = zon["OBJECTID"]
                 known_zon.zpyear = zon["zpyear"]
@@ -207,4 +207,4 @@ def zoning_api_scan():
                                   GlobalID=zon["GlobalID"],
                                   CreationDate=zon["CreationDate"],
                                   EditDate=zon["EditDate"])
-            print("Does not exist. Creating one.")
+            # print("Does not exist. Creating one.")

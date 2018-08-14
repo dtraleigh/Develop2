@@ -84,7 +84,7 @@ class SiteReviewCases(models.Model):
 
 class Zoning(models.Model):
     # Zoning is an item produced by the Zoning API
-    OBJECTID = models.IntegerField(verbose_name="Object ID")
+    OBJECTID = models.IntegerField(blank=True, null=True, verbose_name="Object ID")
     zpyear = models.SmallIntegerField(blank=True, null=True, verbose_name="Year Submitted")
     zpnum = models.SmallIntegerField(blank=True, null=True, verbose_name="Zoning Number")
     submittal_date = models.BigIntegerField(blank=True, null=True, verbose_name="Submitted")
@@ -110,9 +110,11 @@ class Zoning(models.Model):
     history = HistoricalRecords()
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now=True)
+    status = models.CharField(blank=True, max_length=300, null=True, verbose_name="Status")
+    plan_url = models.TextField(blank=True, null=True, verbose_name="Plan URL")
 
     class Meta:
-        verbose_name = "Zoning (API)"
+        verbose_name = "Zoning Request"
 
     def __str__(self):
         return u"%s (%s)" % (self.zpnum, self.zpyear)
