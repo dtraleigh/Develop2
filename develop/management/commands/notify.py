@@ -8,6 +8,7 @@ from datetime import timedelta
 from django.utils import timezone
 from django.core.management.base import BaseCommand
 from django.core.mail import send_mail
+from django.conf import settings
 
 from .actions import create_email_message
 from develop.models import *
@@ -35,7 +36,10 @@ class Command(BaseCommand):
             everything_that_changed.append(zon)
 
         if everything_that_changed:
-            subject = "Update on Development Tracker"
+            if settings.DEVELOP_INSTANCE == "Develop":
+                subject = "Update on Development Tracker [Develop]"
+            else:
+                subject = "Update on Development Tracker"
             message = create_email_message(everything_that_changed)
             email_from = "develop@dtraleigh.com"
             all_active_subscribers = Subscriber.objects.filter(send_emails=True)
