@@ -56,7 +56,13 @@ def get_all_ids(url):
 
     json_object_ids = get_api_json(url)
 
-    return json_object_ids["objectIds"]
+    try:
+        return json_object_ids["objectIds"]
+    except KeyError:
+        n = datetime.now()
+        logger.info(n.strftime("%H:%M %m-%d-%y") + ": KeyError: 'objectIds'")
+        logger.info("json_object_ids")
+        logger.info(json_object_ids)
 
 
 def get_dev_range_json(url):

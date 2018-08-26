@@ -33,94 +33,100 @@ def development_api_scan():
         # batch_of_devs_json = get_test_data()
 
         # Process each dev
-        for features in batch_of_devs_json["features"]:
-            dev = features["attributes"]
+        try:
+            for features in batch_of_devs_json["features"]:
+                dev = features["attributes"]
 
-            # Try to get the development from the DB and check if it needs to be updated.
-            try:
-                known_dev = Development.objects.get(devplan_id=dev["devplan_id"])
+                # Try to get the development from the DB and check if it needs to be updated.
+                try:
+                    known_dev = Development.objects.get(devplan_id=dev["devplan_id"])
 
-                # If the new object is not the same as the one in the DB, update it.
-                if api_object_is_different(known_dev, dev):
-                    # print("Object is in the DB and is different. Updating it.")
+                    # If the new object is not the same as the one in the DB, update it.
+                    if api_object_is_different(known_dev, dev):
+                        # print("Object is in the DB and is different. Updating it.")
 
-                    known_dev.OBJECTID = dev["OBJECTID"]
-                    known_dev.submitted = dev["submitted"]
-                    known_dev.submitted_yr = dev["submitted_yr"]
-                    known_dev.approved = dev["approved"]
-                    known_dev.daystoapprove = dev["daystoapprove"]
-                    known_dev.plan_type = dev["plan_type"]
-                    known_dev.status = dev["status"]
-                    known_dev.appealperiodends = dev["appealperiodends"]
-                    known_dev.updated = dev["updated"]
-                    known_dev.sunset_date = dev["sunset_date"]
-                    known_dev.acreage = dev["acreage"]
-                    known_dev.major_street = dev["major_street"]
-                    known_dev.cac = dev["cac"]
-                    known_dev.engineer = dev["engineer"]
-                    known_dev.engineer_phone = dev["engineer_phone"]
-                    known_dev.developer = dev["developer"]
-                    known_dev.developer_phone = dev["developer_phone"]
-                    known_dev.plan_name = dev["plan_name"]
-                    known_dev.planurl = dev["planurl"]
-                    known_dev.planurl_approved = dev["planurl_approved"]
-                    known_dev.planner = dev["planner"]
-                    known_dev.lots_req = dev["lots_req"]
-                    known_dev.lots_rec = dev["lots_rec"]
-                    known_dev.lots_apprv = dev["lots_apprv"]
-                    known_dev.sq_ft_req = dev["sq_ft_req"]
-                    known_dev.units_apprv = dev["units_apprv"]
-                    known_dev.units_req = dev["units_req"]
-                    known_dev.zoning = dev["zoning"]
-                    known_dev.plan_number = dev["plan_number"]
-                    known_dev.CreationDate = dev["CreationDate"]
-                    known_dev.Creator = dev["Creator"]
-                    known_dev.EditDate = dev["EditDate"]
-                    known_dev.Editor = dev["Editor"]
+                        known_dev.OBJECTID = dev["OBJECTID"]
+                        known_dev.submitted = dev["submitted"]
+                        known_dev.submitted_yr = dev["submitted_yr"]
+                        known_dev.approved = dev["approved"]
+                        known_dev.daystoapprove = dev["daystoapprove"]
+                        known_dev.plan_type = dev["plan_type"]
+                        known_dev.status = dev["status"]
+                        known_dev.appealperiodends = dev["appealperiodends"]
+                        known_dev.updated = dev["updated"]
+                        known_dev.sunset_date = dev["sunset_date"]
+                        known_dev.acreage = dev["acreage"]
+                        known_dev.major_street = dev["major_street"]
+                        known_dev.cac = dev["cac"]
+                        known_dev.engineer = dev["engineer"]
+                        known_dev.engineer_phone = dev["engineer_phone"]
+                        known_dev.developer = dev["developer"]
+                        known_dev.developer_phone = dev["developer_phone"]
+                        known_dev.plan_name = dev["plan_name"]
+                        known_dev.planurl = dev["planurl"]
+                        known_dev.planurl_approved = dev["planurl_approved"]
+                        known_dev.planner = dev["planner"]
+                        known_dev.lots_req = dev["lots_req"]
+                        known_dev.lots_rec = dev["lots_rec"]
+                        known_dev.lots_apprv = dev["lots_apprv"]
+                        known_dev.sq_ft_req = dev["sq_ft_req"]
+                        known_dev.units_apprv = dev["units_apprv"]
+                        known_dev.units_req = dev["units_req"]
+                        known_dev.zoning = dev["zoning"]
+                        known_dev.plan_number = dev["plan_number"]
+                        known_dev.CreationDate = dev["CreationDate"]
+                        known_dev.Creator = dev["Creator"]
+                        known_dev.EditDate = dev["EditDate"]
+                        known_dev.Editor = dev["Editor"]
 
-                    known_dev.save()
+                        known_dev.save()
 
-                # Nothing new here.
-                # else:
-                    # print("Nothing new from the API. We already know about it.")
+                    # Nothing new here.
+                    # else:
+                        # print("Nothing new from the API. We already know about it.")
 
-            # If we don't know about it, we need to add it
-            except Development.DoesNotExist:
-                Development.objects.create(OBJECTID=dev["OBJECTID"],
-                                           devplan_id=dev["devplan_id"],
-                                           submitted=dev["submitted"],
-                                           submitted_yr=dev["submitted_yr"],
-                                           approved=dev["approved"],
-                                           daystoapprove=dev["daystoapprove"],
-                                           plan_type=dev["plan_type"],
-                                           status=dev["status"],
-                                           appealperiodends=dev["appealperiodends"],
-                                           updated=dev["updated"],
-                                           sunset_date=dev["sunset_date"],
-                                           acreage=dev["acreage"],
-                                           major_street=dev["major_street"],
-                                           cac=dev["cac"],
-                                           engineer=dev["engineer"],
-                                           engineer_phone=dev["engineer_phone"],
-                                           developer=dev["developer"],
-                                           developer_phone=dev["developer_phone"],
-                                           plan_name=dev["plan_name"],
-                                           planurl=dev["planurl"],
-                                           planurl_approved=dev["planurl_approved"],
-                                           planner=dev["planner"],
-                                           lots_req=dev["lots_req"],
-                                           lots_rec=dev["lots_rec"],
-                                           lots_apprv=dev["lots_apprv"],
-                                           sq_ft_req=dev["sq_ft_req"],
-                                           units_apprv=dev["units_apprv"],
-                                           units_req=dev["units_req"],
-                                           zoning=dev["zoning"],
-                                           plan_number=dev["plan_number"],
-                                           CreationDate=dev["CreationDate"],
-                                           Creator=dev["Creator"],
-                                           EditDate=dev["EditDate"],
-                                           Editor=dev["Editor"])
-                # print("Does not exist. Creating one.")
+                # If we don't know about it, we need to add it
+                except Development.DoesNotExist:
+                    Development.objects.create(OBJECTID=dev["OBJECTID"],
+                                               devplan_id=dev["devplan_id"],
+                                               submitted=dev["submitted"],
+                                               submitted_yr=dev["submitted_yr"],
+                                               approved=dev["approved"],
+                                               daystoapprove=dev["daystoapprove"],
+                                               plan_type=dev["plan_type"],
+                                               status=dev["status"],
+                                               appealperiodends=dev["appealperiodends"],
+                                               updated=dev["updated"],
+                                               sunset_date=dev["sunset_date"],
+                                               acreage=dev["acreage"],
+                                               major_street=dev["major_street"],
+                                               cac=dev["cac"],
+                                               engineer=dev["engineer"],
+                                               engineer_phone=dev["engineer_phone"],
+                                               developer=dev["developer"],
+                                               developer_phone=dev["developer_phone"],
+                                               plan_name=dev["plan_name"],
+                                               planurl=dev["planurl"],
+                                               planurl_approved=dev["planurl_approved"],
+                                               planner=dev["planner"],
+                                               lots_req=dev["lots_req"],
+                                               lots_rec=dev["lots_rec"],
+                                               lots_apprv=dev["lots_apprv"],
+                                               sq_ft_req=dev["sq_ft_req"],
+                                               units_apprv=dev["units_apprv"],
+                                               units_req=dev["units_req"],
+                                               zoning=dev["zoning"],
+                                               plan_number=dev["plan_number"],
+                                               CreationDate=dev["CreationDate"],
+                                               Creator=dev["Creator"],
+                                               EditDate=dev["EditDate"],
+                                               Editor=dev["Editor"])
+                    # print("Does not exist. Creating one.")
+        except KeyError:
+            n = datetime.now()
+            logger.info(n.strftime("%H:%M %m-%d-%y") + ": KeyError: 'features'")
+            logger.info("batch_of_devs_json")
+            logger.info(batch_of_devs_json)
 
 
 def zoning_api_scan():
