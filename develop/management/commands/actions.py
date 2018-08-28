@@ -357,7 +357,8 @@ def create_email_message(items_that_changed):
 
     if new_devs:
         new_devs_message = "--------------New Developments---------------\n\n"
-        new_devs_message += get_new_dev_text(new_devs)
+        for new_dev in new_devs:
+            new_devs_message += get_new_dev_text(new_dev)
     else:
         new_devs_message = ""
 
@@ -368,7 +369,8 @@ def create_email_message(items_that_changed):
 
     if updated_devs:
         updated_devs_message = "-------------Existing Dev Updates------------\n\n"
-        updated_devs_message += get_updated_dev_text(updated_devs)
+        for updated_dev in updated_devs:
+            updated_devs_message += get_updated_dev_text(updated_dev)
     else:
         updated_devs_message = ""
 

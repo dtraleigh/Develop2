@@ -63,54 +63,52 @@ def difference_email_output(item):
     return output
 
 
-def get_new_dev_text(new_devs):
-    for new_dev in new_devs:
-        if isinstance(new_dev, Development):
-            new_devs_message = "***" + str(new_dev.plan_name) + ", " + str(new_dev.plan_number) + "***\n"
-            if settings.DEVELOP_INSTANCE == "Develop":
-                new_devs_message += "[Develop - API]\n"
-            new_devs_message += "    Submitted year: " + str(new_dev.submitted_yr) + "\n"
-            new_devs_message += "    Plan type: " + str(new_dev.plan_type) + "\n"
-            new_devs_message += "    Status: " + str(new_dev.status) + "\n"
-            new_devs_message += "    Major Street: " + str(new_dev.major_street) + "\n"
-            new_devs_message += "    CAC: " + str(new_dev.cac) + "\n"
-            new_devs_message += "    URL: " + str(new_dev.planurl) + "\n\n"
-        if isinstance(new_dev, SiteReviewCases):
-            new_devs_message = "***" + str(new_dev.project_name) + ", " + str(new_dev.case_number) + "***\n"
-            if settings.DEVELOP_INSTANCE == "Develop":
-                new_devs_message += "[Develop - Web scrape]\n"
-            new_devs_message += "    Status: " + str(new_dev.status) + "\n"
-            new_devs_message += "    CAC: " + str(new_dev.cac) + "\n"
-            new_devs_message += "    URL: " + str(new_dev.case_url) + "\n\n"
+def get_new_dev_text(new_dev):
+    if isinstance(new_dev, Development):
+        new_devs_message = "***" + str(new_dev.plan_name) + ", " + str(new_dev.plan_number) + "***\n"
+        if settings.DEVELOP_INSTANCE == "Develop":
+            new_devs_message += "[Develop - API]\n"
+        new_devs_message += "    Submitted year: " + str(new_dev.submitted_yr) + "\n"
+        new_devs_message += "    Plan type: " + str(new_dev.plan_type) + "\n"
+        new_devs_message += "    Status: " + str(new_dev.status) + "\n"
+        new_devs_message += "    Major Street: " + str(new_dev.major_street) + "\n"
+        new_devs_message += "    CAC: " + str(new_dev.cac) + "\n"
+        new_devs_message += "    URL: " + str(new_dev.planurl) + "\n\n"
+    if isinstance(new_dev, SiteReviewCases):
+        new_devs_message = "***" + str(new_dev.project_name) + ", " + str(new_dev.case_number) + "***\n"
+        if settings.DEVELOP_INSTANCE == "Develop":
+            new_devs_message += "[Develop - Web scrape]\n"
+        new_devs_message += "    Status: " + str(new_dev.status) + "\n"
+        new_devs_message += "    CAC: " + str(new_dev.cac) + "\n"
+        new_devs_message += "    URL: " + str(new_dev.case_url) + "\n\n"
 
     return new_devs_message
 
 
-def get_updated_dev_text(updated_devs):
-    for updated_dev in updated_devs:
-        # Need to look at the history and compare the most recent update with the one before it.
-        if isinstance(updated_dev, Development):
-            updated_devs_message = "***" + str(updated_dev.plan_name) + ", " + str(updated_dev.plan_number) + "***\n"
-            if settings.DEVELOP_INSTANCE == "Develop":
-                updated_devs_message += "[Develop - API]\n"
-            updated_devs_message += "    Updated: " + string_output_unix_datetime(updated_dev.updated) + "\n"
-            updated_devs_message += "    Status: " + str(updated_dev.status) + "\n"
-            updated_devs_message += "    CAC: " + str(updated_dev.cac) + "\n"
-            updated_devs_message += "    URL: " + str(updated_dev.planurl) + "\n\n"
-            updated_devs_message += "  *UPDATES*\n"
-            updated_devs_message += difference_email_output(updated_dev)
-        if isinstance(updated_dev, SiteReviewCases):
-            updated_devs_message = "***" + str(updated_dev.project_name) + ", " + str(updated_dev.case_number) + "***\n"
-            if settings.DEVELOP_INSTANCE == "Develop":
-                updated_devs_message += "[Develop - Web scrape]\n"
-            updated_devs_message += "    Updated: " + updated_dev.modified_date.strftime("%m-%d-%y %H:%M") + "\n"
-            updated_devs_message += "    Status: " + str(updated_dev.status) + "\n"
-            updated_devs_message += "    CAC: " + str(updated_dev.cac) + "\n"
-            updated_devs_message += "    URL: " + str(updated_dev.case_url) + "\n\n"
-            updated_devs_message += "  *UPDATES*\n"
-            updated_devs_message += difference_email_output(updated_dev)
+def get_updated_dev_text(updated_dev):
+    # Need to look at the history and compare the most recent update with the one before it.
+    if isinstance(updated_dev, Development):
+        updated_devs_message = "***" + str(updated_dev.plan_name) + ", " + str(updated_dev.plan_number) + "***\n"
+        if settings.DEVELOP_INSTANCE == "Develop":
+            updated_devs_message += "[Develop - API]\n"
+        updated_devs_message += "    Updated: " + string_output_unix_datetime(updated_dev.updated) + "\n"
+        updated_devs_message += "    Status: " + str(updated_dev.status) + "\n"
+        updated_devs_message += "    CAC: " + str(updated_dev.cac) + "\n"
+        updated_devs_message += "    URL: " + str(updated_dev.planurl) + "\n\n"
+        updated_devs_message += "  *UPDATES*\n"
+        updated_devs_message += difference_email_output(updated_dev)
+    if isinstance(updated_dev, SiteReviewCases):
+        updated_devs_message = "***" + str(updated_dev.project_name) + ", " + str(updated_dev.case_number) + "***\n"
+        if settings.DEVELOP_INSTANCE == "Develop":
+            updated_devs_message += "[Develop - Web scrape]\n"
+        updated_devs_message += "    Updated: " + updated_dev.modified_date.strftime("%m-%d-%y %H:%M") + "\n"
+        updated_devs_message += "    Status: " + str(updated_dev.status) + "\n"
+        updated_devs_message += "    CAC: " + str(updated_dev.cac) + "\n"
+        updated_devs_message += "    URL: " + str(updated_dev.case_url) + "\n\n"
+        updated_devs_message += "  *UPDATES*\n"
+        updated_devs_message += difference_email_output(updated_dev)
 
-        updated_devs_message += "\n"
+    updated_devs_message += "\n"
 
     return updated_devs_message
 
