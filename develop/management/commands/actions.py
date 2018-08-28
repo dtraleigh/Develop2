@@ -8,6 +8,8 @@ from django.core.mail import send_mail
 from django.utils import timezone
 from django.conf import settings
 
+from .text_generates import *
+
 logger = logging.getLogger("django")
 
 
@@ -39,7 +41,7 @@ def get_total_developments():
     return json_count["count"]
 
 
-def get_all_dev_ids(url):
+def get_all_ids(url):
     # Example:
     # {
     #     "objectIdFieldName": "OBJECTID",
@@ -54,7 +56,13 @@ def get_all_dev_ids(url):
 
     json_object_ids = get_api_json(url)
 
-    return json_object_ids["objectIds"]
+    try:
+        return json_object_ids["objectIds"]
+    except KeyError:
+        n = datetime.now()
+        logger.info(n.strftime("%H:%M %m-%d-%y") + ": KeyError: 'objectIds'")
+        logger.info("json_object_ids")
+        logger.info(json_object_ids)
 
 
 def get_dev_range_json(url):
@@ -75,12 +83,6 @@ def fields_are_same(object_item, api_or_web_scrape_item):
     except:
         n = datetime.datetime.now()
         logger.info(n.strftime("%H:%M %m-%d-%y") + ": Error comparing object_item, " + str(object_item) + ", with json_item, " + str(api_or_web_scrape_item))
-
-
-def string_output_unix_datetime(unix_datetime):
-    if unix_datetime:
-        return datetime.fromtimestamp(unix_datetime / 1000).strftime('%Y-%m-%d %H:%M:%S')
-    return str("None")
 
 
 def get_status_legend():
@@ -107,111 +109,194 @@ def get_status_legend():
     return "Unable to scrape the status legend."
 
 
-def api_object_is_different(known_dev_object, dev_json):
+def api_object_is_different(known_object, item_json):
     # Return False unless if any of the individual field compare
     # functions return True, return True
+    n = datetime.now()
 
-    if not fields_are_same(known_dev_object.OBJECTID, dev_json["OBJECTID"]):
-        return True
+    if isinstance(known_object, Development):
+        if not fields_are_same(known_object.OBJECTID, item_json["OBJECTID"]):
+            return True
 
-    if not fields_are_same(known_dev_object.submitted, dev_json["submitted"]):
-        return True
+        if not fields_are_same(known_object.submitted, item_json["submitted"]):
+            return True
 
-    if not fields_are_same(known_dev_object.submitted_yr, dev_json["submitted_yr"]):
-        return True
+        if not fields_are_same(known_object.submitted_yr, item_json["submitted_yr"]):
+            return True
 
-    if not fields_are_same(known_dev_object.approved, dev_json["approved"]):
-        return True
+        if not fields_are_same(known_object.approved, item_json["approved"]):
+            return True
 
-    if not fields_are_same(known_dev_object.daystoapprove, dev_json["daystoapprove"]):
-        return True
+        if not fields_are_same(known_object.daystoapprove, item_json["daystoapprove"]):
+            return True
 
-    if not fields_are_same(known_dev_object.plan_type, dev_json["plan_type"]):
-        return True
+        if not fields_are_same(known_object.plan_type, item_json["plan_type"]):
+            return True
 
-    if not fields_are_same(known_dev_object.status, dev_json["status"]):
-        return True
+        if not fields_are_same(known_object.status, item_json["status"]):
+            return True
 
-    if not fields_are_same(known_dev_object.appealperiodends, dev_json["appealperiodends"]):
-        return True
+        if not fields_are_same(known_object.appealperiodends, item_json["appealperiodends"]):
+            return True
 
-    # Ignoring updated for now.
-    # if not fields_are_same(known_dev_object.updated, dev_json["updated"]):
-    #     return True
+        # Ignoring updated for now.
+        # if not fields_are_same(known_object.updated, item_json["updated"]):
+        #     return True
 
-    if not fields_are_same(known_dev_object.sunset_date, dev_json["sunset_date"]):
-        return True
+        if not fields_are_same(known_object.sunset_date, item_json["sunset_date"]):
+            return True
 
-    if not fields_are_same(known_dev_object.acreage, str(dev_json["acreage"])):
-        return True
+        if not fields_are_same(known_object.acreage, str(item_json["acreage"])):
+            return True
 
-    # Need to convert the decimal field to a char
-    if not fields_are_same(known_dev_object.major_street, dev_json["major_street"]):
-        return True
+        # Need to convert the decimal field to a char
+        if not fields_are_same(known_object.major_street, item_json["major_street"]):
+            return True
 
-    if not fields_are_same(known_dev_object.cac, dev_json["cac"]):
-        return True
+        if not fields_are_same(known_object.cac, item_json["cac"]):
+            return True
 
-    if not fields_are_same(known_dev_object.engineer, dev_json["engineer"]):
-        return True
+        if not fields_are_same(known_object.engineer, item_json["engineer"]):
+            return True
 
-    if not fields_are_same(known_dev_object.engineer_phone, dev_json["engineer_phone"]):
-        return True
+        if not fields_are_same(known_object.engineer_phone, item_json["engineer_phone"]):
+            return True
 
-    if not fields_are_same(known_dev_object.developer, dev_json["developer"]):
-        return True
+        if not fields_are_same(known_object.developer, item_json["developer"]):
+            return True
 
-    if not fields_are_same(known_dev_object.developer_phone, dev_json["developer_phone"]):
-        return True
+        if not fields_are_same(known_object.developer_phone, item_json["developer_phone"]):
+            return True
 
-    if not fields_are_same(known_dev_object.plan_name, dev_json["plan_name"]):
-        return True
+        if not fields_are_same(known_object.plan_name, item_json["plan_name"]):
+            return True
 
-    if not fields_are_same(known_dev_object.planurl, dev_json["planurl"]):
-        return True
+        if not fields_are_same(known_object.planurl, item_json["planurl"]):
+            return True
 
-    if not fields_are_same(known_dev_object.planurl_approved, dev_json["planurl_approved"]):
-        return True
+        if not fields_are_same(known_object.planurl_approved, item_json["planurl_approved"]):
+            return True
 
-    if not fields_are_same(known_dev_object.planner, dev_json["planner"]):
-        return True
+        if not fields_are_same(known_object.planner, item_json["planner"]):
+            return True
 
-    if not fields_are_same(known_dev_object.lots_req, dev_json["lots_req"]):
-        return True
+        if not fields_are_same(known_object.lots_req, item_json["lots_req"]):
+            return True
 
-    if not fields_are_same(known_dev_object.lots_rec, dev_json["lots_rec"]):
-        return True
+        if not fields_are_same(known_object.lots_rec, item_json["lots_rec"]):
+            return True
 
-    if not fields_are_same(known_dev_object.lots_apprv, dev_json["lots_apprv"]):
-        return True
+        if not fields_are_same(known_object.lots_apprv, item_json["lots_apprv"]):
+            return True
 
-    if not fields_are_same(known_dev_object.sq_ft_req, dev_json["sq_ft_req"]):
-        return True
+        if not fields_are_same(known_object.sq_ft_req, item_json["sq_ft_req"]):
+            return True
 
-    if not fields_are_same(known_dev_object.units_apprv, dev_json["units_apprv"]):
-        return True
+        if not fields_are_same(known_object.units_apprv, item_json["units_apprv"]):
+            return True
 
-    if not fields_are_same(known_dev_object.units_req, dev_json["units_req"]):
-        return True
+        if not fields_are_same(known_object.units_req, item_json["units_req"]):
+            return True
 
-    if not fields_are_same(known_dev_object.zoning, dev_json["zoning"]):
-        return True
+        if not fields_are_same(known_object.zoning, item_json["zoning"]):
+            return True
 
-    if not fields_are_same(known_dev_object.plan_number, str(dev_json["plan_number"])):
-        return True
+        if not fields_are_same(known_object.plan_number, str(item_json["plan_number"])):
+            return True
 
-    if not fields_are_same(known_dev_object.CreationDate, dev_json["CreationDate"]):
-        return True
+        if not fields_are_same(known_object.CreationDate, item_json["CreationDate"]):
+            return True
 
-    if not fields_are_same(known_dev_object.Creator, dev_json["Creator"]):
-        return True
+        if not fields_are_same(known_object.Creator, item_json["Creator"]):
+            return True
 
-    # Ignoring EditDate for now as some changes come in with EditDate being the only change
-    # if not fields_are_same(known_dev_object.EditDate, dev_json["EditDate"]):
-    #     return True
+        # Ignoring EditDate for now as some changes come in with EditDate being the only change
+        # if not fields_are_same(known_object.EditDate, item_json["EditDate"]):
+        #     return True
 
-    if not fields_are_same(known_dev_object.Editor, dev_json["Editor"]):
-        return True
+        if not fields_are_same(known_object.Editor, item_json["Editor"]):
+            return True
+
+    if isinstance(known_object, Zoning):
+        if not fields_are_same(known_object.submittal_date, item_json["submittal_date"]):
+            logger.info(n.strftime("%H:%M %m-%d-%y") + ": Difference found with submittal_date")
+            return True
+
+        if not fields_are_same(known_object.petitioner, item_json["petitioner"]):
+            logger.info(n.strftime("%H:%M %m-%d-%y") + ": Difference found with petitioner")
+            return True
+
+        if not fields_are_same(known_object.location, item_json["location"]):
+            logger.info(n.strftime("%H:%M %m-%d-%y") + ": Difference found with location")
+            return True
+
+        if not fields_are_same(known_object.remarks, item_json["remarks"]):
+            logger.info(n.strftime("%H:%M %m-%d-%y") + ": Difference found with remarks")
+            return True
+
+        if not fields_are_same(known_object.zp_petition_acres, str(item_json["zp_petition_acres"])):
+            logger.info(n.strftime("%H:%M %m-%d-%y") + ": Difference found with zp_petition_acres")
+            return True
+
+        if not fields_are_same(known_object.planning_commission_action, item_json["planning_commission_action"]):
+            logger.info(n.strftime("%H:%M %m-%d-%y") + ": Difference found with planning_commission_action")
+            return True
+
+        if not fields_are_same(known_object.city_council_action, item_json["city_council_action"]):
+            logger.info(n.strftime("%H:%M %m-%d-%y") + ": Difference found with city_council_action")
+            return True
+
+        if not fields_are_same(known_object.ph_date, item_json["ph_date"]):
+            logger.info(n.strftime("%H:%M %m-%d-%y") + ": Difference found with ph_date")
+            return True
+
+        if not fields_are_same(known_object.withdraw_date, item_json["withdraw_date"]):
+            logger.info(n.strftime("%H:%M %m-%d-%y") + ": Difference found with withdraw_date")
+            return True
+
+        if not fields_are_same(known_object.exp_date_120_days, item_json["exp_date_120_days"]):
+            logger.info(n.strftime("%H:%M %m-%d-%y") + ": Difference found with exp_date_120_days")
+            return True
+
+        if not fields_are_same(known_object.exp_date_2_year, item_json["exp_date_2_year"]):
+            logger.info(n.strftime("%H:%M %m-%d-%y") + ": Difference found with exp_date_2_year")
+            return True
+
+        if not fields_are_same(known_object.ordinance_number, item_json["ordinance_number"]):
+            logger.info(n.strftime("%H:%M %m-%d-%y") + ": Difference found with ordinance_number")
+            return True
+
+        if not fields_are_same(known_object.received_by, item_json["received_by"]):
+            logger.info(n.strftime("%H:%M %m-%d-%y") + ": Difference found with received_by")
+            return True
+
+        if not fields_are_same(known_object.last_revised, item_json["last_revised"]):
+            logger.info(n.strftime("%H:%M %m-%d-%y") + ": Difference found with last_revised")
+            return True
+
+        if not fields_are_same(known_object.drain_basin, item_json["drain_basin"]):
+            logger.info(n.strftime("%H:%M %m-%d-%y") + ": Difference found with drain_basin")
+            return True
+
+        if not fields_are_same(known_object.advisory_committee_areas, item_json["advisory_committee_areas"]):
+            logger.info(n.strftime("%H:%M %m-%d-%y") + ": Difference found with advisory_committee_areas")
+            return True
+
+        if not fields_are_same(known_object.comprehensive_plan_districts, item_json["comprehensive_plan_districts"]):
+            logger.info(n.strftime("%H:%M %m-%d-%y") + ": Difference found with comprehensive_plan_districts")
+            return True
+
+        if not fields_are_same(known_object.GlobalID, item_json["GlobalID"]):
+            logger.info(n.strftime("%H:%M %m-%d-%y") + ": Difference found with GlobalID")
+            return True
+
+        if not fields_are_same(known_object.CreationDate, item_json["CreationDate"]):
+            logger.info(n.strftime("%H:%M %m-%d-%y") + ": Difference found with CreationDate")
+            return True
+
+        if not fields_are_same(known_object.EditDate, item_json["EditDate"]):
+            logger.info(n.strftime("%H:%M %m-%d-%y") + ": Difference found with EditDate")
+            return True
 
     return False
 
@@ -237,7 +322,7 @@ def send_email_test():
         logger.info("Problem sending email at " + n.strftime("%H:%M %m-%d-%y"))
 
 
-def create_email_message(devs_that_changed):
+def create_email_message(items_that_changed):
     # /// Header
     email_header = "=========================\n"
     email_header += "The latest updates from\n"
@@ -253,61 +338,59 @@ def create_email_message(devs_that_changed):
     # If the dev's created date was in the last hour, we assume it's a new dev
     new_devs = []
     updated_devs = []
+    new_zons = []
+    updated_zons = []
 
-    for dev in devs_that_changed:
-        if dev.created_date > timezone.now() - timedelta(hours=1):
-            new_devs.append(dev)
-        else:
-            updated_devs.append(dev)
+    for item in items_that_changed:
+        if isinstance(item, Development) or isinstance(item, SiteReviewCases):
+            if item.created_date > timezone.now() - timedelta(hours=1):
+                new_devs.append(item)
+            else:
+                updated_devs.append(item)
+        if isinstance(item, Zoning):
+            if item.created_date > timezone.now() - timedelta(hours=1):
+                new_zons.append(item)
+            else:
+                updated_zons.append(item)
 
-    new_devs_message = "--------------New Developments---------------\n\n"
+    # /// New Devs section
 
     if new_devs:
-        for new_dev in new_devs:
-            if isinstance(new_dev, Development):
-                new_devs_message += "***" + str(new_dev.plan_name) + ", " + str(new_dev.plan_number) + "***\n"
-                new_devs_message += "    Submitted year: " + str(new_dev.submitted_yr) + "\n"
-                new_devs_message += "    Plan type: " + str(new_dev.plan_type) + "\n"
-                new_devs_message += "    Status: " + str(new_dev.status) + "\n"
-                new_devs_message += "    Major Street: " + str(new_dev.major_street) + "\n"
-                new_devs_message += "    CAC: " + str(new_dev.cac) + "\n"
-                new_devs_message += "    URL: " + str(new_dev.planurl) + "\n\n"
-            if isinstance(new_dev, SiteReviewCases):
-                new_devs_message += "***" + str(new_dev.project_name) + ", " + str(new_dev.case_number) + "***\n"
-                new_devs_message += "    Status: " + str(new_dev.status) + "\n"
-                new_devs_message += "    CAC: " + str(new_dev.cac) + "\n"
-                new_devs_message += "    URL: " + str(new_dev.case_url) + "\n\n"
+        new_devs_message = "--------------New Developments---------------\n\n"
+        new_devs_message += get_new_dev_text(new_devs)
     else:
-        new_devs_message += "No new developments at this time.\n\n"
+        new_devs_message = ""
+
 
     # \\\ End New Devs Section
 
     # /// Dev Updates Section
-    updated_devs_message = "-------------Existing Dev Updates------------\n\n"
 
     if updated_devs:
-        for updated_dev in updated_devs:
-            # Need to look at the history and compare the most recent update with the one before it.
-            if isinstance(updated_dev, Development):
-                updated_devs_message += "***" + str(updated_dev.plan_name) + ", " + str(updated_dev.plan_number) + "***\n"
-                updated_devs_message += "    Updated: " + string_output_unix_datetime(updated_dev.updated) + "\n"
-                updated_devs_message += "    Status: " + str(updated_dev.status) + "\n"
-                updated_devs_message += "    CAC: " + str(updated_dev.cac) + "\n"
-                updated_devs_message += "    URL: " + str(updated_dev.planurl) + "\n\n"
-                updated_devs_message += "  *UPDATES*\n"
-                updated_devs_message += difference_email_output(updated_dev)
-            if isinstance(updated_dev, SiteReviewCases):
-                updated_devs_message += "***" + str(updated_dev.project_name) + ", " + str(updated_dev.case_number) + "***\n"
-                updated_devs_message += "    Updated: " + updated_dev.modified_date.strftime("%m-%d-%y %H:%M") + "\n"
-                updated_devs_message += "    Status: " + str(updated_dev.status) + "\n"
-                updated_devs_message += "    CAC: " + str(updated_dev.cac) + "\n"
-                updated_devs_message += "    URL: " + str(updated_dev.case_url) + "\n\n"
-                updated_devs_message += "  *UPDATES*\n"
-                updated_devs_message += difference_email_output(updated_dev)
-
-            updated_devs_message += "\n"
+        updated_devs_message = "-------------Existing Dev Updates------------\n\n"
+        updated_devs_message += get_updated_dev_text(updated_devs)
     else:
-        updated_devs_message += "No updates to existing developments at this time.\n\n"
+        updated_devs_message = ""
+
+    # \\\ End Dev Updates Section
+
+    # /// New Zons section
+
+    if new_zons:
+        new_zons_message = "-----------New Zoning Requests------------\n\n"
+        new_zons_message += get_new_zon_text(new_zons)
+    else:
+        new_zons_message = ""
+
+    # \\\ End New Devs Section
+
+    # /// Dev Updates Section
+
+    if updated_zons:
+        updated_zons_message = "--------Existing Zoning Request Updates-------\n\n"
+        updated_zons_message += get_updated_zon_text(updated_zons)
+    else:
+        updated_zons_message = ""
 
     # \\\ End Dev Updates Section
 
@@ -320,55 +403,6 @@ def create_email_message(devs_that_changed):
 
     # \\\ End Footer
 
-    message = email_header + new_devs_message + updated_devs_message + email_footer
+    message = email_header + new_devs_message + updated_devs_message + new_zons_message + updated_zons_message + email_footer
 
     return message
-
-
-def difference_email_output(dev):
-    output = ""
-
-    # Get the most recent version of the dev and the one previously
-    dev_most_recent = dev.history.first()
-    dev_previous = dev_most_recent.prev_record
-
-    # Get all the dev fields
-    fields = dev._meta.get_fields()
-
-    # Loop through each field, except created_date, modified_date, and id.
-    # If the fields are not equal, add it to output.
-    for field in fields:
-        if field.name != "created_date" and field.name != "modified_date" and field.name != "id" and field.name != "EditDate":
-            dev_most_recent_field = getattr(dev_most_recent, field.name)
-            dev_old_field = getattr(dev_previous, field.name)
-
-            # If there is a difference...
-            if dev_most_recent_field != dev_old_field:
-                # If it's a date field, we need to convert it to a human readable string
-                # Let's ignore EditDate
-                if field.get_internal_type() == "BigIntegerField" and field.name != "EditDate":
-                    try:
-                        before_date_hr = datetime.fromtimestamp(dev_old_field / 1000).strftime('%Y-%m-%d %H:%M:%S')
-                        after_date_hr = datetime.fromtimestamp(dev_most_recent_field / 1000).strftime('%Y-%m-%d %H:%M:%S')
-
-                        output += "    " + field.verbose_name + " changed from \"" + before_date_hr + "\" to \"" + \
-                                  after_date_hr + "\"\n"
-                    except:
-                        logger.info("Problem calculating the datetime")
-                        logger.info("field is " + str(field))
-                        if dev_old_field:
-                            logger.info("dev_old_field: " + str(dev_old_field))
-                        else:
-                            logger.info("dev_old_field: None")
-
-                        if dev_old_field:
-                            logger.info("dev_most_recent_field: " + str(dev_old_field))
-                        else:
-                            logger.info("dev_most_recent_field: None")
-
-
-                else:
-                    output += "    " + field.verbose_name + " changed from \"" + str(dev_old_field) + "\" to \"" + \
-                              str(dev_most_recent_field) + "\"\n"
-
-    return output

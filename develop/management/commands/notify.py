@@ -10,7 +10,7 @@ from django.core.management.base import BaseCommand
 from django.core.mail import send_mail
 from django.conf import settings
 
-from develop.management.commands.actions import *
+from .actions import create_email_message
 from develop.models import *
 
 logger = logging.getLogger("django")
@@ -19,8 +19,12 @@ logger = logging.getLogger("django")
 class Command(BaseCommand):
     def handle(self, *args, **options):
         # Get everything that have changed in the last hour
-        devs_that_changed = Development.objects.filter(modified_date__range=[timezone.now() - timedelta(hours=1), timezone.now()])
-        SRs_that_changed = SiteReviewCases.objects.filter(modified_date__range=[timezone.now() - timedelta(hours=1), timezone.now()])
+        devs_that_changed = Development.objects.filter(modified_date__range=[timezone.now() - timedelta(hours=1),
+                                                                             timezone.now()])
+        SRs_that_changed = SiteReviewCases.objects.filter(modified_date__range=[timezone.now() - timedelta(hours=1),
+                                                                                timezone.now()])
+        zons_that_changed = Zoning.objects.filter(modified_date__range=[timezone.now() - timedelta(hours=1),
+                                                                        timezone.now()])
 
         everything_that_changed = []
 
@@ -28,6 +32,8 @@ class Command(BaseCommand):
             everything_that_changed.append(dev)
         for SR in SRs_that_changed:
             everything_that_changed.append(SR)
+        for zon in zons_that_changed:
+            everything_that_changed.append(zon)
 
         if everything_that_changed:
             if settings.DEVELOP_INSTANCE == "Develop":

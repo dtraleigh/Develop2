@@ -30,6 +30,21 @@ class SiteReviewCasesAdmin(SimpleHistoryAdmin):
     history_list_display = ["status"]
 
 
+class ZoningAdmin(SimpleHistoryAdmin):
+    list_display = ("zpyear", "zpnum", "submitted_date", "location", "remarks", "advisory_committee_areas", "modified_date", "created_date")
+    # history_list_display = ["status"]
+
+    def submitted_date(self, obj):
+        if obj.submittal_date:
+            return datetime.datetime.fromtimestamp(obj.submittal_date / 1000).strftime('%Y-%m-%d %H:%M:%S')
+        else:
+            return "NA"
+
+    submitted_date.short_description = 'Date Submitted'
+    # submitted_date.admin_order_field = 'updated'
+
+
 admin.site.register(SiteReviewCases, SiteReviewCasesAdmin)
 admin.site.register(Subscriber, SubscriberAdmin)
 admin.site.register(Development, DevelopmentsAdmin)
+admin.site.register(Zoning, ZoningAdmin)
