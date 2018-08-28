@@ -378,7 +378,8 @@ def create_email_message(items_that_changed):
 
     if new_zons:
         new_zons_message = "-----------New Zoning Requests------------\n\n"
-        new_zons_message += get_new_zon_text(new_zons)
+        for new_zon in new_zons:
+            new_zons_message += get_new_zon_text(new_zon)
     else:
         new_zons_message = ""
 
@@ -388,7 +389,8 @@ def create_email_message(items_that_changed):
 
     if updated_zons:
         updated_zons_message = "--------Existing Zoning Request Updates-------\n\n"
-        updated_zons_message += get_updated_zon_text(updated_zons)
+        for updated_zon in updated_zons:
+            updated_zons_message += get_updated_zon_text(updated_zon)
     else:
         updated_zons_message = ""
 
