@@ -115,7 +115,8 @@ def site_reviews(page_content, page_link="https://www.raleighnc.gov"):
                 total_score += 1
 
             # sr_case is indeed the same as the scanned info
-            if total_score >= 2 and project_name_score > 50:
+            # if total_score >= 2 and project_name_score > 50:
+            if total_score >= 2 and case_number_score == 100:
                 known_sr_case = sr_case
                 break
 
@@ -142,10 +143,11 @@ def site_reviews(page_content, page_link="https://www.raleighnc.gov"):
 
                     known_sr_case.save()
                     logger.info("**********************")
-                    logger.info("Updating a site case")
-                    logger.info("case_number:" + case_number)
-                    logger.info("project_name:" + project_name)
-                    logger.info("cac: " + cac)
+                    logger.info("Updating a site case (" + str(known_sr_case) + ")")
+                    logger.info("scrape case_number:" + case_number)
+                    logger.info("scrape project_name:" + project_name)
+                    logger.info("scrape cac: " + cac)
+                    logger.info("case,proj,cac score: " + str(case_number_score) + "," + str(project_name_score) + "," + str(cac_score))
                     logger.info("**********************")
 
         else:
