@@ -54,11 +54,16 @@ class Command(BaseCommand):
             # If the fields are not equal, add it to output.
             for field in zon_fields:
                 if field.name != "created_date" and field.name != "modified_date" and field.name != "id" and field.name != "EditDate":
-                    item_most_recent_field = getattr(zon_most_recent, field.name)
-                    item_old_field = getattr(zon_previous, field.name)
+                    # If its a web scrape, it won't have a lot fields and therefore, we can "skip" this.
+                    try:
+                        item_most_recent_field = getattr(zon_most_recent, field.name)
+                        item_old_field = getattr(zon_previous, field.name)
 
-                    # If there is a difference...
-                    if item_most_recent_field != item_old_field:
+                        # If there is a difference...
+                        if item_most_recent_field != item_old_field:
+                            zon_fields_that_changed.append(field)
+                    except AttributeError:
+                        # Just catch this for now and move on. Should be ok for the objects that are missing data.
                         zon_fields_that_changed.append(field)
 
             # check if zon_fields_that_changed contains any elements of zon_fields_we_dont_want but
