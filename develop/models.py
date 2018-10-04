@@ -90,7 +90,7 @@ class Zoning(models.Model):
     submittal_date = models.BigIntegerField(blank=True, null=True, verbose_name="Submitted")
     petitioner = models.CharField(blank=True, max_length=300, null=True, verbose_name="Petitioner")
     location = models.CharField(blank=True, max_length=300, null=True, verbose_name="Location")
-    remarks = models.CharField(blank=True, max_length=300, null=True, verbose_name="Remarks")
+    remarks = models.CharField(blank=True, max_length=300, null=True, verbose_name="Remarks") # API field
     zp_petition_acres = models.CharField(blank=True, max_length=100, null=True, verbose_name="Acreage") # Need to convert from decimal to char
     planning_commission_action = models.CharField(blank=True, max_length=300, null=True, verbose_name="PC Action")
     city_council_action = models.CharField(blank=True, max_length=300, null=True, verbose_name="CC Action")
@@ -110,7 +110,7 @@ class Zoning(models.Model):
     history = HistoricalRecords()
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now=True)
-    status = models.CharField(blank=True, max_length=300, null=True, verbose_name="Status")
+    status = models.CharField(blank=True, max_length=300, null=True, verbose_name="Status") # Web scrape field
     plan_url = models.TextField(blank=True, null=True, verbose_name="Plan URL")
 
     class Meta:

@@ -117,6 +117,7 @@ def get_new_zon_text(new_zon):
     new_zon_message = "***" + str(new_zon.zpyear) + "-" + str(new_zon.zpnum) + "***\n"
     new_zon_message += "    Location: " + str(new_zon.location) + "\n"
     new_zon_message += "    Remarks: " + str(new_zon.remarks) + "\n"
+    new_zon_message += "    Status: " + str(new_zon.status) + "\n"
     new_zon_message += "    CAC: " + str(new_zon.advisory_committee_areas) + "\n\n"
 
     return new_zon_message
@@ -126,6 +127,7 @@ def get_updated_zon_text(updated_zon):
     updated_zon_message = "***" + str(updated_zon.zpyear) + "-" + str(updated_zon.zpnum) + "***\n"
     updated_zon_message += "    Location: " + str(updated_zon.location) + "\n"
     updated_zon_message += "    Remarks: " + str(updated_zon.remarks) + "\n"
+    updated_zon_message += "    Status: " + str(updated_zon.status) + "\n"
     updated_zon_message += "    CAC: " + str(updated_zon.advisory_committee_areas) + "\n\n"
     updated_zon_message += "  *UPDATES*\n"
     updated_zon_message += difference_email_output(updated_zon)

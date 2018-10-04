@@ -194,6 +194,8 @@ def zoning_requests(page_content, page_link="https://www.raleighnc.gov"):
         label_a_text = info_row_tds[0].find("a").get_text()
 
         # If any of these variables are None, log it and move on.
+        # Remarks come from the API
+        # Status is from the web scrape
         if not label or not location or not label_a_text or not cac or not status or not contact or not label_a:
             logger.info("********** Problem scraping this row **********")
             logger.info(str(info_row_tds))
@@ -217,17 +219,17 @@ def zoning_requests(page_content, page_link="https://www.raleighnc.gov"):
             known_zon = Zoning.objects.get(zpyear=scrape_year, zpnum=scrape_num)
 
             # If the status or plan_url have changed, update the zoning request
-            if (not fields_are_same(known_zon.remarks, status) or
+            if (not fields_are_same(known_zon.status, status) or
                     not fields_are_same(known_zon.plan_url, page_link + label_a)):
                 # A zoning web scrape only updates status and/or plan_url
                 # Want to log what the difference is
                 difference = "*"
-                if not fields_are_same(known_zon.remarks, status):
+                if not fields_are_same(known_zon.status, status):
                     difference += "Difference: " + str(known_zon.status) + " changed to " + str(status)
                 if not fields_are_same(known_zon.plan_url, page_link + label_a):
                     difference += "Difference: " + known_zon.plan_url + " changed to " + page_link + str(label_a)
 
-                known_zon.remarks = status
+                known_zon.status = status
                 known_zon.plan_url = page_link + label_a
 
                 known_zon.save()
@@ -253,7 +255,7 @@ def zoning_requests(page_content, page_link="https://www.raleighnc.gov"):
             Zoning.objects.create(zpyear=scrape_year,
                                   zpnum=scrape_num,
                                   advisory_committee_areas=cac,
-                                  remarks=status,
+                                  status=status,
                                   location=location,
                                   received_by=contact,
                                   plan_url=plan_url)
