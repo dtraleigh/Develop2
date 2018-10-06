@@ -222,17 +222,18 @@ def zoning_requests(page_content, page_link="https://www.raleighnc.gov"):
             if (not fields_are_same(known_zon.status, status) or
                     not fields_are_same(known_zon.plan_url, page_link + label_a)):
                 # A zoning web scrape only updates status and/or plan_url
+                known_zon.status = status
+                known_zon.plan_url = page_link + label_a
+
+                known_zon.save()
+
                 # Want to log what the difference is
                 difference = "*"
                 if not fields_are_same(known_zon.status, status):
                     difference += "Difference: " + str(known_zon.status) + " changed to " + str(status)
                 if not fields_are_same(known_zon.plan_url, page_link + label_a):
-                    difference += "Difference: " + known_zon.plan_url + " changed to " + page_link + str(label_a)
+                    difference += "Difference: " + str(known_zon.plan_url) + " changed to " + page_link + str(label_a)
 
-                known_zon.status = status
-                known_zon.plan_url = page_link + label_a
-
-                known_zon.save()
                 logger.info("**********************")
                 logger.info("Updating a zoning request")
                 logger.info("known_zon: " + str(known_zon))
