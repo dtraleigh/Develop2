@@ -287,7 +287,6 @@ def api_object_is_different(known_object, item_json):
             return True
 
         if not fields_are_same(known_object.GlobalID, item_json["GlobalID"]):
-            logger.info(n.strftime("%H:%M %m-%d-%y") + ": Difference found with GlobalID")
             return True
 
         if not fields_are_same(known_object.CreationDate, item_json["CreationDate"]):

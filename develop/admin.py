@@ -7,6 +7,10 @@ from develop.models import *
 from simple_history.admin import SimpleHistoryAdmin
 
 
+class ControlAdmin(admin.ModelAdmin):
+    list_display =("scrape", "scan", "notify")
+
+
 class SubscriberAdmin(admin.ModelAdmin):
     list_display = ("name", "email", "created_date", "modified_date", "send_emails")
 
@@ -44,6 +48,7 @@ class ZoningAdmin(SimpleHistoryAdmin):
     # submitted_date.admin_order_field = 'updated'
 
 
+admin.site.register(Control, ControlAdmin)
 admin.site.register(SiteReviewCases, SiteReviewCasesAdmin)
 admin.site.register(Subscriber, SubscriberAdmin)
 admin.site.register(Development, DevelopmentsAdmin)

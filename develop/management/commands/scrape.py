@@ -20,24 +20,26 @@ class Command(BaseCommand):
         # ////
         # Development Site Scraper
         # \\\\
-        n = datetime.now()
-        logger.info(n.strftime("%H:%M %m-%d-%y") + ": Web scrape started.")
+        control = Control.objects.get(id=1)
+        if control.scrape:
+            n = datetime.now()
+            logger.info(n.strftime("%H:%M %m-%d-%y") + ": Web scrape started.")
 
-        page_link = "https://www.raleighnc.gov/development"
+            page_link = "https://www.raleighnc.gov/development"
 
-        page_response = requests.get(page_link, timeout=10)
+            page_response = requests.get(page_link, timeout=10)
 
-        if page_response.status_code == 200:
-            page_content = BeautifulSoup(page_response.content, "html.parser")
+            if page_response.status_code == 200:
+                page_content = BeautifulSoup(page_response.content, "html.parser")
 
-            site_reviews(page_content)
-            zoning_requests(page_content)
-        else:
-            # Send email alert saying that we could not reach the development page, did not get 200
-            pass
+                site_reviews(page_content)
+                zoning_requests(page_content)
+            else:
+                # Send email alert saying that we could not reach the development page, did not get 200
+                pass
 
-        n = datetime.now()
-        logger.info(n.strftime("%H:%M %m-%d-%y") + ": Web scrape finished.")
+            n = datetime.now()
+            logger.info(n.strftime("%H:%M %m-%d-%y") + ": Web scrape finished.")
 
 
 def site_reviews(page_content, page_link="https://www.raleighnc.gov"):

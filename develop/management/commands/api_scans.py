@@ -147,76 +147,80 @@ def zoning_api_scan():
     zon_json = get_api_json(zon_query)
 
     # Process each zoning request
-    try:
-        for features in zon_json["features"]:
-            zon = features["attributes"]
+    if zon_json is not None:
+        try:
+            for features in zon_json["features"]:
+                zon = features["attributes"]
 
-            # Try to get the zoning request from the DB and check if it needs to be updated.
-            try:
-                known_zon = Zoning.objects.get(zpyear=zon["zpyear"], zpnum=zon["zpnum"])
+                # Try to get the zoning request from the DB and check if it needs to be updated.
+                try:
+                    known_zon = Zoning.objects.get(zpyear=zon["zpyear"], zpnum=zon["zpnum"])
 
-                # If the new object is not the same as the one in the DB, update it.
-                if api_object_is_different(known_zon, zon):
-                    # print("Object " + str(known_zon) + "is in the DB and is different. Updating it.")
+                    # If the new object is not the same as the one in the DB, update it.
+                    if api_object_is_different(known_zon, zon):
+                        # print("Object " + str(known_zon) + "is in the DB and is different. Updating it.")
 
-                    known_zon.OBJECTID = zon["OBJECTID"]
-                    known_zon.zpyear = zon["zpyear"]
-                    known_zon.zpnum = zon["zpnum"]
-                    known_zon.submittal_date = zon["submittal_date"]
-                    known_zon.petitioner = zon["petitioner"]
-                    known_zon.location = zon["location"]
-                    known_zon.remarks = zon["remarks"]
-                    known_zon.zp_petition_acres = str(zon["zp_petition_acres"])
-                    known_zon.planning_commission_action = zon["planning_commission_action"]
-                    known_zon.city_council_action = zon["city_council_action"]
-                    known_zon.ph_date = zon["ph_date"]
-                    known_zon.withdraw_date = zon["withdraw_date"]
-                    known_zon.exp_date_120_days = zon["exp_date_120_days"]
-                    known_zon.exp_date_2_year = zon["exp_date_2_year"]
-                    known_zon.ordinance_number = zon["ordinance_number"]
-                    known_zon.received_by = zon["received_by"]
-                    known_zon.last_revised = zon["last_revised"]
-                    known_zon.drain_basin = zon["drain_basin"]
-                    known_zon.advisory_committee_areas = zon["advisory_committee_areas"]
-                    known_zon.comprehensive_plan_districts = zon["comprehensive_plan_districts"]
-                    known_zon.GlobalID = zon["GlobalID"]
-                    known_zon.CreationDate = zon["CreationDate"]
-                    known_zon.EditDate = zon["EditDate"]
+                        known_zon.OBJECTID = zon["OBJECTID"]
+                        known_zon.zpyear = zon["zpyear"]
+                        known_zon.zpnum = zon["zpnum"]
+                        known_zon.submittal_date = zon["submittal_date"]
+                        known_zon.petitioner = zon["petitioner"]
+                        known_zon.location = zon["location"]
+                        known_zon.remarks = zon["remarks"]
+                        known_zon.zp_petition_acres = str(zon["zp_petition_acres"])
+                        known_zon.planning_commission_action = zon["planning_commission_action"]
+                        known_zon.city_council_action = zon["city_council_action"]
+                        known_zon.ph_date = zon["ph_date"]
+                        known_zon.withdraw_date = zon["withdraw_date"]
+                        known_zon.exp_date_120_days = zon["exp_date_120_days"]
+                        known_zon.exp_date_2_year = zon["exp_date_2_year"]
+                        known_zon.ordinance_number = zon["ordinance_number"]
+                        known_zon.received_by = zon["received_by"]
+                        known_zon.last_revised = zon["last_revised"]
+                        known_zon.drain_basin = zon["drain_basin"]
+                        known_zon.advisory_committee_areas = zon["advisory_committee_areas"]
+                        known_zon.comprehensive_plan_districts = zon["comprehensive_plan_districts"]
+                        known_zon.GlobalID = zon["GlobalID"]
+                        known_zon.CreationDate = zon["CreationDate"]
+                        known_zon.EditDate = zon["EditDate"]
 
-                    known_zon.save()
+                        known_zon.save()
 
-                # Nothing new here.
-                # else:
-                #     print("Nothing new from the API. We already know about it.")
+                    # Nothing new here.
+                    # else:
+                    #     print("Nothing new from the API. We already know about it.")
 
-            # If we don't know about it, we need to add it
-            except Zoning.DoesNotExist:
-                Zoning.objects.create(OBJECTID=zon["OBJECTID"],
-                                      zpyear=zon["zpyear"],
-                                      zpnum=zon["zpnum"],
-                                      submittal_date=zon["submittal_date"],
-                                      petitioner=zon["petitioner"],
-                                      location=zon["location"],
-                                      remarks=zon["remarks"],
-                                      zp_petition_acres=zon["zp_petition_acres"],
-                                      planning_commission_action=zon["planning_commission_action"],
-                                      city_council_action=zon["city_council_action"],
-                                      ph_date=zon["ph_date"],
-                                      withdraw_date=zon["withdraw_date"],
-                                      exp_date_120_days=zon["exp_date_120_days"],
-                                      exp_date_2_year=zon["exp_date_2_year"],
-                                      ordinance_number=zon["ordinance_number"],
-                                      received_by=zon["received_by"],
-                                      last_revised=zon["last_revised"],
-                                      drain_basin=zon["drain_basin"],
-                                      advisory_committee_areas=zon["advisory_committee_areas"],
-                                      comprehensive_plan_districts=zon["comprehensive_plan_districts"],
-                                      GlobalID=zon["GlobalID"],
-                                      CreationDate=zon["CreationDate"],
-                                      EditDate=zon["EditDate"])
-                # print("Does not exist. Creating one.")
-    except KeyError:
+                # If we don't know about it, we need to add it
+                except Zoning.DoesNotExist:
+                    Zoning.objects.create(OBJECTID=zon["OBJECTID"],
+                                          zpyear=zon["zpyear"],
+                                          zpnum=zon["zpnum"],
+                                          submittal_date=zon["submittal_date"],
+                                          petitioner=zon["petitioner"],
+                                          location=zon["location"],
+                                          remarks=zon["remarks"],
+                                          zp_petition_acres=zon["zp_petition_acres"],
+                                          planning_commission_action=zon["planning_commission_action"],
+                                          city_council_action=zon["city_council_action"],
+                                          ph_date=zon["ph_date"],
+                                          withdraw_date=zon["withdraw_date"],
+                                          exp_date_120_days=zon["exp_date_120_days"],
+                                          exp_date_2_year=zon["exp_date_2_year"],
+                                          ordinance_number=zon["ordinance_number"],
+                                          received_by=zon["received_by"],
+                                          last_revised=zon["last_revised"],
+                                          drain_basin=zon["drain_basin"],
+                                          advisory_committee_areas=zon["advisory_committee_areas"],
+                                          comprehensive_plan_districts=zon["comprehensive_plan_districts"],
+                                          GlobalID=zon["GlobalID"],
+                                          CreationDate=zon["CreationDate"],
+                                          EditDate=zon["EditDate"])
+                    # print("Does not exist. Creating one.")
+        except KeyError:
+            n = datetime.now()
+            logger.info(n.strftime("%H:%M %m-%d-%y") + ": KeyError: 'features'")
+            logger.info("zon_json")
+            logger.info(zon_json)
+    else:
         n = datetime.now()
-        logger.info(n.strftime("%H:%M %m-%d-%y") + ": KeyError: 'features'")
-        logger.info("zon_json")
-        logger.info(zon_json)
+        logger.info(n.strftime("%H:%M %m-%d-%y") + ": zon_json is None. Zoning API is probably down")

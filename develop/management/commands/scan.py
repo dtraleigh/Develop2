@@ -4,6 +4,7 @@
 import logging
 
 from django.core.management.base import BaseCommand
+from develop.models import *
 
 from .api_scans import development_api_scan, zoning_api_scan
 
@@ -12,5 +13,7 @@ logger = logging.getLogger("django")
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
-        development_api_scan()
-        zoning_api_scan()
+        control = Control.objects.get(id=1)
+        if control.scan:
+            development_api_scan()
+            zoning_api_scan()

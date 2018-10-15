@@ -3,6 +3,12 @@ from django.db import models
 from simple_history.models import HistoricalRecords
 
 
+class Control(models.Model):
+    scrape = models.BooleanField(default=True)
+    scan = models.BooleanField(default=True)
+    notify = models.BooleanField(default=True)
+
+
 class Subscriber(models.Model):
     date_created = models.DateTimeField(auto_now_add=True, verbose_name="Date Subscribed")
     name = models.CharField(max_length=254)
