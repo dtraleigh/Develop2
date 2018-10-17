@@ -8,7 +8,15 @@ from simple_history.admin import SimpleHistoryAdmin
 
 
 class ControlAdmin(admin.ModelAdmin):
-    list_display =("scrape", "scan", "notify")
+    list_display = ("scrape", "scan", "notify")
+
+
+class CACAdmin(admin.ModelAdmin):
+    list_display = ("name",)
+
+
+class coverAreaAdmin(admin.ModelAdmin):
+    list_display = ("name",)
 
 
 class SubscriberAdmin(admin.ModelAdmin):
@@ -49,6 +57,8 @@ class ZoningAdmin(SimpleHistoryAdmin):
 
 
 admin.site.register(Control, ControlAdmin)
+admin.site.register(CAC, CACAdmin)
+admin.site.register(coverArea, coverAreaAdmin)
 admin.site.register(SiteReviewCases, SiteReviewCasesAdmin)
 admin.site.register(Subscriber, SubscriberAdmin)
 admin.site.register(Development, DevelopmentsAdmin)

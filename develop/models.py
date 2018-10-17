@@ -9,6 +9,27 @@ class Control(models.Model):
     notify = models.BooleanField(default=True)
 
 
+class CAC(models.Model):
+    name = models.CharField(blank=True, max_length=300, null=True, verbose_name="Name")
+
+    class Meta:
+        verbose_name = "Citizen Advisory Council"
+
+    def __str__(self):
+        return u"%s" % self.name
+
+
+class coverArea(models.Model):
+    name = models.CharField(blank=True, max_length=300, null=True, verbose_name="Name")
+    CACs = models.ManyToManyField(CAC)
+
+    class Meta:
+        verbose_name = "Cover Area"
+
+    def __str__(self):
+        return u"%s" % self.name
+
+
 class Subscriber(models.Model):
     date_created = models.DateTimeField(auto_now_add=True, verbose_name="Date Subscribed")
     name = models.CharField(max_length=254)
@@ -16,6 +37,7 @@ class Subscriber(models.Model):
     send_emails = models.BooleanField(default=True)
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now=True)
+    cover_areas = models.ManyToManyField(coverArea)
 
     def __str__(self):
         return u"%s (%s)" % (self.name, self.email)
@@ -124,3 +146,5 @@ class Zoning(models.Model):
 
     def __str__(self):
         return u"%s (%s)" % (self.zpnum, self.zpyear)
+
+
