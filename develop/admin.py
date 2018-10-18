@@ -43,7 +43,7 @@ class SiteReviewCasesAdmin(SimpleHistoryAdmin):
 
 
 class ZoningAdmin(SimpleHistoryAdmin):
-    list_display = ("zpyear", "zpnum", "submitted_date", "location", "remarks", "advisory_committee_areas", "modified_date", "created_date")
+    list_display = ("zpyear", "zpnum", "submitted_date", "location", "remarks", "cac", "modified_date", "created_date")
     # history_list_display = ["status"]
 
     def submitted_date(self, obj):

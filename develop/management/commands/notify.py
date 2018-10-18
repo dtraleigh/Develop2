@@ -84,20 +84,44 @@ class Command(BaseCommand):
                     subject = "Update on Development Tracker [Develop]"
                 else:
                     subject = "Update on Development Tracker"
-                message = create_email_message(everything_that_changed)
-                email_from = "develop@dtraleigh.com"
+
+                # We need to filter everything_that_changed for only the cover areas that each user is subscribed to.
+                # We also need to include None. Rather than pass literally everything_that_changed let's filter it
+                # for each user and then send them an email.
                 all_active_subscribers = Subscriber.objects.filter(send_emails=True)
 
-                try:
-                    send_mail(
-                        subject,
-                        message,
-                        email_from,
-                        [sub.email for sub in all_active_subscribers],
-                        fail_silently=False,
-                    )
-                    n = datetime.now()
-                    logger.info("Email sent at " + n.strftime("%H:%M %m-%d-%y"))
-                except:
-                    n = datetime.now()
-                    logger.info("Problem sending email at " + n.strftime("%H:%M %m-%d-%y"))
+                for subscriber in all_active_subscribers:
+                    # Get list of CACs we need to worry about
+                    covered_cacs_total_extend = []
+                    cover_areas_for_this_user = [a for a in subscriber.cover_areas.all()]
+                    for area in cover_areas_for_this_user:
+                        cacs = [b for b in area.CACs.all()]
+                        covered_cacs_total_extend.extend(cacs)
+
+                    covered_cacs_total = list(set(covered_cacs_total_extend))
+
+                    covered_items = []
+                    for item in everything_that_changed:
+                        # append to covered_items things from only cacs that the user is covering plus None
+                        for cac in covered_cacs_total:
+                            if item.cac == None:
+                                covered_items.append(item)
+                            elif cac.name.lower() in item.cac.lower():
+                                covered_items.append(item)
+
+                    message = create_email_message(covered_items)
+                    email_from = "develop@dtraleigh.com"
+
+                    try:
+                        send_mail(
+                            subject,
+                            message,
+                            email_from,
+                            [subscriber.email],
+                            fail_silently=False,
+                        )
+                        n = datetime.now()
+                        logger.info("Email sent at " + n.strftime("%H:%M %m-%d-%y"))
+                    except:
+                        n = datetime.now()
+                        logger.info("Problem sending email at " + n.strftime("%H:%M %m-%d-%y"))

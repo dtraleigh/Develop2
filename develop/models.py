@@ -130,7 +130,7 @@ class Zoning(models.Model):
     received_by = models.CharField(blank=True, max_length=300, null=True, verbose_name="Received By")
     last_revised = models.CharField(blank=True, max_length=300, null=True, verbose_name="Last Revised")
     drain_basin = models.CharField(blank=True, max_length=300, null=True, verbose_name="Drain Basin")
-    advisory_committee_areas = models.CharField(blank=True, max_length=300, null=True, verbose_name="Advisory Committee Areas")
+    cac = models.CharField(blank=True, max_length=300, null=True, verbose_name="CAC")
     comprehensive_plan_districts = models.CharField(blank=True, max_length=300, null=True, verbose_name="Comprehensive Plan Districts")
     GlobalID = models.CharField(blank=True, max_length=300, null=True, verbose_name="Global ID")
     CreationDate = models.BigIntegerField(blank=True, null=True, verbose_name="Creation Date")
