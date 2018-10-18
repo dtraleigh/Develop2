@@ -257,7 +257,7 @@ def zoning_requests(page_content, page_link="https://www.raleighnc.gov"):
 
             Zoning.objects.create(zpyear=scrape_year,
                                   zpnum=scrape_num,
-                                  advisory_committee_areas=cac,
+                                  cac=cac,
                                   status=status,
                                   location=location,
                                   received_by=contact,

@@ -178,7 +178,7 @@ def zoning_api_scan():
                         known_zon.received_by = zon["received_by"]
                         known_zon.last_revised = zon["last_revised"]
                         known_zon.drain_basin = zon["drain_basin"]
-                        known_zon.advisory_committee_areas = zon["advisory_committee_areas"]
+                        known_zon.cac = zon["cac"]
                         known_zon.comprehensive_plan_districts = zon["comprehensive_plan_districts"]
                         known_zon.GlobalID = zon["GlobalID"]
                         known_zon.CreationDate = zon["CreationDate"]
@@ -210,7 +210,7 @@ def zoning_api_scan():
                                           received_by=zon["received_by"],
                                           last_revised=zon["last_revised"],
                                           drain_basin=zon["drain_basin"],
-                                          advisory_committee_areas=zon["advisory_committee_areas"],
+                                          cac=zon["cac"],
                                           comprehensive_plan_districts=zon["comprehensive_plan_districts"],
                                           GlobalID=zon["GlobalID"],
                                           CreationDate=zon["CreationDate"],

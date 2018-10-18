@@ -278,8 +278,8 @@ def api_object_is_different(known_object, item_json):
             logger.info(n.strftime("%H:%M %m-%d-%y") + ": Difference found with drain_basin")
             return True
 
-        if not fields_are_same(known_object.advisory_committee_areas, item_json["advisory_committee_areas"]):
-            logger.info(n.strftime("%H:%M %m-%d-%y") + ": Difference found with advisory_committee_areas")
+        if not fields_are_same(known_object.cac, item_json["cac"]):
+            logger.info(n.strftime("%H:%M %m-%d-%y") + ": Difference found with cac")
             return True
 
         if not fields_are_same(known_object.comprehensive_plan_districts, item_json["comprehensive_plan_districts"]):
