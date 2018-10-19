@@ -109,19 +109,20 @@ class Command(BaseCommand):
                             elif cac.name.lower() in item.cac.lower():
                                 covered_items.append(item)
 
-                    message = create_email_message(covered_items)
-                    email_from = "develop@dtraleigh.com"
+                    if covered_items:
+                        message = create_email_message(covered_items)
+                        email_from = "develop@dtraleigh.com"
 
-                    try:
-                        send_mail(
-                            subject,
-                            message,
-                            email_from,
-                            [subscriber.email],
-                            fail_silently=False,
-                        )
-                        n = datetime.now()
-                        logger.info("Email sent at " + n.strftime("%H:%M %m-%d-%y"))
-                    except:
-                        n = datetime.now()
-                        logger.info("Problem sending email at " + n.strftime("%H:%M %m-%d-%y"))
+                        try:
+                            send_mail(
+                                subject,
+                                message,
+                                email_from,
+                                [subscriber.email],
+                                fail_silently=False,
+                            )
+                            n = datetime.now()
+                            logger.info("Email sent at " + n.strftime("%H:%M %m-%d-%y"))
+                        except:
+                            n = datetime.now()
+                            logger.info("Problem sending email at " + n.strftime("%H:%M %m-%d-%y"))

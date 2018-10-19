@@ -278,7 +278,7 @@ def api_object_is_different(known_object, item_json):
             logger.info(n.strftime("%H:%M %m-%d-%y") + ": Difference found with drain_basin")
             return True
 
-        if not fields_are_same(known_object.cac, item_json["cac"]):
+        if not fields_are_same(known_object.cac, item_json["advisory_committee_areas"]):
             logger.info(n.strftime("%H:%M %m-%d-%y") + ": Difference found with cac")
             return True
 
