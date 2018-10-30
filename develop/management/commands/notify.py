@@ -104,10 +104,10 @@ class Command(BaseCommand):
                     for item in everything_that_changed:
                         # append to covered_items things from only cacs that the user is covering plus None
                         for cac in covered_cacs_total:
-                            if item.cac == None:
+                            if cac.name.lower() in item.cac.lower():
                                 covered_items.append(item)
-                            elif cac.name.lower() in item.cac.lower():
-                                covered_items.append(item)
+                        if item.cac == None:
+                            covered_items.append(item)
 
                     if covered_items:
                         message = create_email_message(covered_items)
