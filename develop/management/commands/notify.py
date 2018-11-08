@@ -101,13 +101,19 @@ class Command(BaseCommand):
                     covered_cacs_total = list(set(covered_cacs_total_extend))
 
                     covered_items = []
+                    try:
                     for item in everything_that_changed:
                         # append to covered_items things from only cacs that the user is covering plus None
-                        for cac in covered_cacs_total:
-                            if cac.name.lower() in item.cac.lower():
+                        try:
+                            for cac in covered_cacs_total:
+                                if cac.name.lower() in item.cac.lower():
+                                    covered_items.append(item)
+                            if item.cac == None:
                                 covered_items.append(item)
-                        if item.cac == None:
-                            covered_items.append(item)
+                        except AttributeError:
+                            n = datetime.now()
+                            logger.info(n.strftime("%H:%M %m-%d-%y") + ": AttributeError. cac.name: " + cac.name + ", item.cac: " + item.cac)
+
 
                     if covered_items:
                         message = create_email_message(covered_items)
