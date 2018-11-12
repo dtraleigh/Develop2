@@ -105,10 +105,10 @@ class Command(BaseCommand):
                         # append to covered_items things from only cacs that the user is covering plus None
                         try:
                             for cac in covered_cacs_total:
-                                if cac.name.lower() in item.cac.lower():
+                                if item.cac is None:
                                     covered_items.append(item)
-                            if item.cac == None:
-                                covered_items.append(item)
+                                elif cac.name.lower() in item.cac.lower():
+                                    covered_items.append(item)
                         except AttributeError:
                             n = datetime.now()
                             logger.info(n.strftime("%H:%M %m-%d-%y") + ": AttributeError. cac.name: " + cac.name + ", item.cac: " + item.cac)
