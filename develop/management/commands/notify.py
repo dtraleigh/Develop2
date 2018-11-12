@@ -1,7 +1,7 @@
 # ///
 # This command is used to notify subscribers of changes in the last hour
 # \\\
-import logging, pytz
+import logging, pytz, requests
 from datetime import datetime
 from datetime import timedelta
 
@@ -20,7 +20,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         control = Control.objects.get(id=1)
         if control.notify:
-            # Get everything that have changed in the last hour
+            # Get everything that has changed in the last hour
             devs_that_changed = Development.objects.filter(modified_date__range=[timezone.now() - timedelta(hours=1),
                                                                                  timezone.now()])
             SRs_that_changed = SiteReviewCases.objects.filter(modified_date__range=[timezone.now() - timedelta(hours=1),
@@ -105,16 +105,16 @@ class Command(BaseCommand):
                         # append to covered_items things from only cacs that the user is covering plus None
                         try:
                             for cac in covered_cacs_total:
-                                if cac.name.lower() in item.cac.lower():
+                                if item.cac is None:
                                     covered_items.append(item)
-                            if item.cac == None:
-                                covered_items.append(item)
+                                elif cac.name.lower() in item.cac.lower():
+                                    covered_items.append(item)
                         except AttributeError:
                             n = datetime.now()
-                            logger.info(n.strftime("%H:%M %m-%d-%y") + ": AttributeError. cac.name: " + cac.name + ", item.cac: " + item.cac)
+                            logger.info(n.strftime("%H:%M %m-%d-%y") + ": AttributeError. cac.name: " + str(cac) + ", item.cac: " + str(item.cac))
 
-
-                    if covered_items:
+                    # Send emails if the subscriber is not a bot
+                    if covered_items and not subscriber.is_bot:
                         message = create_email_message(covered_items)
                         email_from = "develop@dtraleigh.com"
 
@@ -131,3 +131,19 @@ class Command(BaseCommand):
                         except:
                             n = datetime.now()
                             logger.info("Problem sending email at " + n.strftime("%H:%M %m-%d-%y"))
+
+                    # Post to discourse community
+                    if covered_items and subscriber.is_bot:
+                        url = "https://community.dtraleigh.com/posts.json"
+
+                        querystring = {"api_key": subscriber.api_key,
+                                       "api_username": subscriber.name}
+
+                        payload = "{\n\t\"topic_id\": 686,\n\t\"raw\": \"Test post from develop2 django app\"\n}"
+                        headers = {
+                            'Content-Type': "application/json",
+                            'cache-control': "no-cache",
+                            'Postman-Token': "1e737fea-23d8-48f7-96d7-c19c66c484a6"
+                        }
+
+                        response = requests.request("POST", url, data=payload, headers=headers, params=querystring)

@@ -38,6 +38,8 @@ class Subscriber(models.Model):
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now=True)
     cover_areas = models.ManyToManyField(coverArea)
+    is_bot = models.BooleanField(default=False)
+    api_key = models.CharField(max_length=254, blank=True, null=True)
 
     def __str__(self):
         return u"%s (%s)" % (self.name, self.email)
