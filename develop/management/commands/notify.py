@@ -10,7 +10,7 @@ from django.core.management.base import BaseCommand
 from django.core.mail import send_mail
 from django.conf import settings
 
-from .actions import create_email_message
+from .actions import create_email_message, create_new_discourse_post
 from develop.models import *
 
 logger = logging.getLogger("django")
@@ -136,16 +136,5 @@ class Command(BaseCommand):
 
                     # Post to discourse community
                     if covered_items and subscriber.is_bot:
-                        url = "https://community.dtraleigh.com/posts.json"
-
-                        querystring = {"api_key": subscriber.api_key,
-                                       "api_username": subscriber.name}
-
-                        payload = "{\n\t\"topic_id\": 686,\n\t\"raw\": \"Test post from develop2 django app\"\n}"
-                        headers = {
-                            'Content-Type': "application/json",
-                            'cache-control': "no-cache",
-                            'Postman-Token': "1e737fea-23d8-48f7-96d7-c19c66c484a6"
-                        }
-
-                        response = requests.request("POST", url, data=payload, headers=headers, params=querystring)
+                        for item in covered_items:
+                            create_new_discourse_post(subscriber, item)

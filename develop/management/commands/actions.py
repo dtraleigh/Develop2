@@ -409,3 +409,31 @@ def create_email_message(items_that_changed):
     message = email_header + new_devs_message + updated_devs_message + new_zons_message + updated_zons_message + email_footer
 
     return message
+
+
+def create_new_discourse_post(subscriber, item):
+    url = "https://community.dtraleigh.com/posts.json"
+
+    querystring = {"api_key": subscriber.api_key,
+                   "api_username": subscriber.name}
+
+    if isinstance(item, Development) or isinstance(item, SiteReviewCases):
+        if item.created_date > timezone.now() - timedelta(hours=1):
+            message = get_new_dev_text(item)
+        else:
+            message = get_updated_dev_text(item)
+    if isinstance(item, Zoning):
+        if item.created_date > timezone.now() - timedelta(hours=1):
+            message = get_new_zon_text(item)
+        else:
+            message = get_updated_zon_text(item)
+
+    # payload = {"topic_id": 686, "raw": "Test post"}
+    payload = "{\n\t\"topic_id\": 686,\n\t\"raw\": \"Test post from develop2 django app\"\n}"
+    headers = {
+        'Content-Type': "application/json",
+        'cache-control': "no-cache",
+        'Postman-Token': "1e737fea-23d8-48f7-96d7-c19c66c484a6"
+    }
+
+    requests.request("POST", url, data=payload, headers=headers, params=querystring)
