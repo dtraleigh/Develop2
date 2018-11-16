@@ -429,11 +429,15 @@ def create_new_discourse_post(subscriber, item):
             message = get_updated_zon_text(item)
 
     # payload = {"topic_id": 686, "raw": "Test post"}
-    payload = "{\n\t\"topic_id\": 686,\n\t\"raw\": \"Test post from develop2 django app\"\n}"
+    # payload = "{\n\t\"topic_id\": 686,\n\t\"raw\": \"Test post from develop2 django app\"\n}"
+    payload = json.dumps({"topic_id": 686,
+                          "raw": message})
+
     headers = {
         'Content-Type': "application/json",
         'cache-control': "no-cache",
         'Postman-Token': "1e737fea-23d8-48f7-96d7-c19c66c484a6"
     }
 
-    requests.request("POST", url, data=payload, headers=headers, params=querystring)
+    # requests.request("POST", url, data=payload, headers=headers, params=querystring)
+    requests.post(url, payload, headers=headers, params=querystring)
