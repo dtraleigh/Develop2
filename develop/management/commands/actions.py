@@ -399,7 +399,7 @@ def create_email_message(items_that_changed):
 
     # /// Footer
     email_footer = "*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*\n"
-    email_footer += get_status_legend() + "\n\n"
+    # email_footer += get_status_legend() + "\n\n"
     email_footer += "You are subscribed to THE RALEIGH WIRE SERVICE\n"
     email_footer += "This is a service of DTRaleigh.com\n"
     email_footer += "*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*\n"
