@@ -94,7 +94,7 @@ def get_status_legend():
         page_content = BeautifulSoup(page_response.content, "html.parser")
 
         # Status Abbreviations
-        status_abbreviations_title = page_content.find("h3", {"id": "*StatusAbbreviations"})
+        status_abbreviations_title = page_content.find("h3", {"id": "StatusAbbreviations"})
 
         status_section = status_abbreviations_title.findNext("div")
 
@@ -399,7 +399,10 @@ def create_email_message(items_that_changed):
 
     # /// Footer
     email_footer = "*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*\n"
-    # email_footer += get_status_legend() + "\n\n"
+    try:
+        email_footer += get_status_legend() + "\n\n"
+    except AttributeError:
+        email_footer += "Please see the Current Development Activity website for status abbreviations.\n\n"
     email_footer += "You are subscribed to THE RALEIGH WIRE SERVICE\n"
     email_footer += "This is a service of DTRaleigh.com\n"
     email_footer += "*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*\n"
