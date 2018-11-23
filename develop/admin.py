@@ -20,7 +20,7 @@ class coverAreaAdmin(admin.ModelAdmin):
 
 
 class SubscriberAdmin(admin.ModelAdmin):
-    list_display = ("name", "email", "created_date", "modified_date", "send_emails", "is_bot")
+    list_display = ("name", "email", "created_date", "modified_date", "send_emails", "is_bot", "topic_id")
 
 
 class DevelopmentsAdmin(SimpleHistoryAdmin):

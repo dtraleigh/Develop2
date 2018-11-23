@@ -39,6 +39,7 @@ class Subscriber(models.Model):
     modified_date = models.DateTimeField(auto_now=True)
     cover_areas = models.ManyToManyField(coverArea)
     is_bot = models.BooleanField(default=False)
+    topic_id = models.IntegerField(blank=True, null=True, verbose_name="Topic ID")
     api_key = models.CharField(max_length=254, blank=True, null=True)
 
     def __str__(self):
