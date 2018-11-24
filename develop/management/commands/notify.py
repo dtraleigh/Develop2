@@ -118,6 +118,7 @@ class Command(BaseCommand):
                     # Send emails if the subscriber is not a bot
                     if covered_items and not subscriber.is_bot:
                         message = create_email_message(covered_items)
+
                         email_from = "develop@dtraleigh.com"
 
                         try:

@@ -419,11 +419,27 @@ def create_email_message(items_that_changed):
 
 
 def create_new_discourse_post(subscriber, item):
-    url = "https://community.dtraleigh.com/posts.json"
+    headers = {
+        'Content-Type': "application/json",
+        'cache-control': "no-cache",
+        'Postman-Token': "1e737fea-23d8-48f7-96d7-c19c66c484a6"
+    }
+
+    post_url = "https://community.dtraleigh.com/posts.json"
+    get_url = "https://community.dtraleigh.com/t/" + str(subscriber.topic_id) + ".json"
 
     querystring = {"api_key": subscriber.api_key,
                    "api_username": subscriber.name}
 
+    get_payload = ""
+
+    response = requests.request("GET", get_url, data=get_payload, headers=headers, params=querystring)
+    r = response.json()
+
+    slug = r["slug"]
+    topic_header_url = "https://community.dtraleigh.com/t/" + slug + "/" + str(subscriber.topic_id) + "/1"
+
+    # Create discourse message
     if isinstance(item, Development) or isinstance(item, SiteReviewCases):
         if item.created_date > timezone.now() - timedelta(hours=1):
             message = get_new_dev_text(item)
@@ -435,13 +451,11 @@ def create_new_discourse_post(subscriber, item):
         else:
             message = get_updated_zon_text(item)
 
-    payload = json.dumps({"topic_id": subscriber.topic_id,
-                          "raw": message})
+    message += "\n\nSee status abbreviations and sources at <a href=\"" + topic_header_url + "\">the topic's header</a>."
+    # End message create
 
-    headers = {
-        'Content-Type': "application/json",
-        'cache-control': "no-cache",
-        'Postman-Token': "1e737fea-23d8-48f7-96d7-c19c66c484a6"
-    }
+    # POST to Discourse
+    post_payload = json.dumps({"topic_id": subscriber.topic_id,
+                               "raw": message})
 
-    requests.post(url, payload, headers=headers, params=querystring)
+    requests.post(post_url, post_payload, headers=headers, params=querystring)
