@@ -442,14 +442,18 @@ def create_new_discourse_post(subscriber, item):
     # Create discourse message
     if isinstance(item, Development) or isinstance(item, SiteReviewCases):
         if item.created_date > timezone.now() - timedelta(hours=1):
-            message = get_new_dev_text(item)
+            message = "--------------New Development---------------\n\n"
+            message += get_new_dev_text(item)
         else:
-            message = get_updated_dev_text(item)
+            message = "--------------Existing Dev Update---------------\n\n"
+            message += get_updated_dev_text(item)
     if isinstance(item, Zoning):
         if item.created_date > timezone.now() - timedelta(hours=1):
-            message = get_new_zon_text(item)
+            message = "--------------New Zoning Request---------------\n\n"
+            message += get_new_zon_text(item)
         else:
-            message = get_updated_zon_text(item)
+            message = "--------------Existing Zoning Request Update---------------\n\n"
+            message += get_updated_zon_text(item)
 
     message += "\n\nSee status abbreviations and sources at <a href=\"" + topic_header_url + "\">the topic's header</a>."
     # End message create
