@@ -14,15 +14,18 @@ logger = logging.getLogger("django")
 
 
 def get_api_json(url):
+    response = None
+
     try:
         response = requests.get(url)
     except requests.exceptions.ChunkedEncodingError:
         n = datetime.now()
         logger.info(n.strftime("%H:%M %m-%d-%y") + ": problem hitting the api. (" + url + ")")
+        
     if response.status_code == 200:
         return response.json()
 
-    return None
+    return response
 
 
 def batch(iterable, n=1):
