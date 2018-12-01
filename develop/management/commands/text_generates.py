@@ -27,8 +27,13 @@ def difference_email_output(item):
     # If the fields are not equal, add it to output.
     for field in fields:
         if field.name != "created_date" and field.name != "modified_date" and field.name != "id" and field.name != "EditDate":
-            item_most_recent_field = getattr(item_most_recent, field.name)
-            item_old_field = getattr(item_previous, field.name)
+            try:
+                item_most_recent_field = getattr(item_most_recent, field.name)
+                item_old_field = getattr(item_previous, field.name)
+            except AttributeError:
+                n = datetime.now()
+                logger.info(n.strftime("%H:%M %m-%d-%y") + ": AttributeError - field is " + field + " and item_most_recent = " + item_most_recent)
+                continue
 
             # If there is a difference...
             if item_most_recent_field != item_old_field:
