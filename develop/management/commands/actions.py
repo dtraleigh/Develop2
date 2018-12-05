@@ -21,7 +21,7 @@ def get_api_json(url):
     except requests.exceptions.ChunkedEncodingError:
         n = datetime.now()
         logger.info(n.strftime("%H:%M %m-%d-%y") + ": problem hitting the api. (" + url + ")")
-        
+
     if response.status_code == 200:
         return response.json()
 
