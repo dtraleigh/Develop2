@@ -123,6 +123,12 @@ def get_new_zon_text(new_zon):
     new_zon_message += "    Location: " + str(new_zon.location) + "\n"
     new_zon_message += "    Remarks: " + str(new_zon.remarks) + "\n"
     new_zon_message += "    Status: " + str(new_zon.status) + "\n"
+
+    if new_zon.plan_url:
+        new_zon_message += "    Plan URL: " + str(new_zon.plan_url) + "\n"
+    else:
+        new_zon_message += "    Plan URL: NA\n"
+
     new_zon_message += "    CAC: " + str(new_zon.cac) + "\n\n"
 
     return new_zon_message
@@ -133,6 +139,12 @@ def get_updated_zon_text(updated_zon):
     updated_zon_message += "    Location: " + str(updated_zon.location) + "\n"
     updated_zon_message += "    Remarks: " + str(updated_zon.remarks) + "\n"
     updated_zon_message += "    Status: " + str(updated_zon.status) + "\n"
+
+    if updated_zon.plan_url:
+        updated_zon_message += "    Plan URL: " + str(updated_zon.plan_url) + "\n"
+    else:
+        updated_zon_message += "    Plan URL: NA\n"
+
     updated_zon_message += "    CAC: " + str(updated_zon.cac) + "\n\n"
     updated_zon_message += "  *UPDATES*\n"
     updated_zon_message += difference_email_output(updated_zon)
