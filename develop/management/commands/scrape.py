@@ -73,12 +73,12 @@ def site_reviews(page_content, page_link="https://www.raleighnc.gov"):
         row_tds = sr_row.findAll("td")
 
         case_number = row_tds[0].find("a").string
-        case_url = page_link + row_tds[0].find("a")["href"]
+        case_url = page_link + row_tds[0].find("a")["href"].replace(" ", "")
         project_name = row_tds[1].get_text().strip()
         cac = row_tds[2].get_text().strip()
         status = row_tds[3].get_text().strip()
         contact = row_tds[4].find("a").get_text().strip()
-        contact_url = page_link + row_tds[4].find("a")["href"]
+        contact_url = page_link + row_tds[4].find("a")["href"].replace(" ", "")
 
         # If any of these variables are None, log it and move on.
         if not case_number or not case_url or not project_name or not cac or not status or not contact or not contact_url:
@@ -192,7 +192,7 @@ def zoning_requests(page_content, page_link="https://www.raleighnc.gov"):
         cac = info_row_tds[2].get_text()
         contact = info_row_tds[3].get_text()
         status = status_row_tds[0].get_text()
-        label_a = info_row_tds[0].find("a")["href"]
+        label_a = info_row_tds[0].find("a")["href"].replace(" ", "")
         label_a_text = info_row_tds[0].find("a").get_text()
 
         # If any of these variables are None, log it and move on.
