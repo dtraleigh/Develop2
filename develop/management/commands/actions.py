@@ -92,7 +92,7 @@ def fields_are_same(object_item, api_or_web_scrape_item):
         logger.info(n.strftime("%H:%M %m-%d-%y") + ": Error comparing object_item, " + str(object_item) + ", with json_item, " + str(api_or_web_scrape_item))
 
 
-def get_status_legend():
+def get_status_legend_text():
     page_link = "https://www.raleighnc.gov/development"
 
     page_response = requests.get(page_link, timeout=10)
@@ -407,7 +407,7 @@ def create_email_message(items_that_changed):
     # /// Footer
     email_footer = "*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*\n"
     try:
-        email_footer += get_status_legend() + "\n\n"
+        email_footer += get_status_legend_text() + "\n\n"
     except AttributeError:
         email_footer += "Please see the Current Development Activity website for status abbreviations.\n\n"
     email_footer += "You are subscribed to THE RALEIGH WIRE SERVICE\n"
@@ -446,17 +446,17 @@ def create_new_discourse_post(subscriber, item):
     if isinstance(item, Development) or isinstance(item, SiteReviewCases):
         if item.created_date > timezone.now() - timedelta(hours=1):
             message = "--------------New Development---------------\n\n"
-            message += get_new_dev_text(item)
+            message += get_new_dev_text(item, True)
         else:
             message = "--------------Existing Dev Update---------------\n\n"
-            message += get_updated_dev_text(item)
+            message += get_updated_dev_text(item, True)
     if isinstance(item, Zoning):
         if item.created_date > timezone.now() - timedelta(hours=1):
             message = "--------------New Zoning Request---------------\n\n"
-            message += get_new_zon_text(item)
+            message += get_new_zon_text(item, True)
         else:
             message = "--------------Existing Zoning Request Update---------------\n\n"
-            message += get_updated_zon_text(item)
+            message += get_updated_zon_text(item, True)
 
     message += "\n\nSee status abbreviations and sources at <a href=\"" + topic_header_url + "\">the topic's header</a>."
     # End message create

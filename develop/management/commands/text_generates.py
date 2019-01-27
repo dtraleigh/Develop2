@@ -2,7 +2,8 @@ from develop.models import *
 from django.conf import settings
 
 from datetime import datetime
-import logging
+import logging, requests
+from bs4 import BeautifulSoup
 
 logger = logging.getLogger("django")
 
@@ -11,6 +12,55 @@ def string_output_unix_datetime(unix_datetime):
     if unix_datetime:
         return datetime.fromtimestamp(unix_datetime / 1000).strftime('%Y-%m-%d %H:%M:%S')
     return str("None")
+
+
+def get_status_legend_list():
+    page_link = "https://www.raleighnc.gov/development"
+
+    page_response = requests.get(page_link, timeout=10)
+
+    if page_response.status_code == 200:
+        page_content = BeautifulSoup(page_response.content, "html.parser")
+
+        # Status Abbreviations
+        status_abbreviations_title = page_content.find("h3", {"id": "StatusAbbreviations"})
+
+        status_section = status_abbreviations_title.findNext("div")
+
+        status_ul = status_section.find("ul")
+        status_list = []
+
+        for li in status_ul.findAll('li'):
+            status_list.append(li.get_text())
+
+        return status_list
+
+    # It doesn't change much so if we can't get to the page for the legend, we'll use this static version.
+    return ['City Council (CC)', 'City Council Economic Development and Innovation Committee (EDI)',
+            'City Council Growth and Natural Resources Committee (GNR)',
+            'City Council Healthy Neighborhoods Committee (HN)',
+            'City Council Transportation and Transit Committee (TTC)',
+            'Planning Commission (PC)', 'Planning Commission Committee of the Whole (COW)',
+            'Planning Commission Strategic Planning Committee (SPC)',
+            'Planning Commission Text Change Committee (TCC)', 'Under Review (UR)', 'Public Hearing (PH)',
+            'Approved Pending Appeal (APA)', 'Approved with Conditions Pending Appeal (CAPA)', 'Appealed (AP)',
+            'Denied Pending Appeal (DPA)', 'Expired Pending Appeal (EPA)', 'Effective Date (EFF)',
+            'Boundary Survey (BS)', 'Exemption (EX)', 'Miscellaneous (MI)', 'Recombination (R)', 'Right-of-Way (RW)',
+            'Subdivision (S)', 'Site Plan (SP)', 'Site Review (SR)']
+
+
+def get_status_tooltip(status):
+    # This will take in the status and add the tooltip html for discourse
+    status_list = get_status_legend_list()
+
+    for s in status_list:
+        abbreviation = "(" + status + ")"
+        if abbreviation in s:
+            status_text = s
+
+    status = "    Status: " + status_text + "\n"
+
+    return status
 
 
 def difference_email_output(item):
@@ -68,7 +118,7 @@ def difference_email_output(item):
     return output
 
 
-def get_new_dev_text(new_dev):
+def get_new_dev_text(new_dev, discourse):
     if isinstance(new_dev, Development):
         new_devs_message = "***" + str(new_dev.plan_name) + ", " + str(new_dev.plan_number) + "***\n"
         if settings.DEVELOP_INSTANCE == "Develop":
@@ -83,14 +133,17 @@ def get_new_dev_text(new_dev):
         new_devs_message = "***" + str(new_dev.project_name) + ", " + str(new_dev.case_number) + "***\n"
         if settings.DEVELOP_INSTANCE == "Develop":
             new_devs_message += "[Develop - Web scrape]\n"
-        new_devs_message += "    Status: " + str(new_dev.status) + "\n"
+        if discourse:
+            new_devs_message += get_status_tooltip(new_dev.status)
+        else:
+            new_devs_message += "    Status: " + str(new_dev.status) + str(discourse) + "\n"
         new_devs_message += "    CAC: " + str(new_dev.cac) + "\n"
         new_devs_message += "    URL: " + str(new_dev.case_url) + "\n\n"
 
     return new_devs_message
 
 
-def get_updated_dev_text(updated_dev):
+def get_updated_dev_text(updated_dev, discourse):
     # Need to look at the history and compare the most recent update with the one before it.
     if isinstance(updated_dev, Development):
         updated_devs_message = "***" + str(updated_dev.plan_name) + ", " + str(updated_dev.plan_number) + "***\n"
@@ -107,7 +160,10 @@ def get_updated_dev_text(updated_dev):
         if settings.DEVELOP_INSTANCE == "Develop":
             updated_devs_message += "[Develop - Web scrape]\n"
         updated_devs_message += "    Updated: " + updated_dev.modified_date.strftime("%m-%d-%y %H:%M") + "\n"
-        updated_devs_message += "    Status: " + str(updated_dev.status) + "\n"
+        if discourse:
+            updated_devs_message += get_status_tooltip(updated_dev.status)
+        else:
+            updated_devs_message += "    Status: " + str(updated_dev.status) + str(discourse) + "\n"
         updated_devs_message += "    CAC: " + str(updated_dev.cac) + "\n"
         updated_devs_message += "    URL: " + str(updated_dev.case_url) + "\n\n"
         updated_devs_message += "  *UPDATES*\n"
@@ -118,7 +174,7 @@ def get_updated_dev_text(updated_dev):
     return updated_devs_message
 
 
-def get_new_zon_text(new_zon):
+def get_new_zon_text(new_zon, discourse):
     new_zon_message = "***" + str(new_zon.zpyear) + "-" + str(new_zon.zpnum) + "***\n"
     new_zon_message += "    Location: " + str(new_zon.location) + "\n"
     new_zon_message += "    Remarks: " + str(new_zon.remarks) + "\n"
@@ -134,7 +190,7 @@ def get_new_zon_text(new_zon):
     return new_zon_message
 
 
-def get_updated_zon_text(updated_zon):
+def get_updated_zon_text(updated_zon, discourse):
     updated_zon_message = "***" + str(updated_zon.zpyear) + "-" + str(updated_zon.zpnum) + "***\n"
     updated_zon_message += "    Location: " + str(updated_zon.location) + "\n"
     updated_zon_message += "    Remarks: " + str(updated_zon.remarks) + "\n"
