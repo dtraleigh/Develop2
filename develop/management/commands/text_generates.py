@@ -62,6 +62,10 @@ def get_status_text(status):
     return status
 
 
+def convert_int_datetime(dt):
+    return datetime.fromtimestamp(dt / 1000).strftime('%Y-%m-%d %H:%M:%S')
+
+
 def difference_email_output(item):
     output = ""
 
@@ -90,8 +94,8 @@ def difference_email_output(item):
                 # Let's ignore EditDate
                 if field.get_internal_type() == "BigIntegerField" and field.name != "EditDate" and all([item_most_recent_field, item_old_field]):
                     try:
-                        before_date_hr = datetime.fromtimestamp(item_old_field / 1000).strftime('%Y-%m-%d %H:%M:%S')
-                        after_date_hr = datetime.fromtimestamp(item_most_recent_field / 1000).strftime('%Y-%m-%d %H:%M:%S')
+                        before_date_hr = convert_int_datetime(item_old_field)
+                        after_date_hr = convert_int_datetime(item_most_recent_field)
 
                         output += "    " + field.verbose_name + " changed from \"" + before_date_hr + "\" to \"" + \
                                   after_date_hr + "\"\n"
