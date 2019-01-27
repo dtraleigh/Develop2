@@ -49,16 +49,15 @@ def get_status_legend_list():
             'Subdivision (S)', 'Site Plan (SP)', 'Site Review (SR)']
 
 
-def get_status_tooltip(status):
-    # This will take in the status and add the tooltip html for discourse
+def get_status_text(status):
+    # This will take in the status abbreviation and return the whole text
+    # This only applies to SiteReviewCases
     status_list = get_status_legend_list()
 
     for s in status_list:
         abbreviation = "(" + status + ")"
         if abbreviation in s:
-            status_text = s
-
-    status = "    Status: " + status_text + "\n"
+            return s
 
     return status
 
@@ -110,10 +109,13 @@ def difference_email_output(item):
                         else:
                             logger.info("item_most_recent_field: None")
 
-
                 else:
-                    output += "    " + field.verbose_name + " changed from \"" + str(item_old_field) + "\" to \"" + \
-                              str(item_most_recent_field) + "\"\n"
+                    if isinstance(item, SiteReviewCases) and field.verbose_name == "Status":
+                        output += "    Status changed from \"" + get_status_text(item_old_field) + "\" to \"" + \
+                                  get_status_text(item_most_recent_field) + "\"\n"
+                    else:
+                        output += "    " + field.verbose_name + " changed from \"" + str(item_old_field) + "\" to \"" + \
+                                  str(item_most_recent_field) + "\"\n"
 
     return output
 
@@ -134,7 +136,7 @@ def get_new_dev_text(new_dev, discourse):
         if settings.DEVELOP_INSTANCE == "Develop":
             new_devs_message += "[Develop - Web scrape]\n"
         if discourse:
-            new_devs_message += get_status_tooltip(new_dev.status)
+            new_devs_message += "    Status: " + get_status_text(new_dev.status) + "\n"
         else:
             new_devs_message += "    Status: " + str(new_dev.status) + str(discourse) + "\n"
         new_devs_message += "    CAC: " + str(new_dev.cac) + "\n"
@@ -161,7 +163,7 @@ def get_updated_dev_text(updated_dev, discourse):
             updated_devs_message += "[Develop - Web scrape]\n"
         updated_devs_message += "    Updated: " + updated_dev.modified_date.strftime("%m-%d-%y %H:%M") + "\n"
         if discourse:
-            updated_devs_message += get_status_tooltip(updated_dev.status)
+            updated_devs_message += "    Status: " + get_status_text(updated_dev.status) + "\n"
         else:
             updated_devs_message += "    Status: " + str(updated_dev.status) + str(discourse) + "\n"
         updated_devs_message += "    CAC: " + str(updated_dev.cac) + "\n"
