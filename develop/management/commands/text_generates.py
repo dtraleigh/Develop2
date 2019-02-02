@@ -92,7 +92,8 @@ def difference_email_output(item):
             if item_most_recent_field != item_old_field:
                 # If it's a date field, we need to convert it to a human readable string
                 # Let's ignore EditDate
-                if field.get_internal_type() == "BigIntegerField" and field.name != "EditDate" and all([item_most_recent_field, item_old_field]):
+                if field.get_internal_type() == "BigIntegerField" and field.name != "EditDate" and \
+                        all([item_most_recent_field, item_old_field]):
                     try:
                         before_date_hr = convert_int_datetime(item_old_field)
                         after_date_hr = convert_int_datetime(item_most_recent_field)
