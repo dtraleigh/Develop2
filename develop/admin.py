@@ -56,6 +56,11 @@ class ZoningAdmin(SimpleHistoryAdmin):
     # submitted_date.admin_order_field = 'updated'
 
 
+class AADAdmin(SimpleHistoryAdmin):
+    list_display = ("case_number", "project_name", "cac", "status", "contact", "modified_date", "created_date")
+    history_list_display = ["status"]
+
+
 admin.site.register(Control, ControlAdmin)
 admin.site.register(CAC, CACAdmin)
 admin.site.register(coverArea, coverAreaAdmin)
@@ -63,3 +68,4 @@ admin.site.register(SiteReviewCases, SiteReviewCasesAdmin)
 admin.site.register(Subscriber, SubscriberAdmin)
 admin.site.register(Development, DevelopmentsAdmin)
 admin.site.register(Zoning, ZoningAdmin)
+admin.site.register(AdministrativeAlternates, AADAdmin)

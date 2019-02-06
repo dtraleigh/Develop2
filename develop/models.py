@@ -151,3 +151,23 @@ class Zoning(models.Model):
         return u"%s (%s)" % (self.zpnum, self.zpyear)
 
 
+class AdministrativeAlternates(models.Model):
+    # An Administrative Alternate is an item on the Development Activity page - Administrative Alternate Requests (AAD)
+    # section
+    case_number = models.CharField(blank=True, max_length=100, null=True, verbose_name="Case Number")
+    case_url = models.TextField(blank=True, null=True, verbose_name="Plan URL")
+    project_name = models.CharField(blank=True, max_length=300, null=True, verbose_name="Plan Name")
+    cac = models.CharField(blank=True, max_length=100, null=True, verbose_name="CAC")
+    status = models.CharField(blank=True, max_length=100, null=True, verbose_name="Status")
+    contact = models.CharField(blank=True, max_length=100, null=True, verbose_name="Contact")
+    contact_url = models.CharField(blank=True, max_length=300, null=True, verbose_name="Contact URL")
+    history = HistoricalRecords()
+    created_date = models.DateTimeField(auto_now_add=True)
+    modified_date = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Administrative Alternate Request"
+
+    def __str__(self):
+        return u"%s - %s (%s)" % (self.case_number, self.project_name, self.cac)
+
