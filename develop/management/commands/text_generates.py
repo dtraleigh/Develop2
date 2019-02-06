@@ -62,10 +62,6 @@ def get_status_text(status):
     return status
 
 
-def convert_int_datetime(dt):
-    return datetime.fromtimestamp(dt / 1000).strftime('%Y-%m-%d %H:%M:%S')
-
-
 def difference_email_output(item):
     output = ""
 
@@ -79,7 +75,8 @@ def difference_email_output(item):
     # Loop through each field, except created_date, modified_date, and id.
     # If the fields are not equal, add it to output.
     for field in fields:
-        if field.name != "created_date" and field.name != "modified_date" and field.name != "id" and field.name != "EditDate":
+        if field.name != "created_date" and field.name != "modified_date" and field.name != "id" and field.name != \
+                "EditDate" and field.name != "updated":
             try:
                 item_most_recent_field = getattr(item_most_recent, field.name)
                 item_old_field = getattr(item_previous, field.name)
@@ -95,8 +92,8 @@ def difference_email_output(item):
                 if field.get_internal_type() == "BigIntegerField" and field.name != "EditDate" and \
                         all([item_most_recent_field, item_old_field]):
                     try:
-                        before_date_hr = convert_int_datetime(item_old_field)
-                        after_date_hr = convert_int_datetime(item_most_recent_field)
+                        before_date_hr = string_output_unix_datetime(item_old_field)
+                        after_date_hr = string_output_unix_datetime(item_most_recent_field)
 
                         output += "    " + field.verbose_name + " changed from \"" + before_date_hr + "\" to \"" + \
                                   after_date_hr + "\"\n"
