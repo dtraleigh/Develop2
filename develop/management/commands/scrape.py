@@ -389,9 +389,9 @@ def admin_alternates(page_content, page_link="https://www.raleighnc.gov"):
             logger.info("**********************")
 
             AdministrativeAlternates.objects.create(case_number=case_number,
-                                           case_url=case_url,
-                                           project_name=project_name,
-                                           cac=cac,
-                                           status=status,
-                                           contact=contact,
-                                           contact_url=contact_url)
+                                                    case_url=case_url,
+                                                    project_name=project_name,
+                                                    cac=cac,
+                                                    status=status,
+                                                    contact=contact,
+                                                    contact_url=contact_url)
