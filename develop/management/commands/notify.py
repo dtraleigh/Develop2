@@ -27,6 +27,9 @@ class Command(BaseCommand):
                                                                                     timezone.now()])
             zons_that_changed = Zoning.objects.filter(modified_date__range=[timezone.now() - timedelta(hours=1),
                                                                             timezone.now()])
+            AADs_that_changed = AdministrativeAlternates.objects.filter(modified_date__range=[timezone.now() -
+                                                                                              timedelta(hours=1),
+                                                                                              timezone.now()])
 
             everything_that_changed = []
 
@@ -34,6 +37,8 @@ class Command(BaseCommand):
                 everything_that_changed.append(dev)
             for SR in SRs_that_changed:
                 everything_that_changed.append(SR)
+            for AAD in AADs_that_changed:
+                everything_that_changed.append(AAD)
             for zon in zons_that_changed:
                 # Not interested in some fields for zoning including OBJECTID, GlobalID, CreationDate
                 # (city seems to change these) so let's remove these items from zons_that_changed

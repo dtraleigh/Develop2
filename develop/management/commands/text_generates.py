@@ -51,7 +51,7 @@ def get_status_legend_list():
 
 def get_status_text(status):
     # This will take in the status abbreviation and return the whole text
-    # This only applies to SiteReviewCases
+    # This only applies to web scraped items
     status_list = get_status_legend_list()
 
     for s in status_list:
@@ -215,3 +215,36 @@ def get_updated_zon_text(updated_zon, discourse):
     updated_zon_message += "\n"
 
     return updated_zon_message
+
+
+def get_new_aad_text(new_aad, discourse):
+    new_aad_message = "***" + str(new_aad.project_name) + ", " + str(new_aad.case_number) + "***\n"
+    if settings.DEVELOP_INSTANCE == "Develop":
+        new_aad_message += "[AAD - Web scrape]\n"
+    if discourse:
+        new_aad_message += "    Status: " + get_status_text(new_aad.status) + "\n"
+    else:
+        new_aad_message += "    Status: " + str(new_aad.status) + str(discourse) + "\n"
+    new_aad_message += "    CAC: " + str(new_aad.cac) + "\n"
+    new_aad_message += "    URL: " + str(new_aad.case_url) + "\n\n"
+
+    return new_aad_message
+
+
+def get_updated_aad_text(updated_aad, discourse):
+    updated_aad_message = "***" + str(updated_aad.project_name) + ", " + str(updated_aad.case_number) + "***\n"
+    if settings.DEVELOP_INSTANCE == "Develop":
+        updated_aad_message += "[Develop - Web scrape]\n"
+    updated_aad_message += "    Updated: " + updated_aad.modified_date.strftime("%m-%d-%y %H:%M") + "\n"
+    if discourse:
+        updated_aad_message += "    Status: " + get_status_text(updated_aad.status) + "\n"
+    else:
+        updated_aad_message += "    Status: " + str(updated_aad.status) + str(discourse) + "\n"
+    updated_aad_message += "    CAC: " + str(updated_aad.cac) + "\n"
+    updated_aad_message += "    URL: " + str(updated_aad.case_url) + "\n\n"
+    updated_aad_message += "  *UPDATES*\n"
+    updated_aad_message += difference_email_output(updated_aad)
+
+    updated_aad_message += "\n"
+
+    return updated_aad_message
