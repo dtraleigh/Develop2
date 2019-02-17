@@ -108,9 +108,14 @@ class Command(BaseCommand):
                     covered_items = []
                     for item in everything_that_changed:
                         # append to covered_items things from only cacs that the user is covering plus None
+                        # Look at cac_override first then cac
                         try:
-                            if item.cac is None:
+                            if item.cac is None and item.cac_override is None:
                                 covered_items.append(item)
+                            elif item.cac_override:
+                                for cac in covered_cacs_total:
+                                    if cac.name.lower() in item.cac_override.lower():
+                                        covered_items.append(item)
                             else:
                                 for cac in covered_cacs_total:
                                     if cac.name.lower() in item.cac.lower():

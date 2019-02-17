@@ -24,7 +24,8 @@ class SubscriberAdmin(admin.ModelAdmin):
 
 
 class DevelopmentsAdmin(SimpleHistoryAdmin):
-    list_display = ("devplan_id", "updated_date", "submitted_yr", "status", "major_street", "cac", "plan_name", "plan_number", "modified_date", "created_date")
+    list_display = ("devplan_id", "updated_date", "submitted_yr", "status", "major_street", "cac", "cac_override",
+                    "plan_name", "plan_number", "modified_date", "created_date")
     history_list_display = ["status"]
 
     def updated_date(self, obj):
@@ -38,12 +39,14 @@ class DevelopmentsAdmin(SimpleHistoryAdmin):
 
 
 class SiteReviewCasesAdmin(SimpleHistoryAdmin):
-    list_display = ("case_number", "project_name", "cac", "status", "contact", "modified_date", "created_date")
+    list_display = ("case_number", "project_name", "cac", "cac_override", "status", "contact", "modified_date",
+                    "created_date")
     history_list_display = ["status"]
 
 
 class ZoningAdmin(SimpleHistoryAdmin):
-    list_display = ("zpyear", "zpnum", "submitted_date", "location", "remarks", "cac", "modified_date", "created_date")
+    list_display = ("zpyear", "zpnum", "submitted_date", "location", "remarks", "cac", "cac_override", "modified_date",
+                    "created_date")
     # history_list_display = ["status"]
 
     def submitted_date(self, obj):
@@ -57,7 +60,8 @@ class ZoningAdmin(SimpleHistoryAdmin):
 
 
 class AADAdmin(SimpleHistoryAdmin):
-    list_display = ("case_number", "project_name", "cac", "status", "contact", "modified_date", "created_date")
+    list_display = ("case_number", "project_name", "cac", "cac_override", "status", "contact", "modified_date",
+                    "created_date")
     history_list_display = ["status"]
 
 
