@@ -194,8 +194,17 @@ def zoning_requests(page_content, page_link="https://www.raleighnc.gov"):
         cac = info_row_tds[2].get_text()
         contact = info_row_tds[3].get_text()
         status = status_row_tds[0].get_text()
-        label_a = info_row_tds[0].find("a")["href"].replace(" ", "")
-        label_a_text = info_row_tds[0].find("a").get_text()
+        try:
+            label_a = info_row_tds[0].find("a")["href"].replace(" ", "")
+        except:
+            label_a = None
+            logger.info("Problem getting url or it doesn't exist.")
+
+        try:
+            label_a_text = info_row_tds[0].find("a").get_text()
+        except:
+            label_a_text = None
+            logger.info("Problem getting a text or it doesn't exist.")
 
         # If any of these variables are None, log it and move on.
         # Remarks come from the API
