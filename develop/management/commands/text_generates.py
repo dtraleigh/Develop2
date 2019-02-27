@@ -187,7 +187,7 @@ def get_updated_dev_text(updated_dev, discourse):
 def get_new_zon_text(new_zon, discourse):
     new_zon_message = "***" + str(new_zon.zpyear) + "-" + str(new_zon.zpnum) + "***\n"
     new_zon_message += "    Location: " + str(new_zon.location) + "\n"
-    new_zon_message += "    Remarks: " + str(new_zon.remarks) + "\n"
+    new_zon_message += "    Remarks: " + str(new_zon.remarks).strip() + "\n"
     new_zon_message += "    Status: " + str(new_zon.status) + "\n"
 
     if new_zon.plan_url:
@@ -203,7 +203,7 @@ def get_new_zon_text(new_zon, discourse):
 def get_updated_zon_text(updated_zon, discourse):
     updated_zon_message = "***" + str(updated_zon.zpyear) + "-" + str(updated_zon.zpnum) + "***\n"
     updated_zon_message += "    Location: " + str(updated_zon.location) + "\n"
-    updated_zon_message += "    Remarks: " + str(updated_zon.remarks) + "\n"
+    updated_zon_message += "    Remarks: " + str(updated_zon.remarks).strip() + "\n"
     updated_zon_message += "    Status: " + str(updated_zon.status) + "\n"
 
     if updated_zon.plan_url:
