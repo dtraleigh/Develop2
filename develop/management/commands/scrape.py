@@ -73,8 +73,15 @@ def site_reviews(page_content, page_link="https://www.raleighnc.gov"):
     for sr_row in sr_rows:
         row_tds = sr_row.findAll("td")
 
-        case_number = row_tds[0].find("a").string
-        case_url = page_link + row_tds[0].find("a")["href"].replace(" ", "")
+        try:
+            # If the case number is a link:
+            case_number = row_tds[0].find("a").string
+            case_url = page_link + row_tds[0].find("a")["href"].strip().replace(" ", "%20")
+        except:
+            # in rare cases the case number is not a link
+            case_number = row_tds[0].string
+            case_url = ""
+
         project_name = row_tds[1].get_text().strip()
         cac = row_tds[2].get_text().strip()
         status = row_tds[3].get_text().strip()
@@ -194,22 +201,20 @@ def zoning_requests(page_content, page_link="https://www.raleighnc.gov"):
         cac = info_row_tds[2].get_text()
         contact = info_row_tds[3].get_text()
         status = status_row_tds[0].get_text()
-        try:
-            label_a = info_row_tds[0].find("a")["href"].replace(" ", "")
-        except:
-            label_a = None
-            logger.info("Problem getting url or it doesn't exist.")
 
         try:
-            label_a_text = info_row_tds[0].find("a").get_text()
+            # If the case number is a link:
+            zoning_case = info_row_tds[0].find("a").get_text()
+            zoning_case_url = info_row_tds[0].find("a")["href"].strip().replace(" ", "%20")
         except:
-            label_a_text = None
-            logger.info("Problem getting a text or it doesn't exist.")
+            # in rare cases the case number is not a link
+            zoning_case = info_row_tds[0].string
+            zoning_case_url = ""
 
         # If any of these variables are None, log it and move on.
         # Remarks come from the API
         # Status is from the web scrape
-        if not label or not location or not label_a_text or not cac or not status or not contact or not label_a:
+        if not label or not location or not zoning_case or not cac or not status or not contact or not zoning_case_url:
             logger.info("********** Problem scraping this row **********")
             logger.info(str(info_row_tds))
             logger.info(str(status_row_tds))
@@ -218,14 +223,14 @@ def zoning_requests(page_content, page_link="https://www.raleighnc.gov"):
             logger.info("cac scrape: " + str(cac))
             logger.info("contact scrape: " + str(contact))
             logger.info("status scrape: " + str(status))
-            logger.info("url scrape: " + str(label_a))
-            logger.info("url_text scrape: " + str(label_a_text))
+            logger.info("url scrape: " + str(zoning_case_url))
+            logger.info("url_text scrape: " + str(zoning_case))
 
             continue
 
-        # Break up label_a_text
-        scrape_num = label_a_text.split("-")[1]
-        scrape_year = "20" + label_a_text.split("-")[2]
+        # Break up zoning_case
+        scrape_num = zoning_case.split("-")[1]
+        scrape_year = "20" + zoning_case.split("-")[2]
 
         # First check if we already have this zoning request
         if Zoning.objects.filter(zpnum=int(scrape_num), zpyear=int(scrape_year)).exists():
@@ -233,10 +238,10 @@ def zoning_requests(page_content, page_link="https://www.raleighnc.gov"):
 
             # If the status or plan_url have changed, update the zoning request
             if (not fields_are_same(known_zon.status, status) or
-                    not fields_are_same(known_zon.plan_url, page_link + label_a)):
+                    not fields_are_same(known_zon.plan_url, page_link + zoning_case_url)):
                 # A zoning web scrape only updates status and/or plan_url
                 known_zon.status = status
-                known_zon.plan_url = page_link + label_a
+                known_zon.plan_url = page_link + zoning_case_url
 
                 known_zon.save()
 
@@ -244,8 +249,8 @@ def zoning_requests(page_content, page_link="https://www.raleighnc.gov"):
                 difference = "*"
                 if not fields_are_same(known_zon.status, status):
                     difference += "Difference: " + str(known_zon.status) + " changed to " + str(status)
-                if not fields_are_same(known_zon.plan_url, page_link + label_a):
-                    difference += "Difference: " + str(known_zon.plan_url) + " changed to " + page_link + str(label_a)
+                if not fields_are_same(known_zon.plan_url, page_link + zoning_case_url):
+                    difference += "Difference: " + str(known_zon.plan_url) + " changed to " + page_link + str(zoning_case_url)
 
                 logger.info("**********************")
                 logger.info("Updating a zoning request")
@@ -260,11 +265,11 @@ def zoning_requests(page_content, page_link="https://www.raleighnc.gov"):
             # create a new instance
             logger.info("**********************")
             logger.info("Creating new Zoning Request from web scrape")
-            logger.info("case_number:" + label_a_text)
+            logger.info("case_number:" + zoning_case)
             logger.info("cac: " + cac)
             logger.info("**********************")
 
-            plan_url = "https://www.raleighnc.gov" + label_a
+            plan_url = "https://www.raleighnc.gov" + zoning_case_url
 
             Zoning.objects.create(zpyear=scrape_year,
                                   zpnum=scrape_num,
@@ -307,8 +312,15 @@ def admin_alternates(page_content, page_link="https://www.raleighnc.gov"):
     for aads_row in aads_rows:
         row_tds = aads_row.findAll("td")
 
-        case_number = row_tds[0].find("a").string
-        case_url = page_link + row_tds[0].find("a")["href"].replace(" ", "")
+        try:
+            # If the case number is a link:
+            case_number = row_tds[0].find("a").string
+            case_url = page_link + row_tds[0].find("a")["href"].strip().replace(" ", "%20")
+        except:
+            # in rare cases the case number is not a link
+            case_number = row_tds[0].string
+            case_url = ""
+
         project_name = row_tds[1].get_text().strip()
         cac = row_tds[2].get_text().strip()
         status = row_tds[3].get_text().strip()
