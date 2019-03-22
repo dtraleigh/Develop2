@@ -1,7 +1,7 @@
 # ///
 # This command is used to query the API, compare the results with the DB and make appropriate changes.
 # \\\
-import logging, requests
+import logging, requests, sys
 from bs4 import BeautifulSoup
 from fuzzywuzzy import fuzz
 from datetime import datetime
@@ -27,7 +27,12 @@ class Command(BaseCommand):
 
             page_link = "https://www.raleighnc.gov/development"
 
-            page_response = requests.get(page_link, timeout=10)
+            try:
+                page_response = requests.get(page_link, timeout=10)
+            except requests.exceptions.RequestException as e:
+                logger.info(n.strftime("%H:%M %m-%d-%y") + ": Connection problem")
+                logger.info(e)
+                sys.exit(1)
 
             if page_response.status_code == 200:
                 page_content = BeautifulSoup(page_response.content, "html.parser")
