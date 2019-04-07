@@ -68,6 +68,20 @@ def get_cac_text(item):
     return str(item.cac)
 
 
+def get_field_value(tracked_item, field_name):
+    try:
+        # If a date, convert to human readable
+        if tracked_item.get_internal_type() == "BigIntegerField":
+            return string_output_unix_datetime(getattr(tracked_item, field_name))
+        # everything else, return as is
+        else:
+            return getattr(tracked_item, field_name)
+    except AttributeError:
+        n = datetime.now()
+        logger.info(n.strftime("%H:%M %m-%d-%y") + ": AttributeError - field is " + field_name +
+                    " and item_most_recent = " + tracked_item)
+
+
 def difference_email_output(item):
     output = ""
 
@@ -78,51 +92,29 @@ def difference_email_output(item):
     # Get all the item fields
     fields = item._meta.get_fields()
 
+    ignore_fields = ["created_date", "modified_date", "id", "EditDate", "updated"]
+
     # Loop through each field, except created_date, modified_date, and id.
     # If the fields are not equal, add it to output.
     for field in fields:
-        if field.name != "created_date" and field.name != "modified_date" and field.name != "id" and field.name != \
-                "EditDate" and field.name != "updated":
-            try:
-                item_most_recent_field = getattr(item_most_recent, field.name)
-                item_old_field = getattr(item_previous, field.name)
-            except AttributeError:
-                n = datetime.now()
-                logger.info(n.strftime("%H:%M %m-%d-%y") + ": AttributeError - field is " + field + " and item_most_recent = " + item_most_recent)
-                continue
+        if field.name not in ignore_fields:
+            item_most_recent_field_value = get_field_value(item_most_recent, field.name)
+            item_old_field_value = get_field_value(item_previous, field.name)
 
             # If there is a difference...
-            if item_most_recent_field != item_old_field:
-                # If it's a date field, we need to convert it to a human readable string
-                # Let's ignore EditDate
-                if field.get_internal_type() == "BigIntegerField" and field.name != "EditDate":
-                    try:
-                        before_date_hr = string_output_unix_datetime(item_old_field)
-                        after_date_hr = string_output_unix_datetime(item_most_recent_field)
-
-                        output += "    " + field.verbose_name + " changed from \"" + before_date_hr + "\" to \"" + \
-                                  after_date_hr + "\"\n"
-                    except:
-                        n = datetime.now()
-                        logger.info(n.strftime("%H:%M %m-%d-%y") + ": Problem calculating the datetime")
-                        logger.info("field is " + str(field))
-                        if item_old_field:
-                            logger.info("item_old_field: " + str(item_old_field))
-                        else:
-                            logger.info("item_old_field: None")
-
-                        if item_old_field:
-                            logger.info("item_most_recent_field: " + str(item_old_field))
-                        else:
-                            logger.info("item_most_recent_field: None")
-
+            if item_most_recent_field_value != item_old_field_value:
+                # If a date field
+                if field.get_internal_type() == "BigIntegerField":
+                    output += "    " + field.verbose_name + " changed from \"" + item_most_recent_field_value + \
+                              "\" to \"" + item_old_field_value + "\"\n"
+                # Everything else
                 else:
                     if isinstance(item, SiteReviewCases) and field.verbose_name == "Status":
-                        output += "    Status changed from \"" + get_status_text(item_old_field) + "\" to \"" + \
-                                  get_status_text(item_most_recent_field) + "\"\n"
+                        output += "    Status changed from \"" + get_status_text(item_old_field_value) + \
+                                  "\" to \"" + get_status_text(item_most_recent_field_value) + "\"\n"
                     else:
-                        output += "    " + field.verbose_name + " changed from \"" + str(item_old_field) + "\" to \"" + \
-                                  str(item_most_recent_field) + "\"\n"
+                        output += "    " + field.verbose_name + " changed from \"" + str(item_old_field_value) + \
+                                  "\" to \"" + str(item_most_recent_field_value) + "\"\n"
 
     return output
 
