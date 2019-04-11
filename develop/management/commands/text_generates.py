@@ -68,18 +68,18 @@ def get_cac_text(item):
     return str(item.cac)
 
 
-def get_field_value(tracked_item, field_name):
+def get_field_value(tracked_item, model_field):
     try:
         # If a date, convert to human readable
-        if tracked_item.get_internal_type() == "BigIntegerField":
-            return string_output_unix_datetime(getattr(tracked_item, field_name))
+        if model_field.get_internal_type() == "BigIntegerField":
+            return string_output_unix_datetime(getattr(tracked_item, model_field.name))
         # everything else, return as is
         else:
-            return getattr(tracked_item, field_name)
+            return getattr(tracked_item, model_field.name)
     except AttributeError:
         n = datetime.now()
-        logger.info(n.strftime("%H:%M %m-%d-%y") + ": AttributeError - field is " + field_name +
-                    " and item_most_recent = " + tracked_item)
+        logger.info(n.strftime("%H:%M %m-%d-%y") + ": AttributeError - field is " + str(model_field.name) +
+                    " and item_most_recent = " + str(tracked_item))
 
 
 def difference_email_output(item):
@@ -98,8 +98,8 @@ def difference_email_output(item):
     # If the fields are not equal, add it to output.
     for field in fields:
         if field.name not in ignore_fields:
-            item_most_recent_field_value = get_field_value(item_most_recent, field.name)
-            item_old_field_value = get_field_value(item_previous, field.name)
+            item_most_recent_field_value = get_field_value(item_most_recent, field)
+            item_old_field_value = get_field_value(item_previous, field)
 
             # If there is a difference...
             if item_most_recent_field_value != item_old_field_value:
