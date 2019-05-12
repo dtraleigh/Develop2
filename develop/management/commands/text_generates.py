@@ -2,7 +2,7 @@ from develop.models import *
 from django.conf import settings
 
 from datetime import datetime
-import logging, requests
+import logging, requests, re
 from bs4 import BeautifulSoup
 
 logger = logging.getLogger("django")
@@ -54,10 +54,16 @@ def get_status_text(status):
     # This only applies to web scraped items
     status_list = get_status_legend_list()
 
+    # statuses is a list of lists, [[full text, Abbreviation]]
+    statuses = []
+
     for s in status_list:
-        abbreviation = "(" + status + ")"
-        if abbreviation in s:
-            return s
+        abbr = re.search('\(([^)]+)', s).group(1)
+        statuses.append([s, abbr])
+
+    for a in statuses:
+        if a[1] in status:
+            status = status.replace(a[1], a[0])
 
     return status
 
