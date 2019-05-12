@@ -50,10 +50,7 @@ class Command(BaseCommand):
 
 def site_reviews(page_content, page_link="https://www.raleighnc.gov"):
     # Site Reviews
-    try:
-        site_review_title = page_content.find("h3", {"id": "SiteReviewCases(SR)"})
-    except:
-        logger.info("Couldn't find #SiteReviewCases(SR)")
+    site_review_title = find_table_title_by_id(page_content, "SiteReviewCases(SR)")
 
     # drill down
     try:
@@ -185,10 +182,7 @@ def site_reviews(page_content, page_link="https://www.raleighnc.gov"):
 
 def zoning_requests(page_content, page_link="https://www.raleighnc.gov"):
     # Zoning Requests
-    try:
-        zoning_title = page_content.find("h3", {"id": "ZoningCases(Z)"})
-    except:
-        logger.info("Couldn't find #ZoningCases(Z)")
+    zoning_title = find_table_title_by_id(page_content, "ZoningCases(Z)")
 
     zoning_section = zoning_title.findNext("div")
     zoning_table = zoning_section.find("table")
@@ -289,14 +283,11 @@ def zoning_requests(page_content, page_link="https://www.raleighnc.gov"):
 
 def admin_alternates(page_content, page_link="https://www.raleighnc.gov"):
     # Administrative Alternate Requests
-    try:
-        aads = page_content.find("h3", {"id": "AdministrativeAlternateforDesign(AAD)"})
-    except:
-        logger.info("Couldn't find #AdministrativeAlternateforDesign(AAD)")
+    aads_title = find_table_title_by_id(page_content, "AdministrativeAlternateforDesign(AAD)")
 
     # drill down
     try:
-        aads_section = aads.findNext("div")
+        aads_section = aads_title.findNext("div")
         aads_table = aads_section.find("table")
         aads_table_tbody = aads_table.find("tbody")
         aads_rows = aads_table_tbody.findAll("tr")
@@ -421,3 +412,10 @@ def admin_alternates(page_content, page_link="https://www.raleighnc.gov"):
                                                     status=status,
                                                     contact=contact,
                                                     contact_url=contact_url)
+
+
+def find_table_title_by_id(page_content, table_header_id):
+    try:
+        return page_content.find("h3", {"id": table_header_id})
+    except:
+        logger.info("Couldn't find #" + str(table_header_id))
