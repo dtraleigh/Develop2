@@ -2,7 +2,7 @@ from develop.models import *
 from django.conf import settings
 
 from datetime import datetime
-import logging, requests
+import logging, requests, re
 from bs4 import BeautifulSoup
 
 logger = logging.getLogger("django")
@@ -14,7 +14,7 @@ def string_output_unix_datetime(unix_datetime):
     return str("None")
 
 
-def get_status_legend_list():
+def get_status_legend_dict():
     page_link = "https://www.raleighnc.gov/development"
 
     page_response = requests.get(page_link, timeout=10)
@@ -28,36 +28,48 @@ def get_status_legend_list():
         status_section = status_abbreviations_title.findNext("div")
 
         status_ul = status_section.find("ul")
-        status_list = []
+        status_dict = {}
 
         for li in status_ul.findAll('li'):
-            status_list.append(li.get_text())
+            status_dict[re.search('\(([^)]+)', li.get_text()).group(1)] = li.get_text()
 
-        return status_list
+        return status_dict
 
     # It doesn't change much so if we can't get to the page for the legend, we'll use this static version.
-    return ['City Council (CC)', 'City Council Economic Development and Innovation Committee (EDI)',
-            'City Council Growth and Natural Resources Committee (GNR)',
-            'City Council Healthy Neighborhoods Committee (HN)',
-            'City Council Transportation and Transit Committee (TTC)',
-            'Planning Commission (PC)', 'Planning Commission Committee of the Whole (COW)',
-            'Planning Commission Strategic Planning Committee (SPC)',
-            'Planning Commission Text Change Committee (TCC)', 'Under Review (UR)', 'Public Hearing (PH)',
-            'Approved Pending Appeal (APA)', 'Approved with Conditions Pending Appeal (CAPA)', 'Appealed (AP)',
-            'Denied Pending Appeal (DPA)', 'Expired Pending Appeal (EPA)', 'Effective Date (EFF)',
-            'Boundary Survey (BS)', 'Exemption (EX)', 'Miscellaneous (MI)', 'Recombination (R)', 'Right-of-Way (RW)',
-            'Subdivision (S)', 'Site Plan (SP)', 'Site Review (SR)']
+    return {'CC': 'City Council (CC)',
+            'EDI': 'City Council Economic Development and Innovation Committee (EDI)',
+            'GNR': 'City Council Growth and Natural Resources Committee (GNR)',
+            'HN': 'City Council Healthy Neighborhoods Committee (HN)',
+            'TTC': 'City Council Transportation and Transit Committee (TTC)',
+            'PC': 'Planning Commission (PC)',
+            'COW': 'Planning Commission Committee of the Whole (COW)',
+            'SPC': 'Planning Commission Strategic Planning Committee (SPC)',
+            'TCC': 'Planning Commission Text Change Committee (TCC)',
+            'UR': 'Under Review (UR)',
+            'PH': 'Public Hearing (PH)',
+            'APA': 'Approved Pending Appeal (APA)',
+            'CAPA': 'Approved with Conditions Pending Appeal (CAPA)',
+            'AP': 'Appealed (AP)',
+            'DPA': 'Denied Pending Appeal (DPA)',
+            'EPA': 'Expired Pending Appeal (EPA)',
+            'EFF': 'Effective Date (EFF)',
+            'BS': 'Boundary Survey (BS)',
+            'EX': 'Exemption (EX)',
+            'MI': 'Miscellaneous (MI)',
+            'R': 'Recombination (R)',
+            'RW': 'Right-of-Way (RW)',
+            'S': 'Subdivision (S)',
+            'SP': 'Site Plan (SP)',
+            'SR': 'Site Review (SR)'}
 
 
 def get_status_text(status):
-    # This will take in the status abbreviation and return the whole text
+    # This will take in certain status abbreviations and return the whole text
     # This only applies to web scraped items
-    status_list = get_status_legend_list()
+    status_dict = get_status_legend_dict()
 
-    for s in status_list:
-        abbreviation = "(" + status + ")"
-        if abbreviation in s:
-            return s
+    if 'CAPA' in status:
+        status = status.replace('CAPA', status_dict['CAPA'])
 
     return status
 
