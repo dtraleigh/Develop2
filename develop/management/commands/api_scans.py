@@ -39,7 +39,8 @@ def development_api_scan():
 
                 # Try to get the development from the DB and check if it needs to be updated.
                 try:
-                    known_dev_object = Development.objects.get(devplan_id=dev_info_from_json["devplan_id"])
+                    if dev_info_from_json["devplan_id"]:
+                        known_dev_object = Development.objects.get(devplan_id=dev_info_from_json["devplan_id"])
 
                     # If the new object is not the same as the one in the DB, update it.
                     if api_object_is_different(known_dev_object, dev_info_from_json):
