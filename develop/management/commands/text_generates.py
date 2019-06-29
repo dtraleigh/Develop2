@@ -71,6 +71,9 @@ def get_status_text(status):
     if 'CAPA' in status:
         status = status.replace('CAPA', status_dict['CAPA'])
 
+    if 'GNR' in status:
+        status = status.replace('CAPA', status_dict['GNR'])
+
     return status
 
 
