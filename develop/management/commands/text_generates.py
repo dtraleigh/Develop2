@@ -72,7 +72,16 @@ def get_status_text(status):
         status = status.replace('CAPA', status_dict['CAPA'])
 
     if 'GNR' in status:
-        status = status.replace('CAPA', status_dict['GNR'])
+        status = status.replace('GNR', status_dict['GNR'])
+
+    if 'CC' in status:
+        status = status.replace('CC', status_dict['CC'])
+
+    if 'PC' in status:
+        status = status.replace('PC', status_dict['PC'])
+
+    if 'PH' in status:
+        status = status.replace('PH', status_dict['PH'])
 
     return status
 
