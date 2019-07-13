@@ -312,8 +312,15 @@ def create_new_discourse_post(subscriber, item):
             message = "--------New Administrative Alternate for Design ----------\n\n"
             message += get_new_aad_text(item, True)
         else:
-            message = "--------Existing Administrative Alternate for Design  Update ----------\n\n"
+            message = "--------Existing Administrative Alternate for Design Update ----------\n\n"
             message += get_updated_aad_text(item, True)
+    if isinstance(item, TextChangeCases):
+        if item.created_date > timezone.now() - timedelta(hours=1):
+            message = "--------New Text Change Case ----------\n\n"
+            message += get_new_tc_text(item, True)
+        else:
+            message = "--------Existing Text Change Case Update ----------\n\n"
+            message += get_updated_tc_text(item, True)
 
     message += "\n\nSee status abbreviations and sources at <a href=\"" + topic_header_url + "\">the topic's header</a>."
     # End message create

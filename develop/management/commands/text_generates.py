@@ -71,16 +71,19 @@ def get_status_text(status):
     if 'CAPA' in status:
         status = status.replace('CAPA', status_dict['CAPA'])
 
-    if 'GNR' in status:
+    elif 'GNR' in status:
         status = status.replace('GNR', status_dict['GNR'])
 
-    if 'CC' in status:
+    elif 'TCC' in status:
+        status = status.replace('TCC', status_dict['TCC'])
+
+    elif 'CC' in status:
         status = status.replace('CC', status_dict['CC'])
 
-    if 'PC' in status:
+    elif 'PC' in status:
         status = status.replace('PC', status_dict['PC'])
 
-    if 'PH' in status:
+    elif 'PH' in status:
         status = status.replace('PH', status_dict['PH'])
 
     return status
@@ -252,7 +255,7 @@ def get_new_aad_text(new_aad, discourse):
 def get_updated_aad_text(updated_aad, discourse):
     updated_aad_message = "***" + str(updated_aad.project_name) + ", " + str(updated_aad.case_number) + "***\n"
     if settings.DEVELOP_INSTANCE == "Develop":
-        updated_aad_message += "[Develop - Web scrape]\n"
+        updated_aad_message += "[AAD - Web scrape]\n"
     updated_aad_message += "    Updated: " + updated_aad.modified_date.strftime("%m-%d-%y %H:%M") + "\n"
     if discourse:
         updated_aad_message += "    Status: " + get_status_text(updated_aad.status) + "\n"
@@ -266,3 +269,35 @@ def get_updated_aad_text(updated_aad, discourse):
     updated_aad_message += "\n"
 
     return updated_aad_message
+
+
+def get_new_tc_text(new_tc, discourse):
+    new_tc_message = "***" + str(new_tc.project_name) + ", " + str(new_tc.case_number) + "***\n"
+    if settings.DEVELOP_INSTANCE == "Develop":
+        new_tc_message += "[TC - Web scrape]\n"
+    if discourse:
+        new_tc_message += "    Status: " + get_status_text(new_tc.status) + "\n"
+    else:
+        new_tc_message += "    Status: " + str(new_tc.status) + str(discourse) + "\n"
+    new_tc_message += "    URL: " + str(new_tc.case_url) + "\n\n"
+
+    return new_tc_message
+
+
+def get_updated_tc_text(updated_tc, discourse):
+    updated_tc_message = "***" + str(updated_tc.project_name) + ", " + str(updated_tc.case_number) + "***\n"
+    if settings.DEVELOP_INSTANCE == "Develop":
+        updated_tc_message += "[TC - Web scrape]\n"
+    updated_tc_message += "    Updated: " + updated_tc.modified_date.strftime("%m-%d-%y %H:%M") + "\n"
+    if discourse:
+        updated_tc_message += "    Status: " + get_status_text(updated_tc.status) + "\n"
+    else:
+        updated_tc_message += "    Status: " + str(updated_tc.status) + str(discourse) + "\n"
+    updated_tc_message += "    CAC: " + get_cac_text(updated_tc) + "\n"
+    updated_tc_message += "    URL: " + str(updated_tc.case_url) + "\n\n"
+    updated_tc_message += "  *UPDATES*\n"
+    updated_tc_message += difference_email_output(updated_tc)
+
+    updated_tc_message += "\n"
+
+    return updated_tc_message

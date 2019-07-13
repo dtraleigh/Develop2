@@ -30,6 +30,9 @@ class Command(BaseCommand):
             AADs_that_changed = AdministrativeAlternates.objects.filter(modified_date__range=[timezone.now() -
                                                                                               timedelta(hours=1),
                                                                                               timezone.now()])
+            TCs_that_changed = TextChangeCases.objects.filter(modified_date__range=[timezone.now() -
+                                                                                    timedelta(hours=1),
+                                                                                    timezone.now()])
 
             everything_that_changed = []
 
@@ -39,6 +42,8 @@ class Command(BaseCommand):
                 everything_that_changed.append(SR)
             for AAD in AADs_that_changed:
                 everything_that_changed.append(AAD)
+            for TC in TCs_that_changed:
+                everything_that_changed.append(TC)
             for zon in zons_that_changed:
                 # Not interested in some fields for zoning including OBJECTID, GlobalID, CreationDate
                 # (city seems to change these) so let's remove these items from zons_that_changed
@@ -93,6 +98,7 @@ class Command(BaseCommand):
                 # We need to filter everything_that_changed for only the cover areas that each user is subscribed to.
                 # We also need to include None. Rather than pass literally everything_that_changed let's filter it
                 # for each user and then send them an email.
+                # Text Changes don't have a CAC so include them all which is ok since there are so few
                 all_active_subscribers = Subscriber.objects.filter(send_emails=True)
 
                 for subscriber in all_active_subscribers:
@@ -109,21 +115,24 @@ class Command(BaseCommand):
                     for item in everything_that_changed:
                         # append to covered_items things from only cacs that the user is covering plus None
                         # Look at cac_override first then cac
-                        try:
-                            if item.cac is None and item.cac_override is None:
-                                covered_items.append(item)
-                            elif item.cac_override:
-                                for cac in covered_cacs_total:
-                                    if cac.name.lower() in item.cac_override.lower():
-                                        covered_items.append(item)
-                            else:
-                                for cac in covered_cacs_total:
-                                    if cac.name.lower() in item.cac.lower():
-                                        covered_items.append(item)
+                        if isinstance(item, TextChangeCases):
+                            covered_items.append(item)
+                        else:
+                            try:
+                                if item.cac is None and item.cac_override is None:
+                                    covered_items.append(item)
+                                elif item.cac_override:
+                                    for cac in covered_cacs_total:
+                                        if cac.name.lower() in item.cac_override.lower():
+                                            covered_items.append(item)
+                                else:
+                                    for cac in covered_cacs_total:
+                                        if cac.name.lower() in item.cac.lower():
+                                            covered_items.append(item)
 
-                        except AttributeError:
-                            n = datetime.now()
-                            logger.info(n.strftime("%H:%M %m-%d-%y") + ": AttributeError. cac.name: " + str(cac) + ", item.cac: " + str(item.cac))
+                            except AttributeError:
+                                n = datetime.now()
+                                logger.info(n.strftime("%H:%M %m-%d-%y") + ": AttributeError. cac.name: " + str(cac) + ", item.cac: " + str(item.cac))
 
                     # Send emails if the subscriber is not a bot
                     if covered_items and not subscriber.is_bot:
