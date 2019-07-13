@@ -65,6 +65,11 @@ class AADAdmin(SimpleHistoryAdmin):
     history_list_display = ["status"]
 
 
+class TCAdmin(SimpleHistoryAdmin):
+    list_display= ("case_number", "project_name", "status", "contact", "modified_date", "created_date")
+    history_list_display = ["status"]
+
+
 admin.site.register(Control, ControlAdmin)
 admin.site.register(CAC, CACAdmin)
 admin.site.register(coverArea, coverAreaAdmin)
@@ -73,3 +78,4 @@ admin.site.register(Subscriber, SubscriberAdmin)
 admin.site.register(Development, DevelopmentsAdmin)
 admin.site.register(Zoning, ZoningAdmin)
 admin.site.register(AdministrativeAlternates, AADAdmin)
+admin.site.register(TextChangeCases, TCAdmin)

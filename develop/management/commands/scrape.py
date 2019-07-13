@@ -40,6 +40,7 @@ class Command(BaseCommand):
                 site_reviews(page_content)
                 zoning_requests(page_content)
                 admin_alternates(page_content)
+                text_changes_cases(page_content)
             else:
                 # Send email alert saying that we could not reach the development page, did not get 200
                 pass
@@ -347,16 +348,16 @@ def admin_alternates(page_content, page_link="https://www.raleighnc.gov"):
 
             continue
 
-        known_aad_cases = AdministrativeAlternates.objects.all()
+        known_tc_cases = AdministrativeAlternates.objects.all()
 
         # go through all of them. Criteria of a match:
         # 1. fuzz.ratio(case_number, sr_case.case_number) > 90
         # 2. fuzz.ratio(project_name, sr_case.project_name) > 90
         # 3. fuzz.ratio(cac, sr_case.cac) > 90
         # 2 of 3 need to be true
-        known_aad_case = None
+        known_tc_case = None
 
-        for aad_case in known_aad_cases:
+        for aad_case in known_tc_cases:
             total_score = 0
             case_number_score = fuzz.ratio(case_number, aad_case.case_number)
             project_name_score = fuzz.ratio(project_name, aad_case.project_name)
@@ -372,33 +373,33 @@ def admin_alternates(page_content, page_link="https://www.raleighnc.gov"):
             # aad_case is indeed the same as the scanned info
             # if total_score >= 2 and project_name_score > 50:
             if total_score >= 2 and case_number_score == 100:
-                known_aad_case = aad_case
+                known_tc_case = aad_case
                 break
 
-        # if known_aad_case was found, check for differences
-        # if known_aad_case was not found, then we assume a new one was added
+        # if known_tc_case was found, check for differences
+        # if known_tc_case was not found, then we assume a new one was added
         # need to create
-        if known_aad_case:
-            # Check for difference between known_aad_case and the variables
+        if known_tc_case:
+            # Check for difference between known_tc_case and the variables
             # Assume that the aad_case number doesn't change.
             if (
-                not fields_are_same(known_aad_case.case_url, case_url) or
-                not fields_are_same(known_aad_case.project_name, project_name) or
-                not fields_are_same(known_aad_case.cac, cac) or
-                not fields_are_same(known_aad_case.status, status) or
-                not fields_are_same(known_aad_case.contact, contact) or
-                not fields_are_same(known_aad_case.contact_url, contact_url)
+                not fields_are_same(known_tc_case.case_url, case_url) or
+                not fields_are_same(known_tc_case.project_name, project_name) or
+                not fields_are_same(known_tc_case.cac, cac) or
+                not fields_are_same(known_tc_case.status, status) or
+                not fields_are_same(known_tc_case.contact, contact) or
+                not fields_are_same(known_tc_case.contact_url, contact_url)
             ):
-                    known_aad_case.case_url = case_url
-                    known_aad_case.project_name = project_name
-                    known_aad_case.cac = cac
-                    known_aad_case.status = status
-                    known_aad_case.contact = contact
-                    known_aad_case.contact_url = contact_url
+                    known_tc_case.case_url = case_url
+                    known_tc_case.project_name = project_name
+                    known_tc_case.cac = cac
+                    known_tc_case.status = status
+                    known_tc_case.contact = contact
+                    known_tc_case.contact_url = contact_url
 
-                    known_aad_case.save()
+                    known_tc_case.save()
                     logger.info("**********************")
-                    logger.info("Updating a site case (" + str(known_aad_case) + ")")
+                    logger.info("Updating an AAD case (" + str(known_tc_case) + ")")
                     logger.info("scrape case_number:" + case_number)
                     logger.info("scrape project_name:" + project_name)
                     logger.info("scrape cac: " + cac)
@@ -421,3 +422,127 @@ def admin_alternates(page_content, page_link="https://www.raleighnc.gov"):
                                                     status=status,
                                                     contact=contact,
                                                     contact_url=contact_url)
+            
+            
+def text_changes_cases(page_content, page_link="https://www.raleighnc.gov"):
+    # Text Change Cases
+    try:
+        tc = page_content.find("h3", {"id": "TextChangeCases(TC)"})
+    except:
+        logger.info("Couldn't find #TextChangeCases(TC)")
+
+    # drill down
+    try:
+        tc_section = tc.findNext("div")
+        tc_table = tc_section.find("table")
+        tc_table_tbody = tc_table.find("tbody")
+        tc_rows = tc_table_tbody.findAll("tr")
+    except:
+        logger.info("Problem getting to the #TextChangeCases(TC) table trs")
+        if tc_section:
+            logger.info("tc_section:" + tc_section)
+        if tc_table:
+            logger.info("tc_table: " + tc_table)
+        if tc_table_tbody:
+            logger.info("tc_table_tbody: " + tc_table_tbody)
+        if tc_rows:
+            logger.info("tc_rows: " + tc_rows)
+
+    # For each row, get the values then check if we already know about this item
+    # If we do not, then add it to the DB
+    # If we do, check for differences and update if
+    for tc in tc_rows:
+        row_tds = tc.findAll("td")
+
+        try:
+            # If the case number is a link:
+            case_number = row_tds[0].find("a").string
+            case_url = page_link + row_tds[0].find("a")["href"].strip().replace(" ", "%20")
+        except:
+            # in rare cases the case number is not a link
+            case_number = row_tds[0].string
+            case_url = ""
+
+        project_name = row_tds[1].get_text().strip()
+        status = row_tds[2].get_text().strip()
+        contact = row_tds[3].find("a").get_text().strip()
+        contact_url = page_link + row_tds[3].find("a")["href"].replace(" ", "")
+
+        # If any of these variables are None, log it and move on.
+        if not case_number or not case_url or not project_name or not status or not contact or not contact_url:
+            logger.info("********** Problem scraping this row **********")
+            logger.info(str(row_tds))
+            logger.info("case_number scrape: " + str(case_number))
+            logger.info("case_url scrape: " + str(case_url))
+            logger.info("project_name scrape: " + str(project_name))
+            logger.info("status scrape: " + str(status))
+            logger.info("contact scrape: " + str(contact))
+            logger.info("contact_url scrape: " + str(contact_url))
+
+            continue
+
+        known_tc_cases = TextChangeCases.objects.all()
+
+        # go through all of them. Criteria of a match:
+        # 1. fuzz.ratio(case_number, sr_case.case_number) > 90
+        # 2. fuzz.ratio(project_name, sr_case.project_name) > 90
+        # both need to be true
+        known_tc_case = None
+
+        for tc_case in known_tc_cases:
+            total_score = 0
+            case_number_score = fuzz.ratio(case_number, tc_case.case_number)
+            project_name_score = fuzz.ratio(project_name, tc_case.project_name)
+
+            if case_number_score >= 90:
+                total_score += 1
+            if project_name_score >= 90:
+                total_score += 1
+
+            # tc_case is indeed the same as the scanned info
+            # if total_score >= 2 and project_name_score > 50:
+            if total_score == 2:
+                known_tc_case = tc_case
+                break
+
+        # if known_tc_case was found, check for differences
+        # if known_tc_case was not found, then we assume a new one was added
+        # need to create
+        if known_tc_case:
+            # Check for difference between known_tc_case and the variables
+            # Assume that the tc_case number doesn't change.
+            if (
+                not fields_are_same(known_tc_case.case_url, case_url) or
+                not fields_are_same(known_tc_case.project_name, project_name) or
+                not fields_are_same(known_tc_case.status, status) or
+                not fields_are_same(known_tc_case.contact, contact) or
+                not fields_are_same(known_tc_case.contact_url, contact_url)
+            ):
+                    known_tc_case.case_url = case_url
+                    known_tc_case.project_name = project_name
+                    known_tc_case.status = status
+                    known_tc_case.contact = contact
+                    known_tc_case.contact_url = contact_url
+
+                    known_tc_case.save()
+                    logger.info("**********************")
+                    logger.info("Updating a text change case (" + str(known_tc_case) + ")")
+                    logger.info("scrape case_number:" + case_number)
+                    logger.info("scrape project_name:" + project_name)
+                    logger.info("case,proj: " + str(case_number_score) + "," + str(project_name_score))
+                    logger.info("**********************")
+
+        else:
+            # create a new instance
+            logger.info("**********************")
+            logger.info("Creating new site case")
+            logger.info("case_number:" + case_number)
+            logger.info("project_name:" + project_name)
+            logger.info("**********************")
+
+            TextChangeCases.objects.create(case_number=case_number,
+                                           case_url=case_url,
+                                           project_name=project_name,
+                                           status=status,
+                                           contact=contact,
+                                           contact_url=contact_url)

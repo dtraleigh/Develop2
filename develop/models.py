@@ -175,3 +175,21 @@ class AdministrativeAlternates(models.Model):
     def __str__(self):
         return u"%s - %s (%s)" % (self.case_number, self.project_name, self.cac)
 
+
+class TextChangeCases(models.Model):
+    # A text change case is an item on the Development Activity page - Text Change Cases (TC) section
+    case_number = models.CharField(blank=True, max_length=100, null=True, verbose_name="Case Number")
+    case_url = models.TextField(blank=True, null=True, verbose_name="Plan URL")
+    project_name = models.CharField(blank=True, max_length=300, null=True, verbose_name="Plan Name")
+    status = models.CharField(blank=True, max_length=100, null=True, verbose_name="Status")
+    contact = models.CharField(blank=True, max_length=100, null=True, verbose_name="Contact")
+    contact_url = models.CharField(blank=True, max_length=300, null=True, verbose_name="Contact URL")
+    history = HistoricalRecords()
+    created_date = models.DateTimeField(auto_now_add=True)
+    modified_date = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Text Change Case"
+
+    def __str__(self):
+        return u"%s - %s" % (self.case_number, self.project_name)
