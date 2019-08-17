@@ -472,6 +472,10 @@ def text_changes_cases(page_content, page_link="https://www.raleighnc.gov"):
         contact = row_tds[3].find("a").get_text().strip()
         contact_url = page_link + row_tds[3].find("a")["href"].replace(" ", "")
 
+        # Found a case where the TC name was not a link. We'll set it to something generic in the mean time.
+        if not case_url:
+            case_url = "NA"
+
         # If any of these variables are None, log it and move on.
         if not case_number or not case_url or not project_name or not status or not contact or not contact_url:
             logger.info("********** Problem scraping this row **********")
