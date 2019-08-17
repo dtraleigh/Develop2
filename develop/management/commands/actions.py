@@ -121,7 +121,7 @@ def api_object_is_different(known_object, item_json):
     # functions return True
     n = datetime.now()
 
-    list_of_Development_fields_to_compare = ["OBJECTID", "submitted", "submitted_yr", "approved", "daystoapprove",
+    list_of_Development_fields_to_compare = ["submitted", "submitted_yr", "approved", "daystoapprove",
                                              "plan_type", "status", "appealperiodends", "sunset_date", "acreage",
                                              "major_street", "cac", "engineer", "engineer_phone", "developer",
                                              "developer_phone", "plan_name", "planurl", "planurl_approved",
