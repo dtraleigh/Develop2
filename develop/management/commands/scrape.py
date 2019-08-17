@@ -94,6 +94,10 @@ def site_reviews(page_content, page_link="https://www.raleighnc.gov"):
         contact = row_tds[4].find("a").get_text().strip()
         contact_url = page_link + row_tds[4].find("a")["href"].replace(" ", "")
 
+        # Caught an instance where the site review had an empty CAC so if that is the case, let's set it to 'Unspecified'
+        if not cac:
+            cac = "Unspecified"
+
         # If any of these variables are None, log it and move on.
         if not case_number or not case_url or not project_name or not cac or not status or not contact or not contact_url:
             logger.info("********** Problem scraping this row **********")
