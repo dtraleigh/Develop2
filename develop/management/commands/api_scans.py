@@ -53,12 +53,16 @@ def development_api_scan():
 
                     # Try to get the development from the DB and check if it needs to be updated.
                     try:
-                        if dev_info_from_json["devplan_id"]:
-                            known_dev_object = Development.objects.get(devplan_id=dev_info_from_json["devplan_id"])
+                        if dev_info_from_json["OBJECTID"]:
+                            known_dev_object = Development.objects.get(OBJECTID = dev_info_from_json["OBJECTID"])
+                        else:
+                            logger.info("No OBJECTID on this item")
+                            logger.info(dev_info_from_json)
 
                         # If the new object is not the same as the one in the DB, update it.
-                        if api_object_is_different(known_dev_object, dev_info_from_json):
-                            # print("Object is in the DB and is different. Updating it.")
+                        # Need to also not include old  developments
+                        if api_object_is_different(known_dev_object, dev_info_from_json) and known_dev_object.submitted_yr > 2000:
+                            # print("Object is in the DB, is current, and is different. Updating it.")
 
                             known_dev_object.OBJECTID = dev_info_from_json["OBJECTID"]
                             known_dev_object.submitted = dev_info_from_json["submitted"]

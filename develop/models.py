@@ -49,7 +49,7 @@ class Subscriber(models.Model):
 class Development(models.Model):
     # Development is an item produced by the Development API
     OBJECTID = models.IntegerField(verbose_name="Object ID")
-    devplan_id = models.IntegerField(verbose_name="Development Plan ID")
+    devplan_id = models.IntegerField(blank=True, null=True, verbose_name="Development Plan ID")
     submitted = models.BigIntegerField(blank=True, null=True, verbose_name="Submitted")
     submitted_yr = models.SmallIntegerField(blank=True, null=True, verbose_name="Year Submitted")
     approved = models.BigIntegerField(blank=True, null=True, verbose_name="Approved")
