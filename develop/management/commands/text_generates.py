@@ -293,7 +293,6 @@ def get_updated_tc_text(updated_tc, discourse):
         updated_tc_message += "    Status: " + get_status_text(updated_tc.status) + "\n"
     else:
         updated_tc_message += "    Status: " + str(updated_tc.status) + str(discourse) + "\n"
-    updated_tc_message += "    CAC: " + get_cac_text(updated_tc) + "\n"
     updated_tc_message += "    URL: " + str(updated_tc.case_url) + "\n\n"
     updated_tc_message += "  *UPDATES*\n"
     updated_tc_message += difference_email_output(updated_tc)
