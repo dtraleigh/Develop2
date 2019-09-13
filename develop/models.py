@@ -162,7 +162,7 @@ class AdministrativeAlternates(models.Model):
     project_name = models.CharField(blank=True, max_length=300, null=True, verbose_name="Plan Name")
     cac = models.CharField(blank=True, max_length=100, null=True, verbose_name="CAC")
     cac_override = models.CharField(blank=True, max_length=100, null=True, verbose_name="CAC Override")
-    status = models.CharField(blank=True, max_length=100, null=True, verbose_name="Status")
+    status = models.CharField(blank=True, max_length=300, null=True, verbose_name="Status")
     contact = models.CharField(blank=True, max_length=100, null=True, verbose_name="Contact")
     contact_url = models.CharField(blank=True, max_length=300, null=True, verbose_name="Contact URL")
     history = HistoricalRecords()
