@@ -68,23 +68,28 @@ def get_status_text(status):
     # This only applies to web scraped items
     status_dict = get_status_legend_dict()
 
-    if 'CAPA' in status:
-        status = status.replace('CAPA', status_dict['CAPA'])
+    try:
+        if 'CAPA' in status:
+            status = status.replace('CAPA', status_dict['CAPA'])
 
-    elif 'GNR' in status:
-        status = status.replace('GNR', status_dict['GNR'])
+        elif 'GNR' in status:
+            status = status.replace('GNR', status_dict['GNR'])
 
-    elif 'TCC' in status:
-        status = status.replace('TCC', status_dict['TCC'])
+        elif 'TCC' in status:
+            status = status.replace('TCC', status_dict['TCC'])
 
-    elif 'CC' in status:
-        status = status.replace('CC', status_dict['CC'])
+        elif 'CC' in status:
+            status = status.replace('CC', status_dict['CC'])
 
-    elif 'PC' in status:
-        status = status.replace('PC', status_dict['PC'])
+        elif 'PC' in status:
+            status = status.replace('PC', status_dict['PC'])
 
-    elif 'PH' in status:
-        status = status.replace('PH', status_dict['PH'])
+        elif 'PH' in status:
+            status = status.replace('PH', status_dict['PH'])
+    except TypeError:
+        n = datetime.now()
+        logger.info(n.strftime("%H:%M %m-%d-%y") + ": status is none")
+        return "Error Retrieving Status"
 
     return status
 
