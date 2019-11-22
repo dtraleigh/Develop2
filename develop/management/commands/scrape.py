@@ -52,20 +52,17 @@ class Command(BaseCommand):
 def site_reviews(page_content, page_link="https://www.raleighnc.gov"):
     # Site Reviews
     try:
-        site_review_title = page_content.find("h3", {"id": "SiteReviewCases(SR)"})
+        site_review_title = page_content.find("h2", text="Site Review Cases (SR)")
     except:
         logger.info("Couldn't find #SiteReviewCases(SR)")
 
     # drill down
     try:
-        site_review_section = site_review_title.findNext("div")
-        sr_table = site_review_section.find("table")
+        sr_table = site_review_title.findNext("table")
         sr_table_tbody = sr_table.find("tbody")
         sr_rows = sr_table_tbody.findAll("tr")
     except:
         logger.info("Problem getting to the #SiteReviewCases(SR) table trs")
-        if site_review_section:
-            logger.info("site_review_section:" + site_review_section)
         if sr_table:
             logger.info("sr_table: " + sr_table)
         if sr_table_tbody:
@@ -191,12 +188,11 @@ def site_reviews(page_content, page_link="https://www.raleighnc.gov"):
 def zoning_requests(page_content, page_link="https://www.raleighnc.gov"):
     # Zoning Requests
     try:
-        zoning_title = page_content.find("h3", {"id": "ZoningCases(Z)"})
+        zoning_title = page_content.find("h2", text="Zoning Cases (Z)")
     except:
         logger.info("Couldn't find #ZoningCases(Z)")
 
-    zoning_section = zoning_title.findNext("div")
-    zoning_table = zoning_section.find("table")
+    zoning_table = zoning_title.findNext("table")
     zoning_tbody = zoning_table.find("tbody")
     zoning_rows = zoning_tbody.findAll("tr")
 
@@ -295,20 +291,17 @@ def zoning_requests(page_content, page_link="https://www.raleighnc.gov"):
 def admin_alternates(page_content, page_link="https://www.raleighnc.gov"):
     # Administrative Alternate Requests
     try:
-        aads = page_content.find("h3", {"id": "AdministrativeAlternateforDesign(AAD)"})
+        aads = page_content.find("h2", text="Administrative Alternate for Design (AAD)")
     except:
         logger.info("Couldn't find #AdministrativeAlternateforDesign(AAD)")
 
     # drill down
     try:
-        aads_section = aads.findNext("div")
-        aads_table = aads_section.find("table")
+        aads_table = aads.findNext("table")
         aads_table_tbody = aads_table.find("tbody")
         aads_rows = aads_table_tbody.findAll("tr")
     except:
         logger.info("Problem getting to the #AdministrativeAlternateforDesign(AAD) table trs")
-        if aads_section:
-            logger.info("aads_section:" + aads_section)
         if aads_table:
             logger.info("aads_table: " + aads_table)
         if aads_table_tbody:
@@ -431,20 +424,17 @@ def admin_alternates(page_content, page_link="https://www.raleighnc.gov"):
 def text_changes_cases(page_content, page_link="https://www.raleighnc.gov"):
     # Text Change Cases
     try:
-        tc = page_content.find("h3", {"id": "TextChangeCases(TC)"})
+        tc = page_content.find("h2", text="Text Change Cases (TC)")
     except:
         logger.info("Couldn't find #TextChangeCases(TC)")
 
     # drill down
     try:
-        tc_section = tc.findNext("div")
-        tc_table = tc_section.find("table")
+        tc_table = tc.findNext("table")
         tc_table_tbody = tc_table.find("tbody")
         tc_rows = tc_table_tbody.findAll("tr")
     except:
         logger.info("Problem getting to the #TextChangeCases(TC) table trs")
-        if tc_section:
-            logger.info("tc_section:" + tc_section)
         if tc_table:
             logger.info("tc_table: " + tc_table)
         if tc_table_tbody:

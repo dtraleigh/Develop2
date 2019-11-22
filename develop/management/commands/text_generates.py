@@ -23,11 +23,8 @@ def get_status_legend_dict():
         page_content = BeautifulSoup(page_response.content, "html.parser")
 
         # Status Abbreviations
-        status_abbreviations_title = page_content.find("h3", {"id": "StatusAbbreviations"})
-
-        status_section = status_abbreviations_title.findNext("div")
-
-        status_ul = status_section.find("ul")
+        status_abbreviations_title = page_content.find("h2", text="Status Abbreviations")
+        status_ul = status_abbreviations_title.findNext("ul")
         status_dict = {}
 
         for li in status_ul.findAll('li'):
