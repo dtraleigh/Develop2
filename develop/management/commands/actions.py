@@ -286,28 +286,30 @@ def create_email_message(items_that_changed):
 def create_new_discourse_post(subscriber, item):
     headers = {
         'Content-Type': "application/json",
-        'cache-control': "no-cache",
-        'Postman-Token': "1e737fea-23d8-48f7-96d7-c19c66c484a6"
+        'Api-Key': subscriber.api_key,
+        'Api-Username': subscriber.name,
+        'Accept': "*/*",
+        'Cache-Control': "no-cache",
+        'Host': "community.dtraleigh.com",
+        'Accept-Encoding': "gzip, deflate",
+        'Connection': "keep-alive",
+        'cache-control': "no-cache"
     }
 
     post_url = "https://community.dtraleigh.com/posts.json"
     get_url = "https://community.dtraleigh.com/t/" + str(subscriber.topic_id) + ".json"
 
-    querystring = {"api_key": subscriber.api_key,
-                   "api_username": subscriber.name}
-
-    get_payload = ""
-
-    response = requests.request("GET", get_url, data=get_payload, headers=headers, params=querystring)
+    response = requests.request("GET", get_url, headers=headers)
     r = response.json()
 
     slug = r["slug"]
     topic_header_url = "https://community.dtraleigh.com/t/" + slug + "/" + str(subscriber.topic_id) + "/1"
+    message = ""
 
     # Create discourse message
     if isinstance(item, Development) or isinstance(item, SiteReviewCases):
         if item.created_date > timezone.now() - timedelta(hours=1):
-            message = "--------------New Development---------------\n\n"
+            message += "--------------New Development---------------\n\n"
             message += get_new_dev_text(item, True)
         else:
             message = "--------------Existing Dev Update---------------\n\n"
@@ -334,11 +336,12 @@ def create_new_discourse_post(subscriber, item):
             message = "--------Existing Text Change Case Update ----------\n\n"
             message += get_updated_tc_text(item, True)
 
-    message += "\n\nSee status abbreviations and sources at <a href=\"" + topic_header_url + "\">the topic's header</a>."
+    message += "\n\nSee status abbreviations and sources at " \
+               "<a href=\"" + topic_header_url + "\">the topic's header</a>."
     # End message create
 
     # POST to Discourse
     post_payload = json.dumps({"topic_id": subscriber.topic_id,
                                "raw": message})
 
-    requests.post(post_url, post_payload, headers=headers, params=querystring)
+    requests.request("POST", post_url, data=post_payload, headers=headers)
