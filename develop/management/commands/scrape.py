@@ -49,7 +49,7 @@ class Command(BaseCommand):
             logger.info(n.strftime("%H:%M %m-%d-%y") + ": Web scrape finished.")
 
 
-def site_reviews(page_content, page_link="https://www.raleighnc.gov"):
+def site_reviews(page_content):
     # Site Reviews
     try:
         site_review_title = page_content.find("h2", text="Site Review Cases (SR)")
@@ -79,7 +79,7 @@ def site_reviews(page_content, page_link="https://www.raleighnc.gov"):
         try:
             # If the case number is a link:
             case_number = row_tds[0].find("a").string
-            case_url = page_link + row_tds[0].find("a")["href"].strip().replace(" ", "%20")
+            case_url = row_tds[0].find("a")["href"].strip().replace(" ", "%20")
         except:
             # in rare cases the case number is not a link
             case_number = row_tds[0].string
@@ -89,7 +89,7 @@ def site_reviews(page_content, page_link="https://www.raleighnc.gov"):
         cac = row_tds[2].get_text().strip()
         status = row_tds[3].get_text().strip()
         contact = row_tds[4].find("a").get_text().strip()
-        contact_url = page_link + row_tds[4].find("a")["href"].replace(" ", "")
+        contact_url = "https://raleighnc.gov" + row_tds[4].find("a")["href"].replace(" ", "")
 
         # Caught an instance where the site review had an empty CAC so if that is the case, let's set it to 'Unspecified'
         if not cac:
@@ -185,7 +185,7 @@ def site_reviews(page_content, page_link="https://www.raleighnc.gov"):
                                            contact_url=contact_url)
 
 
-def zoning_requests(page_content, page_link="https://www.raleighnc.gov"):
+def zoning_requests(page_content):
     # Zoning Requests
     try:
         zoning_title = page_content.find("h2", text="Zoning Cases (Z)")
@@ -244,10 +244,10 @@ def zoning_requests(page_content, page_link="https://www.raleighnc.gov"):
 
             # If the status or plan_url have changed, update the zoning request
             if (not fields_are_same(known_zon.status, status) or
-                    not fields_are_same(known_zon.plan_url, page_link + zoning_case_url)):
+                    not fields_are_same(known_zon.plan_url, zoning_case_url)):
                 # A zoning web scrape only updates status and/or plan_url
                 known_zon.status = status
-                known_zon.plan_url = page_link + zoning_case_url
+                known_zon.plan_url = zoning_case_url
 
                 known_zon.save()
 
@@ -255,8 +255,8 @@ def zoning_requests(page_content, page_link="https://www.raleighnc.gov"):
                 difference = "*"
                 if not fields_are_same(known_zon.status, status):
                     difference += "Difference: " + str(known_zon.status) + " changed to " + str(status)
-                if not fields_are_same(known_zon.plan_url, page_link + zoning_case_url):
-                    difference += "Difference: " + str(known_zon.plan_url) + " changed to " + page_link + str(zoning_case_url)
+                if not fields_are_same(known_zon.plan_url, zoning_case_url):
+                    difference += "Difference: " + str(known_zon.plan_url) + " changed to " + str(zoning_case_url)
 
                 logger.info("**********************")
                 logger.info("Updating a zoning request")
@@ -288,7 +288,7 @@ def zoning_requests(page_content, page_link="https://www.raleighnc.gov"):
             # print("Creating new zoning request")
 
 
-def admin_alternates(page_content, page_link="https://www.raleighnc.gov"):
+def admin_alternates(page_content):
     # Administrative Alternate Requests
     try:
         aads = page_content.find("h2", text="Administrative Alternate for Design (AAD)")
@@ -318,7 +318,7 @@ def admin_alternates(page_content, page_link="https://www.raleighnc.gov"):
         try:
             # If the case number is a link:
             case_number = row_tds[0].find("a").string
-            case_url = page_link + row_tds[0].find("a")["href"].strip().replace(" ", "%20")
+            case_url = row_tds[0].find("a")["href"].strip().replace(" ", "%20")
         except:
             # in rare cases the case number is not a link
             case_number = row_tds[0].string
@@ -328,7 +328,7 @@ def admin_alternates(page_content, page_link="https://www.raleighnc.gov"):
         cac = row_tds[2].get_text().strip()
         status = row_tds[3].get_text().strip()
         contact = row_tds[4].find("a").get_text().strip()
-        contact_url = page_link + row_tds[4].find("a")["href"].replace(" ", "")
+        contact_url = row_tds[4].find("a")["href"].replace(" ", "")
 
         # If any of these variables are None, log it and move on.
         if not case_number or not case_url or not project_name or not cac or not status or not contact or not \
@@ -421,7 +421,7 @@ def admin_alternates(page_content, page_link="https://www.raleighnc.gov"):
                                                     contact_url=contact_url)
             
             
-def text_changes_cases(page_content, page_link="https://www.raleighnc.gov"):
+def text_changes_cases(page_content):
     # Text Change Cases
     try:
         tc = page_content.find("h2", text="Text Change Cases (TC)")
@@ -451,7 +451,7 @@ def text_changes_cases(page_content, page_link="https://www.raleighnc.gov"):
         try:
             # If the case number is a link:
             case_number = row_tds[0].find("a").string
-            case_url = page_link + row_tds[0].find("a")["href"].strip().replace(" ", "%20")
+            case_url = row_tds[0].find("a")["href"].strip().replace(" ", "%20")
         except:
             # in rare cases the case number is not a link
             case_number = row_tds[0].string
@@ -460,7 +460,7 @@ def text_changes_cases(page_content, page_link="https://www.raleighnc.gov"):
         project_name = row_tds[1].get_text().strip()
         status = row_tds[2].get_text().strip()
         contact = row_tds[3].find("a").get_text().strip()
-        contact_url = page_link + row_tds[3].find("a")["href"].replace(" ", "")
+        contact_url = row_tds[3].find("a")["href"].replace(" ", "")
 
         # Found a case where the TC name was not a link. We'll set it to something generic in the mean time.
         if not case_url:
