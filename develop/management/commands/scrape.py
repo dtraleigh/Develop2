@@ -275,7 +275,7 @@ def zoning_requests(page_content):
             logger.info("cac: " + cac)
             logger.info("**********************")
 
-            plan_url = "https://www.raleighnc.gov" + zoning_case_url
+            plan_url = zoning_case_url
 
             Zoning.objects.create(zpyear=scrape_year,
                                   zpnum=scrape_num,
