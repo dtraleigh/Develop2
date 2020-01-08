@@ -235,57 +235,62 @@ def zoning_requests(page_content):
             continue
 
         # Break up zoning_case
-        scrape_num = zoning_case.split("-")[1]
-        scrape_year = "20" + zoning_case.split("-")[2]
+        try:
+            scrape_num = zoning_case.split("-")[1]
+            scrape_year = "20" + zoning_case.split("-")[2]
 
-        # First check if we already have this zoning request
-        if Zoning.objects.filter(zpnum=int(scrape_num), zpyear=int(scrape_year)).exists():
-            known_zon = Zoning.objects.get(zpyear=scrape_year, zpnum=scrape_num)
+            # First check if we already have this zoning request
+            if Zoning.objects.filter(zpnum=int(scrape_num), zpyear=int(scrape_year)).exists():
+                known_zon = Zoning.objects.get(zpyear=scrape_year, zpnum=scrape_num)
 
-            # If the status or plan_url have changed, update the zoning request
-            if (not fields_are_same(known_zon.status, status) or
-                    not fields_are_same(known_zon.plan_url, zoning_case_url)):
-                # A zoning web scrape only updates status and/or plan_url
-                known_zon.status = status
-                known_zon.plan_url = zoning_case_url
+                # If the status or plan_url have changed, update the zoning request
+                if (not fields_are_same(known_zon.status, status) or
+                        not fields_are_same(known_zon.plan_url, zoning_case_url)):
+                    # A zoning web scrape only updates status and/or plan_url
+                    known_zon.status = status
+                    known_zon.plan_url = zoning_case_url
 
-                known_zon.save()
+                    known_zon.save()
 
-                # Want to log what the difference is
-                difference = "*"
-                if not fields_are_same(known_zon.status, status):
-                    difference += "Difference: " + str(known_zon.status) + " changed to " + str(status)
-                if not fields_are_same(known_zon.plan_url, zoning_case_url):
-                    difference += "Difference: " + str(known_zon.plan_url) + " changed to " + str(zoning_case_url)
+                    # Want to log what the difference is
+                    difference = "*"
+                    if not fields_are_same(known_zon.status, status):
+                        difference += "Difference: " + str(known_zon.status) + " changed to " + str(status)
+                    if not fields_are_same(known_zon.plan_url, zoning_case_url):
+                        difference += "Difference: " + str(known_zon.plan_url) + " changed to " + str(zoning_case_url)
 
+                    logger.info("**********************")
+                    logger.info("Updating a zoning request")
+                    logger.info("known_zon: " + str(known_zon))
+                    logger.info(difference)
+                    logger.info("**********************")
+
+                    # print("Updating a zoning request")
+
+            else:
+                # We don't know about it so create a new zoning request
+                # create a new instance
                 logger.info("**********************")
-                logger.info("Updating a zoning request")
-                logger.info("known_zon: " + str(known_zon))
-                logger.info(difference)
+                logger.info("Creating new Zoning Request from web scrape")
+                logger.info("case_number:" + zoning_case)
+                logger.info("cac: " + cac)
                 logger.info("**********************")
 
-                # print("Updating a zoning request")
+                plan_url = zoning_case_url
 
-        else:
-            # We don't know about it so create a new zoning request
-            # create a new instance
-            logger.info("**********************")
-            logger.info("Creating new Zoning Request from web scrape")
-            logger.info("case_number:" + zoning_case)
-            logger.info("cac: " + cac)
-            logger.info("**********************")
+                Zoning.objects.create(zpyear=scrape_year,
+                                      zpnum=scrape_num,
+                                      cac=cac,
+                                      status=status,
+                                      location=location,
+                                      received_by=contact,
+                                      plan_url=plan_url)
 
-            plan_url = zoning_case_url
+                # print("Creating new zoning request")
 
-            Zoning.objects.create(zpyear=scrape_year,
-                                  zpnum=scrape_num,
-                                  cac=cac,
-                                  status=status,
-                                  location=location,
-                                  received_by=contact,
-                                  plan_url=plan_url)
-
-            # print("Creating new zoning request")
+        except IndexError:
+            logger.info("IndexError when scraping this item.")
+            logger.info(info_row_tds[0].get_text())
 
 
 def admin_alternates(page_content):
