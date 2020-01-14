@@ -220,7 +220,7 @@ def zoning_requests(page_content):
         # If any of these variables are None, log it and move on.
         # Remarks come from the API
         # Status is from the web scrape
-        if not label or not location or not zoning_case or not cac or not status or not contact or not zoning_case_url:
+        if not label or not location or not zoning_case or not cac or not status or not contact:
             logger.info("********** Problem scraping this row **********")
             logger.info(str(info_row_tds))
             logger.info(str(status_row_tds))
