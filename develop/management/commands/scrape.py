@@ -120,7 +120,12 @@ def determine_if_known_case(known_cases, case_number, project_name, cac):
         total_score = 0
         case_number_score = fuzz.ratio(case_number, case.case_number)
         project_name_score = fuzz.ratio(project_name, case.project_name)
-        cac_score = fuzz.ratio(cac, case.cac)
+
+        # TCs don't use CAC
+        if cac:
+            cac_score = fuzz.ratio(cac, case.cac)
+        else:
+            cac_score = 0
 
         if case_number_score >= 90:
             total_score += 1
@@ -129,7 +134,6 @@ def determine_if_known_case(known_cases, case_number, project_name, cac):
         if cac_score >= 90:
             total_score += 1
 
-        # if total_score >= 2 and project_name_score > 50:
         if total_score >= 2 and case_number_score == 100:
             return case
 
@@ -193,20 +197,20 @@ def site_reviews(page_content):
                     not fields_are_same(known_sr_case.contact, contact) or
                     not fields_are_same(known_sr_case.contact_url, contact_url)
                 ):
-                        known_sr_case.case_url = case_url
-                        known_sr_case.project_name = project_name
-                        known_sr_case.cac = cac
-                        known_sr_case.status = status
-                        known_sr_case.contact = contact
-                        known_sr_case.contact_url = contact_url
+                    known_sr_case.case_url = case_url
+                    known_sr_case.project_name = project_name
+                    known_sr_case.cac = cac
+                    known_sr_case.status = status
+                    known_sr_case.contact = contact
+                    known_sr_case.contact_url = contact_url
 
-                        known_sr_case.save()
-                        logger.info("**********************")
-                        logger.info("Updating a site case (" + str(known_sr_case) + ")")
-                        logger.info("scrape case_number:" + case_number)
-                        logger.info("scrape project_name:" + project_name)
-                        logger.info("scrape cac: " + cac)
-                        logger.info("**********************")
+                    known_sr_case.save()
+                    logger.info("**********************")
+                    logger.info("Updating a site case (" + str(known_sr_case) + ")")
+                    logger.info("scrape case_number:" + case_number)
+                    logger.info("scrape project_name:" + project_name)
+                    logger.info("scrape cac: " + cac)
+                    logger.info("**********************")
 
             else:
                 # create a new instance
@@ -280,20 +284,20 @@ def admin_alternates(page_content):
                     not fields_are_same(known_aad_case.contact, contact) or
                     not fields_are_same(known_aad_case.contact_url, contact_url)
                 ):
-                        known_aad_case.case_url = case_url
-                        known_aad_case.project_name = project_name
-                        known_aad_case.cac = cac
-                        known_aad_case.status = status
-                        known_aad_case.contact = contact
-                        known_aad_case.contact_url = contact_url
+                    known_aad_case.case_url = case_url
+                    known_aad_case.project_name = project_name
+                    known_aad_case.cac = cac
+                    known_aad_case.status = status
+                    known_aad_case.contact = contact
+                    known_aad_case.contact_url = contact_url
 
-                        known_aad_case.save()
-                        logger.info("**********************")
-                        logger.info("Updating an AAD case (" + str(known_aad_case) + ")")
-                        logger.info("scrape case_number:" + case_number)
-                        logger.info("scrape project_name:" + project_name)
-                        logger.info("scrape cac: " + cac)
-                        logger.info("**********************")
+                    known_aad_case.save()
+                    logger.info("**********************")
+                    logger.info("Updating an AAD case (" + str(known_aad_case) + ")")
+                    logger.info("scrape case_number:" + case_number)
+                    logger.info("scrape project_name:" + project_name)
+                    logger.info("scrape cac: " + cac)
+                    logger.info("**********************")
 
             else:
                 # create a new instance
@@ -352,28 +356,7 @@ def text_changes_cases(page_content):
                 continue
 
             known_tc_cases = TextChangeCases.objects.all()
-
-            # go through all of them. Criteria of a match:
-            # 1. fuzz.ratio(case_number, sr_case.case_number) > 90
-            # 2. fuzz.ratio(project_name, sr_case.project_name) > 90
-            # both need to be true
-            known_tc_case = None
-
-            for tc_case in known_tc_cases:
-                total_score = 0
-                case_number_score = fuzz.ratio(case_number, tc_case.case_number)
-                project_name_score = fuzz.ratio(project_name, tc_case.project_name)
-
-                if case_number_score >= 90:
-                    total_score += 1
-                if project_name_score >= 90:
-                    total_score += 1
-
-                # tc_case is indeed the same as the scanned info
-                # if total_score >= 2 and project_name_score > 50:
-                if total_score == 2:
-                    known_tc_case = tc_case
-                    break
+            known_tc_case = determine_if_known_case(known_tc_cases, case_number, project_name, cac=None)
 
             # if known_tc_case was found, check for differences
             # if known_tc_case was not found, then we assume a new one was added
@@ -388,19 +371,18 @@ def text_changes_cases(page_content):
                     not fields_are_same(known_tc_case.contact, contact) or
                     not fields_are_same(known_tc_case.contact_url, contact_url)
                 ):
-                        known_tc_case.case_url = case_url
-                        known_tc_case.project_name = project_name
-                        known_tc_case.status = status
-                        known_tc_case.contact = contact
-                        known_tc_case.contact_url = contact_url
+                    known_tc_case.case_url = case_url
+                    known_tc_case.project_name = project_name
+                    known_tc_case.status = status
+                    known_tc_case.contact = contact
+                    known_tc_case.contact_url = contact_url
 
-                        known_tc_case.save()
-                        logger.info("**********************")
-                        logger.info("Updating a text change case (" + str(known_tc_case) + ")")
-                        logger.info("scrape case_number:" + case_number)
-                        logger.info("scrape project_name:" + project_name)
-                        logger.info("case,proj: " + str(case_number_score) + "," + str(project_name_score))
-                        logger.info("**********************")
+                    known_tc_case.save()
+                    logger.info("**********************")
+                    logger.info("Updating a text change case (" + str(known_tc_case) + ")")
+                    logger.info("scrape case_number:" + case_number)
+                    logger.info("scrape project_name:" + project_name)
+                    logger.info("**********************")
 
             else:
                 # create a new instance
@@ -423,8 +405,7 @@ def zoning_requests(page_content):
     zoning_tables = page_content.findAll("table")
 
     for zoning_table in zoning_tables:
-        zoning_tbody = zoning_table.find("tbody")
-        zoning_rows = zoning_tbody.findAll("tr")
+        zoning_rows = get_rows_in_table(zoning_table, "Zoning")
 
         for i in range(0, len(zoning_rows), 2):
             # First row is zoning_rows[i]
