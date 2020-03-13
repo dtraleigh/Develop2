@@ -120,8 +120,7 @@ def determine_if_known_case(known_cases, case_number, project_name, cac):
         total_score = 0
         case_number_score = fuzz.ratio(case_number, case.case_number)
         project_name_score = fuzz.ratio(project_name, case.project_name)
-        if cac:
-            cac_score = fuzz.ratio(cac, case.cac)
+        cac_score = fuzz.ratio(cac, case.cac)
 
         if case_number_score >= 90:
             total_score += 1
@@ -353,7 +352,28 @@ def text_changes_cases(page_content):
                 continue
 
             known_tc_cases = TextChangeCases.objects.all()
-            known_tc_case = determine_if_known_case(known_tc_cases, case_number, project_name, cac=None)
+
+            # go through all of them. Criteria of a match:
+            # 1. fuzz.ratio(case_number, sr_case.case_number) > 90
+            # 2. fuzz.ratio(project_name, sr_case.project_name) > 90
+            # both need to be true
+            known_tc_case = None
+
+            for tc_case in known_tc_cases:
+                total_score = 0
+                case_number_score = fuzz.ratio(case_number, tc_case.case_number)
+                project_name_score = fuzz.ratio(project_name, tc_case.project_name)
+
+                if case_number_score >= 90:
+                    total_score += 1
+                if project_name_score >= 90:
+                    total_score += 1
+
+                # tc_case is indeed the same as the scanned info
+                # if total_score >= 2 and project_name_score > 50:
+                if total_score == 2:
+                    known_tc_case = tc_case
+                    break
 
             # if known_tc_case was found, check for differences
             # if known_tc_case was not found, then we assume a new one was added
@@ -379,6 +399,7 @@ def text_changes_cases(page_content):
                         logger.info("Updating a text change case (" + str(known_tc_case) + ")")
                         logger.info("scrape case_number:" + case_number)
                         logger.info("scrape project_name:" + project_name)
+                        logger.info("case,proj: " + str(case_number_score) + "," + str(project_name_score))
                         logger.info("**********************")
 
             else:
