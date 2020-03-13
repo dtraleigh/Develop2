@@ -110,6 +110,33 @@ def get_case_url_from_row(row_tds):
         return ""
 
 
+def determine_if_known_case(known_cases, case_number, project_name, cac):
+    # Go through all of the cases. Criteria of a match:
+    # 1. fuzz.ratio(case_number, sr_case.case_number) > 90
+    # 2. fuzz.ratio(project_name, sr_case.project_name) > 90
+    # 3. fuzz.ratio(cac, sr_case.cac) > 90
+    # 2 of 3 need to be true
+    for case in known_cases:
+        total_score = 0
+        case_number_score = fuzz.ratio(case_number, case.case_number)
+        project_name_score = fuzz.ratio(project_name, case.project_name)
+        if cac:
+            cac_score = fuzz.ratio(cac, case.cac)
+
+        if case_number_score >= 90:
+            total_score += 1
+        if project_name_score >= 90:
+            total_score += 1
+        if cac_score >= 90:
+            total_score += 1
+
+        # if total_score >= 2 and project_name_score > 50:
+        if total_score >= 2 and case_number_score == 100:
+            return case
+
+    return None
+
+
 def site_reviews(page_content):
     # Site Review tables
     sr_tables = page_content.findAll("table")
@@ -151,32 +178,7 @@ def site_reviews(page_content):
                 continue
 
             known_sr_cases = SiteReviewCases.objects.all()
-
-            # go through all of them. Criteria of a match:
-            # 1. fuzz.ratio(case_number, sr_case.case_number) > 90
-            # 2. fuzz.ratio(project_name, sr_case.project_name) > 90
-            # 3. fuzz.ratio(cac, sr_case.cac) > 90
-            # 2 of 3 need to be true
-            known_sr_case = None
-
-            for sr_case in known_sr_cases:
-                total_score = 0
-                case_number_score = fuzz.ratio(case_number, sr_case.case_number)
-                project_name_score = fuzz.ratio(project_name, sr_case.project_name)
-                cac_score = fuzz.ratio(cac, sr_case.cac)
-
-                if case_number_score >= 90:
-                    total_score += 1
-                if project_name_score >= 90:
-                    total_score += 1
-                if cac_score >= 90:
-                    total_score += 1
-
-                # sr_case is indeed the same as the scanned info
-                # if total_score >= 2 and project_name_score > 50:
-                if total_score >= 2 and case_number_score == 100:
-                    known_sr_case = sr_case
-                    break
+            known_sr_case = determine_if_known_case(known_sr_cases, case_number, project_name, cac)
 
             # if known_sr_case was found, check for differences
             # if known_sr_case was not found, then we assume a new one was added
@@ -205,7 +207,6 @@ def site_reviews(page_content):
                         logger.info("scrape case_number:" + case_number)
                         logger.info("scrape project_name:" + project_name)
                         logger.info("scrape cac: " + cac)
-                        logger.info("case,proj,cac score: " + str(case_number_score) + "," + str(project_name_score) + "," + str(cac_score))
                         logger.info("**********************")
 
             else:
@@ -263,62 +264,36 @@ def admin_alternates(page_content):
 
                 continue
 
-            known_tc_cases = AdministrativeAlternates.objects.all()
-
-            # go through all of them. Criteria of a match:
-            # 1. fuzz.ratio(case_number, sr_case.case_number) > 90
-            # 2. fuzz.ratio(project_name, sr_case.project_name) > 90
-            # 3. fuzz.ratio(cac, sr_case.cac) > 90
-            # 2 of 3 need to be true
-            known_tc_case = None
-
-            for aad_case in known_tc_cases:
-                total_score = 0
-                case_number_score = fuzz.ratio(case_number, aad_case.case_number)
-                project_name_score = fuzz.ratio(project_name, aad_case.project_name)
-                cac_score = fuzz.ratio(cac, aad_case.cac)
-
-                if case_number_score >= 90:
-                    total_score += 1
-                if project_name_score >= 90:
-                    total_score += 1
-                if cac_score >= 90:
-                    total_score += 1
-
-                # aad_case is indeed the same as the scanned info
-                # if total_score >= 2 and project_name_score > 50:
-                if total_score >= 2 and case_number_score == 100:
-                    known_tc_case = aad_case
-                    break
+            known_aad_cases = AdministrativeAlternates.objects.all()
+            known_aad_case = determine_if_known_case(known_aad_cases, case_number, project_name, cac)
 
             # if known_tc_case was found, check for differences
             # if known_tc_case was not found, then we assume a new one was added
             # need to create
-            if known_tc_case:
+            if known_aad_case:
                 # Check for difference between known_tc_case and the variables
                 # Assume that the aad_case number doesn't change.
                 if (
-                    not fields_are_same(known_tc_case.case_url, case_url) or
-                    not fields_are_same(known_tc_case.project_name, project_name) or
-                    not fields_are_same(known_tc_case.cac, cac) or
-                    not fields_are_same(known_tc_case.status, status) or
-                    not fields_are_same(known_tc_case.contact, contact) or
-                    not fields_are_same(known_tc_case.contact_url, contact_url)
+                    not fields_are_same(known_aad_case.case_url, case_url) or
+                    not fields_are_same(known_aad_case.project_name, project_name) or
+                    not fields_are_same(known_aad_case.cac, cac) or
+                    not fields_are_same(known_aad_case.status, status) or
+                    not fields_are_same(known_aad_case.contact, contact) or
+                    not fields_are_same(known_aad_case.contact_url, contact_url)
                 ):
-                        known_tc_case.case_url = case_url
-                        known_tc_case.project_name = project_name
-                        known_tc_case.cac = cac
-                        known_tc_case.status = status
-                        known_tc_case.contact = contact
-                        known_tc_case.contact_url = contact_url
+                        known_aad_case.case_url = case_url
+                        known_aad_case.project_name = project_name
+                        known_aad_case.cac = cac
+                        known_aad_case.status = status
+                        known_aad_case.contact = contact
+                        known_aad_case.contact_url = contact_url
 
-                        known_tc_case.save()
+                        known_aad_case.save()
                         logger.info("**********************")
-                        logger.info("Updating an AAD case (" + str(known_tc_case) + ")")
+                        logger.info("Updating an AAD case (" + str(known_aad_case) + ")")
                         logger.info("scrape case_number:" + case_number)
                         logger.info("scrape project_name:" + project_name)
                         logger.info("scrape cac: " + cac)
-                        logger.info("case,proj,cac score: " + str(case_number_score) + "," + str(project_name_score) + "," + str(cac_score))
                         logger.info("**********************")
 
             else:
@@ -378,28 +353,7 @@ def text_changes_cases(page_content):
                 continue
 
             known_tc_cases = TextChangeCases.objects.all()
-
-            # go through all of them. Criteria of a match:
-            # 1. fuzz.ratio(case_number, sr_case.case_number) > 90
-            # 2. fuzz.ratio(project_name, sr_case.project_name) > 90
-            # both need to be true
-            known_tc_case = None
-
-            for tc_case in known_tc_cases:
-                total_score = 0
-                case_number_score = fuzz.ratio(case_number, tc_case.case_number)
-                project_name_score = fuzz.ratio(project_name, tc_case.project_name)
-
-                if case_number_score >= 90:
-                    total_score += 1
-                if project_name_score >= 90:
-                    total_score += 1
-
-                # tc_case is indeed the same as the scanned info
-                # if total_score >= 2 and project_name_score > 50:
-                if total_score == 2:
-                    known_tc_case = tc_case
-                    break
+            known_tc_case = determine_if_known_case(known_tc_cases, case_number, project_name, cac=None)
 
             # if known_tc_case was found, check for differences
             # if known_tc_case was not found, then we assume a new one was added
@@ -425,7 +379,6 @@ def text_changes_cases(page_content):
                         logger.info("Updating a text change case (" + str(known_tc_case) + ")")
                         logger.info("scrape case_number:" + case_number)
                         logger.info("scrape project_name:" + project_name)
-                        logger.info("case,proj: " + str(case_number_score) + "," + str(project_name_score))
                         logger.info("**********************")
 
             else:
