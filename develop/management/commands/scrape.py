@@ -1,5 +1,5 @@
 # ///
-# This command is used to query the API, compare the results with the DB and make appropriate changes.
+# This command is used to scrape the city's website, compare the results with the DB and make appropriate changes.
 # \\\
 import logging, requests, sys
 from bs4 import BeautifulSoup
@@ -324,9 +324,6 @@ def text_changes_cases(page_content):
     for tc_table in tc_tables:
         tc_rows = get_rows_in_table(tc_table, "TCC")
 
-        # For each row, get the values then check if we already know about this item
-        # If we do not, then add it to the DB
-        # If we do, check for differences and update if
         for tc in tc_rows:
             row_tds = tc.findAll("td")
 
