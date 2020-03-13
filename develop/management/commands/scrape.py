@@ -90,6 +90,26 @@ def get_rows_in_table(table, page):
             logger.info("rows: " + table_rows)
 
 
+def get_case_number_from_row(row_tds):
+    try:
+        # If the case number is a link:
+        case_number = row_tds[0].find("a").string
+        return case_number
+    except:
+        # in rare cases the case number is not a link
+        return row_tds[0].string
+
+
+def get_case_url_from_row(row_tds):
+    try:
+        # If the case number is a link:
+        case_url = row_tds[0].find("a")["href"].strip().replace(" ", "%20")
+        return case_url
+    except:
+        # in rare cases the case number is not a link
+        return ""
+
+
 def site_reviews(page_content):
     # Site Review tables
     sr_tables = page_content.findAll("table")
@@ -103,14 +123,8 @@ def site_reviews(page_content):
         for sr_row in sr_rows:
             row_tds = sr_row.findAll("td")
 
-            try:
-                # If the case number is a link:
-                case_number = row_tds[0].find("a").string
-                case_url = row_tds[0].find("a")["href"].strip().replace(" ", "%20")
-            except:
-                # in rare cases the case number is not a link
-                case_number = row_tds[0].string
-                case_url = ""
+            case_number = get_case_number_from_row(row_tds)
+            case_url = get_case_url_from_row(row_tds)
 
             project_name = row_tds[1].get_text().strip()
             cac = row_tds[2].get_text().strip()
@@ -225,14 +239,8 @@ def admin_alternates(page_content):
         for aads_row in aads_rows:
             row_tds = aads_row.findAll("td")
 
-            try:
-                # If the case number is a link:
-                case_number = row_tds[0].find("a").string
-                case_url = row_tds[0].find("a")["href"].strip().replace(" ", "%20")
-            except:
-                # in rare cases the case number is not a link
-                case_number = row_tds[0].string
-                case_url = ""
+            case_number = get_case_number_from_row(row_tds)
+            case_url = get_case_url_from_row(row_tds)
 
             project_name = row_tds[1].get_text().strip()
             cac = row_tds[2].get_text().strip()
@@ -344,14 +352,8 @@ def text_changes_cases(page_content):
         for tc in tc_rows:
             row_tds = tc.findAll("td")
 
-            try:
-                # If the case number is a link:
-                case_number = row_tds[0].find("a").string
-                case_url = row_tds[0].find("a")["href"].strip().replace(" ", "%20")
-            except:
-                # in rare cases the case number is not a link
-                case_number = row_tds[0].string
-                case_url = ""
+            case_number = get_case_number_from_row(row_tds)
+            case_url = get_case_url_from_row(row_tds)
 
             project_name = row_tds[1].get_text().strip()
             status = row_tds[2].get_text().strip()
