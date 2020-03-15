@@ -134,27 +134,23 @@ class Command(BaseCommand):
                                 n = datetime.now()
                                 logger.info(n.strftime("%H:%M %m-%d-%y") + ": AttributeError. cac.name: " + str(cac) + ", item.cac: " + str(item.cac))
 
+                    # Post to discourse community
+                    if covered_items and subscriber.is_bot:
+                        for item in covered_items:
+                            create_new_discourse_post(subscriber, item)
+
                     # Send emails if the subscriber is not a bot
                     if covered_items and not subscriber.is_bot:
                         message = create_email_message(covered_items)
 
                         email_from = "develop@dtraleigh.com"
 
-                        try:
-                            send_mail(
-                                subject,
-                                message,
-                                email_from,
-                                [subscriber.email],
-                                fail_silently=False,
-                            )
-                            n = datetime.now()
-                            logger.info("Email sent at " + n.strftime("%H:%M %m-%d-%y"))
-                        except:
-                            n = datetime.now()
-                            logger.info("Problem sending email at " + n.strftime("%H:%M %m-%d-%y"))
-
-                    # Post to discourse community
-                    if covered_items and subscriber.is_bot:
-                        for item in covered_items:
-                            create_new_discourse_post(subscriber, item)
+                        send_mail(
+                            subject,
+                            message,
+                            email_from,
+                            [subscriber.email],
+                            fail_silently=False,
+                        )
+                        n = datetime.now()
+                        logger.info("Email sent at " + n.strftime("%H:%M %m-%d-%y"))

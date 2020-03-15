@@ -67,9 +67,11 @@ def get_all_ids(url):
         return json_object_ids["objectIds"]
     except KeyError:
         n = datetime.now()
-        logger.info(n.strftime("%H:%M %m-%d-%y") + ": KeyError: 'objectIds'")
-        logger.info("json_object_ids")
-        logger.info(json_object_ids)
+        message = n.strftime("%H:%M %m-%d-%y") + ": KeyError: 'objectIds'\n"
+        message += "json_object_ids\n"
+        message += json_object_ids
+        logger.info(message)
+        send_email_notice(message)
 
 
 def get_dev_range_json(url):
@@ -169,25 +171,20 @@ def api_object_is_different(known_object, item_json):
     return False
 
 
-def send_email_test():
-    subject = "This is a test from develop2"
-    message = "This is the message from develop2"
+def send_email_notice(message):
+    subject = "Message from Develop."
     email_from = "develop@dtraleigh.com"
-    all_active_subscribers = Subscriber.objects.filter(send_emails=True)
+    admins = Subscriber.objects.filter(is_bot=False)
 
-    try:
-        send_mail(
-            subject,
-            message,
-            email_from,
-            [sub.email for sub in all_active_subscribers],
-            fail_silently=False,
-        )
-        n = datetime.now()
-        logger.info("Email sent at " + n.strftime("%H:%M %m-%d-%y"))
-    except:
-        n = datetime.now()
-        logger.info("Problem sending email at " + n.strftime("%H:%M %m-%d-%y"))
+    send_mail(
+        subject,
+        message,
+        email_from,
+        [sub.email for sub in admins],
+        fail_silently=False,
+    )
+    n = datetime.now()
+    logger.info("Email sent at " + n.strftime("%H:%M %m-%d-%y"))
 
 
 def create_email_message(items_that_changed):
