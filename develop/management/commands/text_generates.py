@@ -135,7 +135,7 @@ def difference_email_output(item):
                 # If a date field
                 if field.get_internal_type() == "BigIntegerField":
                     output += "    " + field.verbose_name + " changed from \"" + item_most_recent_field_value + \
-                              "\" to \"" + item_old_field_value + "\"\n"
+                              "\" to \"" + str(item_old_field_value) + "\"\n"
                 # Everything else
                 else:
                     if isinstance(item, SiteReviewCases) and field.verbose_name == "Status":
