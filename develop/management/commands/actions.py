@@ -69,9 +69,10 @@ def get_all_ids(url):
         n = datetime.now()
         message = n.strftime("%H:%M %m-%d-%y") + ": KeyError: 'objectIds'\n"
         message += "json_object_ids\n"
-        message += json_object_ids
+        message += str(json_object_ids)
         logger.info(message)
         send_email_notice(message)
+        return None
 
 
 def get_dev_range_json(url):
