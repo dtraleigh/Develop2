@@ -452,7 +452,7 @@ def zoning_requests(page_content):
 
             # Break up zoning_case
             scrape_num = zoning_case.split("-")[1]
-            scrape_year = "20" + zoning_case.split("-")[2]
+            scrape_year = "20" + zoning_case.split("-")[2][:2]
 
             # First check if we already have this zoning request
             if Zoning.objects.filter(zpnum=int(scrape_num), zpyear=int(scrape_year)).exists():
