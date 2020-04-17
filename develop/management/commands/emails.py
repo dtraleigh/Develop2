@@ -8,7 +8,7 @@ from django.conf import settings
 from django.utils import timezone
 
 from .text_generates import *
-from .actions import get_status_legend_text
+from .actions import *
 
 logger = logging.getLogger("django")
 
