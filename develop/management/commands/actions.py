@@ -9,6 +9,7 @@ from django.utils import timezone
 from django.conf import settings
 
 from .text_generates import *
+from .emails import *
 
 logger = logging.getLogger("django")
 
@@ -170,22 +171,6 @@ def api_object_is_different(known_object, item_json):
 
     # Returning false here basically means no difference was found
     return False
-
-
-def send_email_notice(message):
-    subject = "Message from Develop."
-    email_from = "develop@dtraleigh.com"
-    admins = Subscriber.objects.filter(is_bot=False)
-
-    send_mail(
-        subject,
-        message,
-        email_from,
-        [sub.email for sub in admins],
-        fail_silently=False,
-    )
-    n = datetime.now()
-    logger.info("Email sent at " + n.strftime("%H:%M %m-%d-%y"))
 
 
 def create_email_message(items_that_changed):
