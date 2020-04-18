@@ -1,13 +1,11 @@
-# ///
-# This command is used to scrape the city's website, compare the results with the DB and make appropriate changes.
-# \\\
-import logging, requests, sys
+import logging
+import requests
+import sys
 from bs4 import BeautifulSoup
 from fuzzywuzzy import fuzz
 from datetime import datetime
 
 from django.core.management.base import BaseCommand
-from django.core.mail import send_mail
 
 from develop.management.commands.actions import *
 from develop.models import *

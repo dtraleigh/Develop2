@@ -1,17 +1,17 @@
 # ///
 # This command is used to notify subscribers of changes in the last hour
 # \\\
-import logging, pytz, requests
+import logging
 from datetime import datetime
 from datetime import timedelta
 
-from django.utils import timezone
-from django.core.management.base import BaseCommand
-from django.core.mail import send_mail
 from django.conf import settings
+from django.core.mail import send_mail
+from django.core.management.base import BaseCommand
+from django.utils import timezone
 
-from .actions import create_email_message, create_new_discourse_post
 from develop.models import *
+from .actions import create_email_message, create_new_discourse_post
 
 logger = logging.getLogger("django")
 
@@ -132,7 +132,8 @@ class Command(BaseCommand):
 
                             except AttributeError:
                                 n = datetime.now()
-                                logger.info(n.strftime("%H:%M %m-%d-%y") + ": AttributeError. cac.name: " + str(cac) + ", item.cac: " + str(item.cac))
+                                logger.info(n.strftime("%H:%M %m-%d-%y") + ": AttributeError. cac.name: " + str(cac) +
+                                            ", item.cac: " + str(item.cac))
 
                     # Post to discourse community
                     if covered_items and subscriber.is_bot:

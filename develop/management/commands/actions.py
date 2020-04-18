@@ -1,4 +1,8 @@
-import logging, json, requests, pytz
+import logging
+import json
+import requests
+import pytz
+
 from bs4 import BeautifulSoup
 from datetime import datetime
 from datetime import timedelta

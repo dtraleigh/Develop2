@@ -1,9 +1,12 @@
-from develop.models import *
+import logging
+import re
+import requests
+from datetime import datetime
+
+from bs4 import BeautifulSoup
 from django.conf import settings
 
-from datetime import datetime
-import logging, requests, re
-from bs4 import BeautifulSoup
+from develop.models import *
 
 logger = logging.getLogger("django")
 
@@ -28,7 +31,7 @@ def get_status_legend_dict():
         status_dict = {}
 
         for li in status_ul.findAll('li'):
-            status_dict[re.search('\(([^)]+)', li.get_text()).group(1)] = li.get_text()
+            status_dict[re.search("\(([^)]+)", li.get_text()).group(1)] = li.get_text()
 
         return status_dict
 

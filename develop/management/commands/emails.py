@@ -2,11 +2,11 @@ import logging
 from datetime import datetime
 from datetime import timedelta
 
-from develop.models import *
 from django.core.mail import send_mail
 from django.conf import settings
 from django.utils import timezone
 
+from develop.models import *
 from .text_generates import *
 from .actions import *
 
