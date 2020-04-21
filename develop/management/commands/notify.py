@@ -11,7 +11,9 @@ from django.core.management.base import BaseCommand
 from django.utils import timezone
 
 from develop.models import *
+from .location import *
 from .actions import create_email_message, create_new_discourse_post
+from .emails import *
 
 logger = logging.getLogger("django")
 
@@ -102,38 +104,12 @@ class Command(BaseCommand):
                 all_active_subscribers = Subscriber.objects.filter(send_emails=True)
 
                 for subscriber in all_active_subscribers:
-                    # Get list of CACs we need to worry about
-                    covered_cacs_total_extend = []
-                    cover_areas_for_this_user = [a for a in subscriber.cover_areas.all()]
-                    for area in cover_areas_for_this_user:
-                        cacs = [b for b in area.CACs.all()]
-                        covered_cacs_total_extend.extend(cacs)
+                    # Get list of CACs we need to worry about for this subscriber
+                    covered_CACs_total = get_subscribers_covered_CACs(subscriber)
 
-                    covered_cacs_total = list(set(covered_cacs_total_extend))
-
-                    covered_items = []
-                    for item in everything_that_changed:
-                        # append to covered_items things from only cacs that the user is covering plus None
-                        # Look at cac_override first then cac
-                        if isinstance(item, TextChangeCases):
-                            covered_items.append(item)
-                        else:
-                            try:
-                                if item.cac is None and item.cac_override is None:
-                                    covered_items.append(item)
-                                elif item.cac_override:
-                                    for cac in covered_cacs_total:
-                                        if cac.name.lower() in item.cac_override.lower():
-                                            covered_items.append(item)
-                                else:
-                                    for cac in covered_cacs_total:
-                                        if cac.name.lower() in item.cac.lower():
-                                            covered_items.append(item)
-
-                            except AttributeError:
-                                n = datetime.now()
-                                logger.info(n.strftime("%H:%M %m-%d-%y") + ": AttributeError. cac.name: " + str(cac) +
-                                            ", item.cac: " + str(item.cac))
+                    # For this subscriber and list everything_that_changed, get items that changed that
+                    # this subscriber is covering
+                    covered_items = get_subscribers_covered_changed_items(everything_that_changed, covered_CACs_total)
 
                     # Post to discourse community
                     if covered_items and subscriber.is_bot:
@@ -143,15 +119,8 @@ class Command(BaseCommand):
                     # Send emails if the subscriber is not a bot
                     if covered_items and not subscriber.is_bot:
                         message = create_email_message(covered_items)
+                        email_to = [subscriber.email]
+                        send_email_notice(message, email_to)
 
-                        email_from = "develop@dtraleigh.com"
-
-                        send_mail(
-                            subject,
-                            message,
-                            email_from,
-                            [subscriber.email],
-                            fail_silently=False,
-                        )
                         n = datetime.now()
                         logger.info("Email sent at " + n.strftime("%H:%M %m-%d-%y"))

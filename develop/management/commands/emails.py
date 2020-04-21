@@ -13,16 +13,15 @@ from .actions import *
 logger = logging.getLogger("django")
 
 
-def send_email_notice(message):
+def send_email_notice(message, email_to):
     subject = "Message from Develop."
     email_from = "develop@dtraleigh.com"
-    admins = Subscriber.objects.filter(is_bot=False)
 
     send_mail(
         subject,
         message,
         email_from,
-        [sub.email for sub in admins],
+        email_to,
         fail_silently=False,
     )
     n = datetime.now()
