@@ -1,0 +1,20 @@
+INFO: Open of `wake/Corporate_Limits/Corporate_Limits.shp'
+      using driver `ESRI Shapefile' successful.
+
+Layer name: Corporate_Limits
+Geometry: Polygon
+Feature Count: 2088
+Extent: (-78.969002, 35.529802) - (-78.260902, 36.011916)
+Layer SRS WKT:
+GEOGCS["GCS_WGS_1984",
+    DATUM["WGS_1984",
+        SPHEROID["WGS_84",6378137,298.257223563]],
+    PRIMEM["Greenwich",0],
+    UNIT["Degree",0.017453292519943295]]
+OBJECTID: Integer (7.0)
+SHORT_NAME: String (3.0)
+LONG_NAME: String (13.0)
+ORDINANCE_: String (18.0)
+EFFECTIVE_: String (24.0)
+SHAPEAREA: Real (24.15)
+SHAPELEN: Real (24.15)
