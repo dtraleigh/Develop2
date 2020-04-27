@@ -91,7 +91,7 @@ class Development(models.Model):
         verbose_name = "Development"
 
     def __str__(self):
-        return u"%s - %s (%s)" % (self.plan_name, self.devplan_id, self.submitted_yr)
+        return u"Dev - %s - %s (%s)" % (self.plan_name, self.devplan_id, self.submitted_yr)
 
 
 class SiteReviewCases(models.Model):
@@ -112,7 +112,7 @@ class SiteReviewCases(models.Model):
         verbose_name = "Site Review Case"
 
     def __str__(self):
-        return u"%s - %s (%s)" % (self.case_number, self.project_name, self.cac)
+        return u"SR - %s - %s (%s)" % (self.case_number, self.project_name, self.cac)
 
 
 class Zoning(models.Model):
@@ -151,7 +151,7 @@ class Zoning(models.Model):
         verbose_name = "Zoning Request"
 
     def __str__(self):
-        return u"%s (%s)" % (self.zpnum, self.zpyear)
+        return u"Zone - %s (%s)" % (self.zpnum, self.zpyear)
 
 
 class AdministrativeAlternates(models.Model):
@@ -173,7 +173,7 @@ class AdministrativeAlternates(models.Model):
         verbose_name = "Administrative Alternate Request"
 
     def __str__(self):
-        return u"%s - %s (%s)" % (self.case_number, self.project_name, self.cac)
+        return u"AAR - %s - %s (%s)" % (self.case_number, self.project_name, self.cac)
 
 
 class TextChangeCases(models.Model):
@@ -192,4 +192,4 @@ class TextChangeCases(models.Model):
         verbose_name = "Text Change Case"
 
     def __str__(self):
-        return u"%s - %s" % (self.case_number, self.project_name)
+        return u"TCC - %s - %s" % (self.case_number, self.project_name)

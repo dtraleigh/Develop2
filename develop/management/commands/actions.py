@@ -76,8 +76,7 @@ def get_all_ids(url):
         message += "KeyError with variable json_object_ids in get_all_ids()\n"
         message += str(json_object_ids)
         logger.info(message)
-        admins = Subscriber.objects.filter(is_bot=False)
-        send_email_notice(message, [sub.email for sub in admins])
+        send_email_notice(message, email_admins())
         return None
 
 

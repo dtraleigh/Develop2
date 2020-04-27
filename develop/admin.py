@@ -5,6 +5,24 @@ from django.contrib import admin
 from develop.models import *
 
 from simple_history.admin import SimpleHistoryAdmin
+from django.contrib.admin import ModelAdmin, SimpleListFilter
+
+
+class CACStatusFilter(SimpleListFilter):
+    title = 'CAC status'
+    parameter_name = 'items'
+
+    def lookups(self, request, model_admin):
+        return [
+            ('has_cac', 'CAC Assigned'),
+            ('no_cac', 'No CAC Assigned'),
+        ]
+
+    def queryset(self, request, queryset):
+        if self.value() == 'has_cac':
+            return Development.objects.filter(cac=None, cac_override=None)
+        if self.value():
+            return Development.objects.filter(cac=None, cac_override=None)
 
 
 class ControlAdmin(admin.ModelAdmin):
@@ -27,6 +45,7 @@ class DevelopmentsAdmin(SimpleHistoryAdmin):
     list_display = ("OBJECTID", "devplan_id", "updated_date", "submitted_yr", "status", "major_street", "cac", "cac_override",
                     "plan_name", "plan_number", "modified_date", "created_date")
     history_list_display = ["status"]
+    list_filter = (CACStatusFilter,)
 
     def updated_date(self, obj):
         if obj.updated:

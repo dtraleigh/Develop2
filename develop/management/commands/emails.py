@@ -13,6 +13,11 @@ from .actions import *
 logger = logging.getLogger("django")
 
 
+def email_admins():
+    admins = Subscriber.objects.filter(is_bot=False)
+    return [sub.email for sub in admins]
+
+
 def send_email_notice(message, email_to):
     subject = "Message from Develop."
     email_from = "develop@dtraleigh.com"
