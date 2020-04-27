@@ -1,6 +1,7 @@
 import logging
 
 from .actions import *
+from .location import *
 from develop.models import *
 
 logger = logging.getLogger("django")
@@ -107,6 +108,12 @@ def development_api_scan():
 
                         # If we don't know about it, we need to add it
                         except Development.DoesNotExist:
+                            # cac might be None so let's try and figure it out
+                            if not dev_info_from_json["cac"]:
+                                cac_override = cac_lookup(dev_info_from_json["major_street"])
+                            else:
+                                cac_override = None
+
                             Development.objects.create(OBJECTID=dev_info_from_json["OBJECTID"],
                                                        devplan_id=dev_info_from_json["devplan_id"],
                                                        submitted=dev_info_from_json["submitted"],
@@ -121,6 +128,7 @@ def development_api_scan():
                                                        acreage=dev_info_from_json["acreage"],
                                                        major_street=dev_info_from_json["major_street"],
                                                        cac=dev_info_from_json["cac"],
+                                                       cac_override=cac_override,
                                                        engineer=dev_info_from_json["engineer"],
                                                        engineer_phone=dev_info_from_json["engineer_phone"],
                                                        developer=dev_info_from_json["developer"],
@@ -206,6 +214,12 @@ def zoning_api_scan():
 
                 # If we don't know about it, we need to add it
                 except Zoning.DoesNotExist:
+                    # cac might be None so let's try and figure it out
+                    if not zon["advisory_committee_areas"]:
+                        cac_override = cac_lookup(zon["location"])
+                    else:
+                        cac_override = None
+
                     Zoning.objects.create(OBJECTID=zon["OBJECTID"],
                                           zpyear=zon["zpyear"],
                                           zpnum=zon["zpnum"],
@@ -225,6 +239,7 @@ def zoning_api_scan():
                                           last_revised=zon["last_revised"],
                                           drain_basin=zon["drain_basin"],
                                           cac=zon["advisory_committee_areas"],
+                                          cac_override=cac_override,
                                           comprehensive_plan_districts=zon["comprehensive_plan_districts"],
                                           GlobalID=zon["GlobalID"],
                                           CreationDate=zon["CreationDate"],

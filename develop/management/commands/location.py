@@ -1,7 +1,11 @@
 import logging
 from datetime import datetime
+from geopy.geocoders import Nominatim
 
+from django.contrib.gis.geos import Point
 from develop.models import *
+from cac.models import CitizenAdvisoryCouncil
+from wake.models import WakeCorporate
 
 logger = logging.getLogger("django")
 
@@ -48,3 +52,69 @@ def get_subscribers_covered_changed_items(items_that_changed, covered_CACs_total
                 n = datetime.now()
                 logger.info(n.strftime("%H:%M %m-%d-%y") + ": AttributeError. cac.name: " + str(cac) +
                             ", item.cac: " + str(item.cac))
+
+
+def cac_lookup(address):
+    locator = Nominatim(user_agent="myGeocoder")
+
+    try:
+        if address:
+            address = clean_address(address)
+            location = locator.geocode(address)
+
+            cac = get_cac_location(location.latitude, location.longitude)
+
+            return cac.name
+        else:
+            n = datetime.now()
+            logger.info(n.strftime("%H:%M %m-%d-%y") + ": Newly added item does not have an address.")
+            return None
+    except AttributeError:
+        n = datetime.now()
+        logger.info(n.strftime("%H:%M %m-%d-%y") + "Unable to acquire position for ", address)
+
+    return None
+
+
+def clean_address(address):
+    """
+    We need to clean the addresses a bit.
+    Scenario 1: "S West St" needs to be "South West St"
+    Scenario 2: "200 S West St" needs to be "200 South west St"
+    Scenario 3: Need to add city, state, and country
+    """
+    address_parts = address.split()
+
+    for i, part in enumerate(address_parts):
+        if part.lower() == "s":
+            address_parts[i] = "south"
+        elif part.lower() == "n":
+            address_parts[i] = "north"
+        elif part.lower() == "w":
+            address_parts[i] = "west"
+        elif part.lower() == "e":
+            address_parts[i] = "east"
+
+    return " ".join(address_parts) + ", raleigh NC USA"
+
+
+def get_wake_location(lat, lon):
+    """
+    Take in a lat and lon and check which muni it is in the wake app
+    """
+    pnt = Point(lon, lat)
+    try:
+        return WakeCorporate.objects.get(geom__intersects=pnt)
+    except:
+        return None
+
+
+def get_cac_location(lat, lon):
+    """
+    Take in a lat and lon and check which cac it is in the cac app
+    """
+    pnt = Point(lon, lat)
+    try:
+        return CitizenAdvisoryCouncil.objects.get(geom__intersects=pnt)
+    except:
+        return None
