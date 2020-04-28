@@ -94,12 +94,6 @@ def get_status_text(status):
     return status
 
 
-def get_cac_text(item):
-    if item.cac_override:
-        return str(item.cac_override)
-    return str(item.cac)
-
-
 def get_field_value(tracked_item, model_field):
     try:
         # If a date, convert to human readable
@@ -160,7 +154,6 @@ def get_new_dev_text(new_dev, discourse):
         new_devs_message += "    Plan type: " + str(new_dev.plan_type) + "\n"
         new_devs_message += "    Status: " + str(new_dev.status) + "\n"
         new_devs_message += "    Major Street: " + str(new_dev.major_street) + "\n"
-        new_devs_message += "    CAC: " + get_cac_text(new_dev) + "\n"
         new_devs_message += "    URL: " + str(new_dev.planurl) + "\n\n"
     if isinstance(new_dev, SiteReviewCases):
         new_devs_message = "***" + str(new_dev.project_name) + ", " + str(new_dev.case_number) + "***\n"
@@ -170,7 +163,6 @@ def get_new_dev_text(new_dev, discourse):
             new_devs_message += "    Status: " + get_status_text(new_dev.status) + "\n"
         else:
             new_devs_message += "    Status: " + str(new_dev.status) + str(discourse) + "\n"
-        new_devs_message += "    CAC: " + get_cac_text(new_dev) + "\n"
         new_devs_message += "    URL: " + str(new_dev.case_url) + "\n\n"
 
     return new_devs_message
@@ -184,7 +176,6 @@ def get_updated_dev_text(updated_dev, discourse):
             updated_devs_message += "[Develop - API]\n"
         updated_devs_message += "    Updated: " + string_output_unix_datetime(updated_dev.updated) + "\n"
         updated_devs_message += "    Status: " + str(updated_dev.status) + "\n"
-        updated_devs_message += "    CAC: " + get_cac_text(updated_dev) + "\n"
         updated_devs_message += "    URL: " + str(updated_dev.planurl) + "\n\n"
         updated_devs_message += "  *UPDATES*\n"
         updated_devs_message += difference_email_output(updated_dev)
@@ -197,7 +188,6 @@ def get_updated_dev_text(updated_dev, discourse):
             updated_devs_message += "    Status: " + get_status_text(updated_dev.status) + "\n"
         else:
             updated_devs_message += "    Status: " + str(updated_dev.status) + str(discourse) + "\n"
-        updated_devs_message += "    CAC: " + get_cac_text(updated_dev) + "\n"
         updated_devs_message += "    URL: " + str(updated_dev.case_url) + "\n\n"
         updated_devs_message += "  *UPDATES*\n"
         updated_devs_message += difference_email_output(updated_dev)
@@ -218,8 +208,6 @@ def get_new_zon_text(new_zon):
     else:
         new_zon_message += "    Plan URL: NA\n"
 
-    new_zon_message += "    CAC: " + get_cac_text(new_zon) + "\n\n"
-
     return new_zon_message
 
 
@@ -234,7 +222,6 @@ def get_updated_zon_text(updated_zon):
     else:
         updated_zon_message += "    Plan URL: NA\n"
 
-    updated_zon_message += "    CAC: " + get_cac_text(updated_zon) + "\n\n"
     updated_zon_message += "  *UPDATES*\n"
     updated_zon_message += difference_email_output(updated_zon)
 
@@ -251,7 +238,6 @@ def get_new_aad_text(new_aad, discourse):
         new_aad_message += "    Status: " + get_status_text(new_aad.status) + "\n"
     else:
         new_aad_message += "    Status: " + str(new_aad.status) + str(discourse) + "\n"
-    new_aad_message += "    CAC: " + get_cac_text(new_aad) + "\n"
     new_aad_message += "    URL: " + str(new_aad.case_url) + "\n\n"
 
     return new_aad_message
@@ -266,7 +252,6 @@ def get_updated_aad_text(updated_aad, discourse):
         updated_aad_message += "    Status: " + get_status_text(updated_aad.status) + "\n"
     else:
         updated_aad_message += "    Status: " + str(updated_aad.status) + str(discourse) + "\n"
-    updated_aad_message += "    CAC: " + get_cac_text(updated_aad) + "\n"
     updated_aad_message += "    URL: " + str(updated_aad.case_url) + "\n\n"
     updated_aad_message += "  *UPDATES*\n"
     updated_aad_message += difference_email_output(updated_aad)
