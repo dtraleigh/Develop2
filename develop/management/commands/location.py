@@ -4,8 +4,6 @@ from geopy.geocoders import Nominatim
 
 from django.contrib.gis.geos import Point
 from develop.models import *
-from cac.models import CitizenAdvisoryCouncil
-from wake.models import WakeCorporate
 
 logger = logging.getLogger("django")
 
