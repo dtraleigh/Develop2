@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.gis.db import models
 
 from simple_history.models import HistoricalRecords
 
@@ -9,19 +10,69 @@ class Control(models.Model):
     notify = models.BooleanField(default=True)
 
 
-class CAC(models.Model):
-    name = models.CharField(blank=True, max_length=300, null=True, verbose_name="Name")
-
-    class Meta:
-        verbose_name = "Citizen Advisory Council"
+# class CAC(models.Model):
+#     name = models.CharField(blank=True, max_length=300, null=True, verbose_name="Name")
+#
+#     class Meta:
+#         verbose_name = "Citizen Advisory Council"
+#
+#     def __str__(self):
+#         return u"%s" % self.name
+class CitizenAdvisoryCouncil(models.Model):
+    objectid = models.IntegerField()
+    cac = models.CharField(max_length=17)
+    name = models.CharField(max_length=17)
+    cac_code = models.CharField(max_length=1)
+    shape_leng = models.FloatField()
+    shape_area = models.FloatField()
+    geom = models.MultiPolygonField(srid=4326)
 
     def __str__(self):
-        return u"%s" % self.name
+        return self.name
+
+
+# Auto-generated `LayerMapping` dictionary for CitizenAdvisoryCouncil model
+citizenadvisorycouncil_mapping = {
+    'objectid': 'OBJECTID',
+    'cac': 'CAC',
+    'name': 'NAME',
+    'cac_code': 'CAC_CODE',
+    'shape_leng': 'SHAPE_Leng',
+    'shape_area': 'SHAPE_Area',
+    'geom': 'MULTIPOLYGON',
+}
+
+
+class WakeCorporate(models.Model):
+    objectid = models.IntegerField()
+    short_name = models.CharField(max_length=3)
+    long_name = models.CharField(max_length=13)
+    ordinance_field = models.CharField(max_length=18)
+    effective_field = models.CharField(max_length=24)
+    shapearea = models.FloatField()
+    shapelen = models.FloatField()
+    geom = models.MultiPolygonField(srid=4326)
+
+    def __str__(self):
+        return self.long_name
+
+
+# Auto-generated `LayerMapping` dictionary for WakeCorporate model
+wakecorporate_mapping = {
+    'objectid': 'OBJECTID',
+    'short_name': 'SHORT_NAME',
+    'long_name': 'LONG_NAME',
+    'ordinance_field': 'ORDINANCE_',
+    'effective_field': 'EFFECTIVE_',
+    'shapearea': 'SHAPEAREA',
+    'shapelen': 'SHAPELEN',
+    'geom': 'MULTIPOLYGON',
+}
 
 
 class coverArea(models.Model):
     name = models.CharField(blank=True, max_length=300, null=True, verbose_name="Name")
-    CACs = models.ManyToManyField(CAC)
+    CACs = models.ManyToManyField(CitizenAdvisoryCouncil)
 
     class Meta:
         verbose_name = "Cover Area"

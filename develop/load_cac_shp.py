@@ -1,6 +1,6 @@
 import os
 from django.contrib.gis.utils import LayerMapping
-from .models import CitizenAdvisoryCouncil
+from develop.models import CitizenAdvisoryCouncil
 
 citizenadvisorycouncil_mapping = {
     'objectid': 'OBJECTID',

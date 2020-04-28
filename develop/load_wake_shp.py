@@ -1,6 +1,6 @@
 import os
 from django.contrib.gis.utils import LayerMapping
-from .models import WakeCorporate
+from develop.models import WakeCorporate
 
 wakecorporate_mapping = {
     'objectid': 'OBJECTID',

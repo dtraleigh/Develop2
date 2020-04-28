@@ -1,6 +1,7 @@
 import datetime
 
 from django.contrib import admin
+from django.contrib.gis import admin
 
 from develop.models import *
 
@@ -29,7 +30,7 @@ class ControlAdmin(admin.ModelAdmin):
     list_display = ("scrape", "scan", "notify")
 
 
-class CACAdmin(admin.ModelAdmin):
+class CitizenAdvisoryCouncilAdmin(admin.ModelAdmin):
     list_display = ("name",)
 
 
@@ -90,7 +91,7 @@ class TCAdmin(SimpleHistoryAdmin):
 
 
 admin.site.register(Control, ControlAdmin)
-admin.site.register(CAC, CACAdmin)
+admin.site.register(CitizenAdvisoryCouncil, CitizenAdvisoryCouncilAdmin)
 admin.site.register(coverArea, coverAreaAdmin)
 admin.site.register(SiteReviewCases, SiteReviewCasesAdmin)
 admin.site.register(Subscriber, SubscriberAdmin)
@@ -98,3 +99,4 @@ admin.site.register(Development, DevelopmentsAdmin)
 admin.site.register(Zoning, ZoningAdmin)
 admin.site.register(AdministrativeAlternates, AADAdmin)
 admin.site.register(TextChangeCases, TCAdmin)
+admin.site.register(WakeCorporate, admin.GeoModelAdmin)
