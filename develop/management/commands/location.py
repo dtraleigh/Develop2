@@ -29,8 +29,6 @@ def get_subscribers_covered_changed_items(items_that_changed, covered_CACs_total
     covered_items = []
 
     for item in items_that_changed:
-        cac = ""
-
         if isinstance(item, TextChangeCases):
             covered_items.append(item)
         else:
@@ -43,13 +41,15 @@ def get_subscribers_covered_changed_items(items_that_changed, covered_CACs_total
                             covered_items.append(item)
                 else:
                     for cac in covered_CACs_total:
-                        if cac.name.lower() in item.cac.lower():
+                        if cac.name.lower() == item.cac.lower():
                             covered_items.append(item)
 
             except AttributeError:
                 n = datetime.now()
                 logger.info(n.strftime("%H:%M %m-%d-%y") + ": AttributeError. cac.name: " + str(cac) +
                             ", item.cac: " + str(item.cac))
+
+    return covered_items
 
 
 def cac_lookup(address):

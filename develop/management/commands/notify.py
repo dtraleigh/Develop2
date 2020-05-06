@@ -97,6 +97,7 @@ class Command(BaseCommand):
         if control.notify:
 
             everything_that_changed = get_everything_that_changed()
+            #print(everything_that_changed)
 
             if everything_that_changed:
                 if settings.DEVELOP_INSTANCE == "Develop":
@@ -114,18 +115,20 @@ class Command(BaseCommand):
                     # Get list of CACs we need to worry about for this subscriber
                     covered_CACs_total = get_subscribers_covered_CACs(subscriber)
 
-                    # For this subscriber and list everything_that_changed, get items that changed that
+                    # For this subscriber and the list everything_that_changed, get items that changed that
                     # this subscriber is covering
                     covered_items = get_subscribers_covered_changed_items(everything_that_changed, covered_CACs_total)
+                    #print(covered_items)
 
                     # Post to discourse community
                     if covered_items and subscriber.is_bot:
                         for item in covered_items:
                             create_new_discourse_post(subscriber, item)
                             # Alert admin if CAC is None
-                            if not item.cac and not item.cac_override:
-                                message = "Need to add a CAC to " + str(item)
-                                send_email_notice(message, email_admins())
+                            if not isinstance(item, TextChangeCases):
+                                if not item.cac and not item.cac_override:
+                                    message = "Need to add a CAC to " + str(item)
+                                    send_email_notice(message, email_admins())
 
                     # Send emails if the subscriber is not a bot
                     if covered_items and not subscriber.is_bot:

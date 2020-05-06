@@ -304,10 +304,10 @@ def create_new_discourse_post(subscriber, item):
     if isinstance(item, Zoning):
         if item.created_date > timezone.now() - timedelta(hours=1):
             message = "--------------New Zoning Request---------------\n\n"
-            message += get_new_zon_text(item, True)
+            message += get_new_zon_text(item)
         else:
             message = "--------------Existing Zoning Request Update---------------\n\n"
-            message += get_updated_zon_text(item, True)
+            message += get_updated_zon_text(item)
     if isinstance(item, AdministrativeAlternates):
         if item.created_date > timezone.now() - timedelta(hours=1):
             message = "--------New Administrative Alternate for Design ----------\n\n"

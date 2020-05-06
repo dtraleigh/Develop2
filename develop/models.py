@@ -10,14 +10,6 @@ class Control(models.Model):
     notify = models.BooleanField(default=True)
 
 
-# class CAC(models.Model):
-#     name = models.CharField(blank=True, max_length=300, null=True, verbose_name="Name")
-#
-#     class Meta:
-#         verbose_name = "Citizen Advisory Council"
-#
-#     def __str__(self):
-#         return u"%s" % self.name
 class CitizenAdvisoryCouncil(models.Model):
     objectid = models.IntegerField()
     cac = models.CharField(max_length=17)
@@ -197,6 +189,7 @@ class Zoning(models.Model):
     modified_date = models.DateTimeField(auto_now=True)
     status = models.CharField(blank=True, max_length=300, null=True, verbose_name="Status") # Web scrape field
     plan_url = models.TextField(blank=True, null=True, verbose_name="Plan URL")
+    location_url = models.TextField(blank=True, null=True, verbose_name="Location URL")
 
     class Meta:
         verbose_name = "Zoning Request"
