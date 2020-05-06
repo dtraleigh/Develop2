@@ -162,7 +162,7 @@ def get_generic_link(content):
 
 def site_reviews(page_content):
     # Site Review tables
-    sr_tables = page_content.findAll("table")
+    sr_tables = page_content.find_all("table")
 
     for sr_table in sr_tables:
         sr_rows = get_rows_in_table(sr_table, "SR")
@@ -249,7 +249,7 @@ def site_reviews(page_content):
 
 def admin_alternates(page_content):
     # Administrative Alternate Requests
-    aads_tables = page_content.findAll("table")
+    aads_tables = page_content.find_all("table")
 
     for aads_table in aads_tables:
         aads_rows = get_rows_in_table(aads_table, "AAD")
@@ -258,7 +258,7 @@ def admin_alternates(page_content):
         # If we do not, then add it to the DB
         # If we do, check for differences and update if
         for aads_row in aads_rows:
-            row_tds = aads_row.findAll("td")
+            row_tds = aads_row.find_all("td")
 
             case_number = get_case_number_from_row(row_tds)
             case_url = get_case_url_from_row(row_tds)
@@ -336,13 +336,13 @@ def admin_alternates(page_content):
             
 def text_changes_cases(page_content):
     # Text Change Cases
-    tc_tables = page_content.findAll("table")
+    tc_tables = page_content.find_all("table")
 
     for tc_table in tc_tables:
         tc_rows = get_rows_in_table(tc_table, "TCC")
 
         for tc in tc_rows:
-            row_tds = tc.findAll("td")
+            row_tds = tc.find_all("td")
 
             case_number = get_case_number_from_row(row_tds)
             case_url = get_case_url_from_row(row_tds)
@@ -416,7 +416,7 @@ def text_changes_cases(page_content):
 
 def zoning_requests(page_content):
     # Zoning Requests
-    zoning_tables = page_content.findAll("table")
+    zoning_tables = page_content.find_all("table")
 
     for zoning_table in zoning_tables:
         zoning_rows = get_rows_in_table(zoning_table, "Zoning")
@@ -424,8 +424,8 @@ def zoning_requests(page_content):
         for i in range(0, len(zoning_rows), 2):
             # First row is zoning_rows[i]
             # Second row is zoning_rows[i+1]
-            info_row_tds = zoning_rows[i].findAll("td")
-            status_row_tds = zoning_rows[i + 1].findAll("td")
+            info_row_tds = zoning_rows[i].find_all("td")
+            status_row_tds = zoning_rows[i + 1].find_all("td")
 
             # This gets the zoning case label.
             # Some cases have a master plan case so label ends up like "Z-14-19MP-1-19"
