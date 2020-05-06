@@ -53,41 +53,32 @@ def get_page_content(page_link):
         return None
 
 
-def get_correct_url(list_of_a_tags, label):
-    list_of_urls = []
-
-    for tag in list_of_a_tags:
-        list_of_urls.append(tag["href"])
-
-    zoning_case_from_label = label.split('\n')[0]
-
-    best_match_url = ["", 0]
-
-    for url in list_of_urls:
-        pdf_file = url.split('/')[-1]
-        zoning_case_from_url = pdf_file.split('.')[0]
-
-        score = fuzz.ratio(zoning_case_from_label.lower(), zoning_case_from_url.lower())
-
-        if score > best_match_url[1]:
-            best_match_url = [url, score]
-
-    return best_match_url[0]
+# def get_correct_url(list_of_a_tags, label):
+#     list_of_urls = []
+#
+#     for tag in list_of_a_tags:
+#         list_of_urls.append(tag["href"])
+#
+#     zoning_case_from_label = label.split('\n')[0]
+#
+#     best_match_url = ["", 0]
+#
+#     for url in list_of_urls:
+#         pdf_file = url.split('/')[-1]
+#         zoning_case_from_url = pdf_file.split('.')[0]
+#
+#         score = fuzz.ratio(zoning_case_from_label.lower(), zoning_case_from_url.lower())
+#
+#         if score > best_match_url[1]:
+#             best_match_url = [url, score]
+#
+#     return best_match_url[0]
 
 
 def get_rows_in_table(table, page):
-    try:
-        table_tbody = table.find("tbody")
-        table_rows = table_tbody.findAll("tr")
-        return table_rows
-    except:
-        logger.info("Problem getting to a table trs on page, " + page)
-        if table:
-            logger.info("table: " + table)
-        if table_tbody:
-            logger.info("table_tbody: " + table_tbody)
-        if table_rows:
-            logger.info("rows: " + table_rows)
+    if table is not None:
+        # We don't want the first row as that is the header row
+        return table.find_all("tr")[1:]
 
 
 def get_case_number_from_row(row_tds):
@@ -180,7 +171,7 @@ def site_reviews(page_content):
         # If we do not, then add it to the DB
         # If we do, check for differences and update it
         for sr_row in sr_rows:
-            row_tds = sr_row.findAll("td")
+            row_tds = sr_row.find_all("td")
 
             case_number = get_case_number_from_row(row_tds)
             case_url = get_case_url_from_row(row_tds)
