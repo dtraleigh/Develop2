@@ -19,6 +19,6 @@ class Command(BaseCommand):
             n = datetime.now()
             logger.info(n.strftime("%H:%M %m-%d-%y") + ": scan started.")
             development_api_scan()
-            zoning_api_scan()
+            #zoning_api_scan()
             e = datetime.now()
             logger.info(e.strftime("%H:%M %m-%d-%y") + ": scan finished.")
