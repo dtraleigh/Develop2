@@ -1,4 +1,4 @@
-import logging
+import logging, requests
 from datetime import datetime
 from geopy.geocoders import Nominatim
 
@@ -116,3 +116,18 @@ def get_cac_location(lat, lon):
         return CitizenAdvisoryCouncil.objects.get(geom__intersects=pnt)
     except:
         return None
+
+
+def get_parcel_by_pin(pin):
+    # This function will use a pin and return the parcel information that comes from the county's parcel endpoint
+    url = "https://maps.wakegov.com/arcgis/rest/services/Property/Parcels/MapServer/0/query?where=PIN_NUM=" + \
+        pin + "&outFields=*&returnGeometry=false&outSR=4326&f=json"
+
+    payload = {}
+    headers = {}
+
+    response = requests.request("GET", url, headers=headers, data=payload)
+
+    if response.status_code == 200:
+        return response.json()["features"][0]["attributes"]
+    return response
