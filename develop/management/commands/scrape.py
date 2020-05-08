@@ -70,16 +70,6 @@ def get_case_number_from_row(row_tds):
         return row_tds[0].string
 
 
-def get_case_url_from_row(row_tds):
-    try:
-        # If the case number is a link:
-        case_url = row_tds[0].find("a")["href"].strip().replace(" ", "%20")
-        return case_url
-    except:
-        # in rare cases the case number is not a link
-        return ""
-
-
 def determine_if_known_case(known_cases, case_number, project_name, cac):
     # Go through all of the cases. Criteria of a match:
     # 1. fuzz.ratio(case_number, sr_case.case_number) > 90
@@ -122,13 +112,6 @@ def get_contact(content):
         return None
 
 
-def get_contact_url(content):
-    if content.find("a"):
-        return "https://raleighnc.gov" + content.find("a")["href"].replace(" ", "")
-    else:
-        return None
-
-
 def get_generic_link(content):
     # This is used to grab the hyperlink out of a snippet of code
     if len(content.find_all("a")) == 0:
@@ -153,13 +136,13 @@ def site_reviews(page_content):
             row_tds = sr_row.find_all("td")
 
             case_number = get_case_number_from_row(row_tds)
-            case_url = get_case_url_from_row(row_tds)
+            case_url = get_generic_link(row_tds[0])
 
             project_name = row_tds[1].get_text().strip()
             cac = row_tds[2].get_text().strip()
             status = row_tds[3].get_text().strip()
             contact = get_contact(row_tds[4])
-            contact_url = get_contact_url(row_tds[4])
+            contact_url = get_generic_link(row_tds[4])
 
             # If any of these variables are None, log it and move on.
             if not case_number or not case_url or not project_name or not cac or not status or not contact:
@@ -240,7 +223,7 @@ def admin_alternates(page_content):
             row_tds = aads_row.find_all("td")
 
             case_number = get_case_number_from_row(row_tds)
-            case_url = get_case_url_from_row(row_tds)
+            case_url = get_generic_link(row_tds[0])
 
             project_name = row_tds[1].get_text().strip()
             cac = row_tds[2].get_text().strip()
@@ -324,7 +307,7 @@ def text_changes_cases(page_content):
             row_tds = tc.find_all("td")
 
             case_number = get_case_number_from_row(row_tds)
-            case_url = get_case_url_from_row(row_tds)
+            case_url = get_generic_link(row_tds[0])
 
             project_name = row_tds[1].get_text().strip()
             status = row_tds[2].get_text().strip()
