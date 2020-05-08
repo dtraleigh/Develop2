@@ -70,6 +70,38 @@ def get_case_number_from_row(row_tds):
         return row_tds[0].string
 
 
+def get_contact(content):
+    # content usually is a link but if not we need to account for a non-link piece of text
+    contact = content.find("a")
+
+    if contact:
+        return contact.get_text().strip()
+    else:
+        if content.text.strip() != "":
+            return content.text.strip()
+        return None
+
+
+def get_generic_link(content):
+    # This is used to grab the hyperlink out of a snippet of code
+    # This assumes the entire link is in there vs a relative link.
+    if len(content.find_all("a")) == 0:
+        return None
+    elif len(content.find_all("a")) == 1:
+        return content.find("a")["href"].strip().replace(" ", "%20")
+    else:
+        return None
+
+
+def get_contact_url(content):
+    # contact urls are relative
+    # Ex: "<td><a href="/directory?action=search&amp;firstName=Jason&amp;lastName=Hardin">Hardin</a></td>"
+    if content.find("a"):
+        return "https://raleighnc.gov" + content.find("a")["href"].replace(" ", "")
+    else:
+        return None
+
+
 def determine_if_known_case(known_cases, case_number, project_name, cac):
     # Go through all of the cases. Criteria of a match:
     # 1. fuzz.ratio(case_number, sr_case.case_number) > 90
@@ -100,28 +132,6 @@ def determine_if_known_case(known_cases, case_number, project_name, cac):
     return None
 
 
-def get_contact(content):
-    # content usually is a link but if not we need to account for a non-link piece of text
-    contact = content.find("a")
-
-    if contact:
-        return contact.get_text().strip()
-    else:
-        if content.text.strip() != "":
-            return content.text.strip()
-        return None
-
-
-def get_generic_link(content):
-    # This is used to grab the hyperlink out of a snippet of code
-    if len(content.find_all("a")) == 0:
-        return None
-    elif len(content.find_all("a")) == 1:
-        return content.find("a")["href"].strip().replace(" ", "%20")
-    else:
-        return None
-
-
 def site_reviews(page_content):
     # Site Review tables
     sr_tables = page_content.find_all("table")
@@ -142,7 +152,7 @@ def site_reviews(page_content):
             cac = row_tds[2].get_text().strip()
             status = row_tds[3].get_text().strip()
             contact = get_contact(row_tds[4])
-            contact_url = get_generic_link(row_tds[4])
+            contact_url = get_contact_url(row_tds[4])
 
             # If any of these variables are None, log it and move on.
             if not case_number or not case_url or not project_name or not cac or not status or not contact:
@@ -228,8 +238,8 @@ def admin_alternates(page_content):
             project_name = row_tds[1].get_text().strip()
             cac = row_tds[2].get_text().strip()
             status = row_tds[3].get_text().strip()
-            contact = row_tds[4].find("a").get_text().strip()
-            contact_url = row_tds[4].find("a")["href"].replace(" ", "")
+            contact = get_contact(row_tds[4])
+            contact_url = get_contact_url(row_tds[4])
 
             # If any of these variables are None, log it and move on.
             if not case_number or not case_url or not project_name or not cac or not status or not contact or not \
@@ -311,8 +321,8 @@ def text_changes_cases(page_content):
 
             project_name = row_tds[1].get_text().strip()
             status = row_tds[2].get_text().strip()
-            contact = row_tds[3].find("a").get_text().strip()
-            contact_url = row_tds[3].find("a")["href"].replace(" ", "")
+            contact = get_contact(row_tds[3])
+            contact_url = get_contact_url(row_tds[3])
 
             # Found a case where the TC name was not a link. We'll set it to something generic in the mean time.
             if not case_url:

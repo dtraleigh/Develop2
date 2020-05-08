@@ -78,7 +78,6 @@ class ScrapeTestCase(SimpleTestCase):
         self.assertEqual(get_contact(contact3_souped), None)
 
     def test_get_generic_link(self):
-        # get_case_url_from_row() takes in a a list of all <td> tags that were in that <tr>
         content1 = """<td><a href="https://cityofraleigh0drupal.blob.core.usgovcloudapi.net/drupal-prod/COR15/SR-106-17.pdf">SR-106-17</a></td>"""
         content1_souped = BeautifulSoup(content1, "html.parser")
 
@@ -93,3 +92,22 @@ class ScrapeTestCase(SimpleTestCase):
         content3_souped = BeautifulSoup(content3, "html.parser")
 
         self.assertEqual(get_generic_link(content3_souped), None)
+
+    def test_get_contact_url(self):
+        content1 = """<td><a href="/directory?action=search&amp;firstName=Jason&amp;lastName=Hardin">Hardin</a></td>"""
+        content1_souped = BeautifulSoup(content1, "html.parser")
+
+        self.assertEqual(get_contact_url(content1_souped),
+                         "https://raleighnc.gov/directory?action=search&firstName=Jason&lastName=Hardin")
+
+        content2 = """<td><a href="/directory?action=sea rch&amp;firstName = Jason&amp;lastName=Hardin">Hardin</a></td>"""
+        content2_souped = BeautifulSoup(content2, "html.parser")
+
+        self.assertEqual(get_contact_url(content2_souped),
+                         "https://raleighnc.gov/directory?action=search&firstName=Jason&lastName=Hardin")
+
+        content3 = """<td>Hardin</td>"""
+        content3_souped = BeautifulSoup(content3, "html.parser")
+
+        self.assertEqual(get_contact_url(content3_souped), None)
+
