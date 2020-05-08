@@ -102,7 +102,8 @@ def development_api_scan():
                                 known_dev_object.Editor = dev_info_from_json["Editor"]
 
                                 # If cac and cac_override are None, let's try to calculate it.
-
+                                if not known_dev_object.cac and not known_dev_object.cac_override:
+                                    known_dev_object.cac_override = cac_lookup(dev_info_from_json["major_street"])
 
                                 known_dev_object.save()
 
@@ -115,8 +116,6 @@ def development_api_scan():
                             # cac might be None so let's try and figure it out
                             if not dev_info_from_json["cac"]:
                                 cac_override = cac_lookup(dev_info_from_json["major_street"])
-                            else:
-                                cac_override = None
 
                             Development.objects.create(OBJECTID=dev_info_from_json["OBJECTID"],
                                                        devplan_id=dev_info_from_json["devplan_id"],
