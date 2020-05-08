@@ -4,6 +4,7 @@ from geopy.geocoders import Nominatim
 
 from django.contrib.gis.geos import Point
 from develop.models import *
+from develop.management.commands.emails import *
 
 logger = logging.getLogger("django")
 
@@ -131,3 +132,21 @@ def get_parcel_by_pin(pin):
     if response.status_code == 200:
         return response.json()["features"][0]["attributes"]
     return response
+
+
+def calculate_cac(location_url):
+    # This function takes in a location_url. We use the location_url string, extract the pin from it and retrieve
+    # the address from json data returned from get_parcel_by_pin(). Using the address, we can use cac_lookup()
+    # Ex: https://maps.raleighnc.gov/iMAPS/?pin=0772865947,0772875055,0772875125,0772873120
+    list_of_pins = location_url.split("=")[1].split(",")
+    parcel_data = get_parcel_by_pin(list_of_pins[0])
+
+    cac_name = cac_lookup(parcel_data["SITE_ADDRESS"])
+
+    if cac_name:
+        return cac_name
+    else:
+        message = "Location.calculate_and_update_cac: Could not calculate CAC for a zoning case."
+        message += location_url
+        send_email_notice(message, email_admins())
+        return None

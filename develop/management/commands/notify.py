@@ -97,7 +97,6 @@ class Command(BaseCommand):
         if control.notify:
 
             everything_that_changed = get_everything_that_changed()
-            #print(everything_that_changed)
 
             if everything_that_changed:
                 if settings.DEVELOP_INSTANCE == "Develop":
@@ -127,7 +126,7 @@ class Command(BaseCommand):
                             # Alert admin if CAC is None
                             if not isinstance(item, TextChangeCases):
                                 if not item.cac and not item.cac_override:
-                                    message = "Need to add a CAC to " + str(item)
+                                    message = "notify: Need to add a CAC to " + str(item)
                                     send_email_notice(message, email_admins())
 
                     # Send emails if the subscriber is not a bot

@@ -73,7 +73,7 @@ def get_all_ids(url):
     except KeyError:
         n = datetime.now()
         message = n.strftime("%H:%M %m-%d-%y") + ": KeyError: 'objectIds'\n"
-        message += "KeyError with variable json_object_ids in get_all_ids()\n"
+        message += "actions.get_all_ids: KeyError with variable json_object_ids in get_all_ids()\n"
         message += str(json_object_ids)
         logger.info(message)
         send_email_notice(message, email_admins())

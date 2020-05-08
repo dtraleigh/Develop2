@@ -8,6 +8,7 @@ from datetime import datetime
 from django.core.management.base import BaseCommand
 
 from develop.management.commands.actions import *
+from develop.management.commands.location import *
 from develop.models import *
 
 logger = logging.getLogger("django")
@@ -51,28 +52,6 @@ def get_page_content(page_link):
     else:
         # Future: Send email alert saying that we could not reach the development page, did not get 200
         return None
-
-
-# def get_correct_url(list_of_a_tags, label):
-#     list_of_urls = []
-#
-#     for tag in list_of_a_tags:
-#         list_of_urls.append(tag["href"])
-#
-#     zoning_case_from_label = label.split('\n')[0]
-#
-#     best_match_url = ["", 0]
-#
-#     for url in list_of_urls:
-#         pdf_file = url.split('/')[-1]
-#         zoning_case_from_url = pdf_file.split('.')[0]
-#
-#         score = fuzz.ratio(zoning_case_from_label.lower(), zoning_case_from_url.lower())
-#
-#         if score > best_match_url[1]:
-#             best_match_url = [url, score]
-#
-#     return best_match_url[0]
 
 
 def get_rows_in_table(table, page):
@@ -475,6 +454,10 @@ def zoning_requests(page_content):
                     known_zon.plan_url = plan_url
                     known_zon.location_url = location_url
 
+                    # If we don't know the CAC, let's try and "calculate" it using the pin from location_url
+                    if not known_zon.cac and known_zon.cac_override:
+                        known_zon.cac_override = calculate_cac(location_url)
+
                     known_zon.save()
 
                     # Want to log what the difference is
@@ -500,9 +483,13 @@ def zoning_requests(page_content):
                 logger.info("location: " + location)
                 logger.info("**********************")
 
+                # Try to calculate CAC
+                cac_calc = calculate_cac(location_url)
+
                 Zoning.objects.create(zpyear=scrape_year,
                                       zpnum=scrape_num,
                                       status=status,
+                                      cac_override=cac_calc,
                                       location=location,
                                       received_by=contact,
                                       plan_url=plan_url,
