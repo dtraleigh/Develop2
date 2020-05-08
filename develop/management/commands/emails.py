@@ -19,7 +19,11 @@ def email_admins():
 
 
 def send_email_notice(message, email_to):
-    subject = "Message from Develop."
+    if settings.DEVELOP_INSTANCE == "Develop":
+        subject = "Message from Develop_test."
+    else:
+        subject = "Message from Develop."
+
     email_from = "develop@dtraleigh.com"
 
     send_mail(
