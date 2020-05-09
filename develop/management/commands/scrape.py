@@ -156,15 +156,18 @@ def site_reviews(page_content):
 
             # If any of these variables are None, log it and move on.
             if not case_number or not case_url or not project_name or not cac or not status or not contact:
-                logger.info("********** Problem scraping this row **********")
-                logger.info(str(row_tds))
-                logger.info("case_number scrape: " + str(case_number))
-                logger.info("case_url scrape: " + str(case_url))
-                logger.info("project_name scrape: " + str(project_name))
-                logger.info("cac scrape: " + str(cac))
-                logger.info("status scrape: " + str(status))
-                logger.info("contact scrape: " + str(contact))
-                logger.info("contact_url scrape: " + str(contact_url))
+                scraped_info = [["row_tds", row_tds],
+                                ["case_number", case_number],
+                                ["case_url", case_url],
+                                ["project_name", project_name],
+                                ["cac", cac],
+                                ["status", status],
+                                ["contact", contact],
+                                ["contact_url", contact_url]]
+                message = "scrape.site_reviews: Problem scraping this row"
+                message += scraped_info
+                logger.info(message)
+                send_email_notice(message, email_admins())
 
                 # Reminder: continue will move this to the next loop iteration.
                 continue
@@ -244,15 +247,18 @@ def admin_alternates(page_content):
             # If any of these variables are None, log it and move on.
             if not case_number or not case_url or not project_name or not cac or not status or not contact or not \
                     contact_url:
-                logger.info("********** Problem scraping this row **********")
-                logger.info(str(row_tds))
-                logger.info("case_number scrape: " + str(case_number))
-                logger.info("case_url scrape: " + str(case_url))
-                logger.info("project_name scrape: " + str(project_name))
-                logger.info("cac scrape: " + str(cac))
-                logger.info("status scrape: " + str(status))
-                logger.info("contact scrape: " + str(contact))
-                logger.info("contact_url scrape: " + str(contact_url))
+                scraped_info = [["row_tds", row_tds],
+                                ["case_number", case_number],
+                                ["case_url", case_url],
+                                ["project_name", project_name],
+                                ["cac", cac],
+                                ["status", status],
+                                ["contact", contact],
+                                ["contact_url", contact_url]]
+                message = "scrape.admin_alternates: Problem scraping this row"
+                message += scraped_info
+                logger.info(message)
+                send_email_notice(message, email_admins())
 
                 continue
 
@@ -330,14 +336,17 @@ def text_changes_cases(page_content):
 
             # If any of these variables are None, log it and move on.
             if not case_number or not case_url or not project_name or not status or not contact or not contact_url:
-                logger.info("********** Problem scraping this row **********")
-                logger.info(str(row_tds))
-                logger.info("case_number scrape: " + str(case_number))
-                logger.info("case_url scrape: " + str(case_url))
-                logger.info("project_name scrape: " + str(project_name))
-                logger.info("status scrape: " + str(status))
-                logger.info("contact scrape: " + str(contact))
-                logger.info("contact_url scrape: " + str(contact_url))
+                scraped_info = [["row_tds", row_tds],
+                                ["case_number", case_number],
+                                ["case_url", case_url],
+                                ["project_name", project_name],
+                                ["status", status],
+                                ["contact", contact],
+                                ["contact_url", contact_url]]
+                message = "scrape.text_changes_cases: Problem scraping this row"
+                message += scraped_info
+                logger.info(message)
+                send_email_notice(message, email_admins())
 
                 continue
 
@@ -422,15 +431,18 @@ def zoning_requests(page_content):
             # Remarks come from the API
             # Status is from the web scrape
             if not case_number or not location or not zoning_case or not status:
-                logger.info("********** Problem scraping this row **********")
-                logger.info(str(info_row_tds))
-                logger.info(str(status_row_tds))
-                logger.info("label scrape: " + str(case_number))
-                logger.info("location scrape: " + str(location))
-                logger.info("contact scrape: " + str(contact))
-                logger.info("status scrape: " + str(status))
-                logger.info("url scrape: " + str(plan_url))
-                logger.info("url_text scrape: " + str(zoning_case))
+                scraped_info = [["info_row_tds", info_row_tds],
+                                ["status_row_tds", status_row_tds],
+                                ["case_number", case_number],
+                                ["location", location],
+                                ["location_url", location_url],
+                                ["contact", contact],
+                                ["status", status],
+                                ["plan_url", plan_url]]
+                message = "scrape.zoning_requests: Problem scraping this row"
+                message += scraped_info
+                logger.info(message)
+                send_email_notice(message, email_admins())
 
                 continue
 
