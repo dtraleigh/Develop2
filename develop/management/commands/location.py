@@ -84,15 +84,20 @@ def clean_address(address):
     """
     address_parts = address.split()
 
-    for i, part in enumerate(address_parts):
-        if part.lower() == "s":
-            address_parts[i] = "south"
-        elif part.lower() == "n":
-            address_parts[i] = "north"
-        elif part.lower() == "w":
-            address_parts[i] = "west"
-        elif part.lower() == "e":
-            address_parts[i] = "east"
+    # There are a couple exceptions
+    # "T W ALEXANDER  DR"
+    # "M E Valentine Dr"
+    if not address_parts[0].lower() == "t" and not address_parts[1].lower() == "w" and \
+            not address_parts[0].lower() == "m" and not address_parts[1].lower() == "e":
+        for i, part in enumerate(address_parts):
+            if part.lower() == "s":
+                address_parts[i] = "south"
+            elif part.lower() == "n":
+                address_parts[i] = "north"
+            elif part.lower() == "w":
+                address_parts[i] = "west"
+            elif part.lower() == "e":
+                address_parts[i] = "east"
 
     return " ".join(address_parts) + ", raleigh NC USA"
 
