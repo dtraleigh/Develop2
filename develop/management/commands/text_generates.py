@@ -145,11 +145,15 @@ def difference_email_output(item):
     return output
 
 
+def get_instance_text(model):
+    if settings.DEVELOP_INSTANCE == "Develop":
+        return "[Develop - " + model + "]\n"
+
+
 def get_new_dev_text(new_dev, discourse):
     if isinstance(new_dev, Development):
         new_devs_message = "***" + str(new_dev.plan_name) + ", " + str(new_dev.plan_number) + "***\n"
-        if settings.DEVELOP_INSTANCE == "Develop":
-            new_devs_message += "[Develop - API]\n"
+        new_devs_message += get_instance_text("DEV")
         new_devs_message += "    Submitted year: " + str(new_dev.submitted_yr) + "\n"
         new_devs_message += "    Plan type: " + str(new_dev.plan_type) + "\n"
         new_devs_message += "    Status: " + str(new_dev.status) + "\n"
@@ -157,8 +161,7 @@ def get_new_dev_text(new_dev, discourse):
         new_devs_message += "    URL: " + str(new_dev.planurl) + "\n\n"
     if isinstance(new_dev, SiteReviewCases):
         new_devs_message = "***" + str(new_dev.project_name) + ", " + str(new_dev.case_number) + "***\n"
-        if settings.DEVELOP_INSTANCE == "Develop":
-            new_devs_message += "[Develop - Web scrape]\n"
+        new_devs_message += get_instance_text("SR")
         if discourse:
             new_devs_message += "    Status: " + get_status_text(new_dev.status) + "\n"
         else:
@@ -172,8 +175,7 @@ def get_updated_dev_text(updated_dev, discourse):
     # Need to look at the history and compare the most recent update with the one before it.
     if isinstance(updated_dev, Development):
         updated_devs_message = "***" + str(updated_dev.plan_name) + ", " + str(updated_dev.plan_number) + "***\n"
-        if settings.DEVELOP_INSTANCE == "Develop":
-            updated_devs_message += "[Develop - API]\n"
+        updated_devs_message += get_instance_text("DEV")
         updated_devs_message += "    Updated: " + string_output_unix_datetime(updated_dev.updated) + "\n"
         updated_devs_message += "    Status: " + str(updated_dev.status) + "\n"
         updated_devs_message += "    URL: " + str(updated_dev.planurl) + "\n\n"
@@ -181,8 +183,7 @@ def get_updated_dev_text(updated_dev, discourse):
         updated_devs_message += difference_email_output(updated_dev)
     if isinstance(updated_dev, SiteReviewCases):
         updated_devs_message = "***" + str(updated_dev.project_name) + ", " + str(updated_dev.case_number) + "***\n"
-        if settings.DEVELOP_INSTANCE == "Develop":
-            updated_devs_message += "[Develop - Web scrape]\n"
+        updated_devs_message += get_instance_text("SR")
         updated_devs_message += "    Updated: " + updated_dev.modified_date.strftime("%m-%d-%y %H:%M") + "\n"
         if discourse:
             updated_devs_message += "    Status: " + get_status_text(updated_dev.status) + "\n"
@@ -199,6 +200,7 @@ def get_updated_dev_text(updated_dev, discourse):
 
 def get_new_zon_text(new_zon):
     new_zon_message = "***" + str(new_zon.zpyear) + "-" + str(new_zon.zpnum) + "***\n"
+    new_zon_message += get_instance_text("ZON")
     new_zon_message += "    Location: " + str(new_zon.location) + "\n"
     new_zon_message += "    Remarks: " + str(new_zon.remarks).strip() + "\n"
     new_zon_message += "    Status: " + str(new_zon.status) + "\n"
@@ -213,6 +215,7 @@ def get_new_zon_text(new_zon):
 
 def get_updated_zon_text(updated_zon):
     updated_zon_message = "***" + str(updated_zon.zpyear) + "-" + str(updated_zon.zpnum) + "***\n"
+    updated_zon_message += get_instance_text("ZON")
     updated_zon_message += "    Location: " + str(updated_zon.location) + "\n"
     updated_zon_message += "    Remarks: " + str(updated_zon.remarks).strip() + "\n"
     updated_zon_message += "    Status: " + str(updated_zon.status) + "\n"
@@ -232,8 +235,7 @@ def get_updated_zon_text(updated_zon):
 
 def get_new_aad_text(new_aad, discourse):
     new_aad_message = "***" + str(new_aad.project_name) + ", " + str(new_aad.case_number) + "***\n"
-    if settings.DEVELOP_INSTANCE == "Develop":
-        new_aad_message += "[AAD - Web scrape]\n"
+    new_aad_message += get_instance_text("AAD")
     if discourse:
         new_aad_message += "    Status: " + get_status_text(new_aad.status) + "\n"
     else:
@@ -245,8 +247,7 @@ def get_new_aad_text(new_aad, discourse):
 
 def get_updated_aad_text(updated_aad, discourse):
     updated_aad_message = "***" + str(updated_aad.project_name) + ", " + str(updated_aad.case_number) + "***\n"
-    if settings.DEVELOP_INSTANCE == "Develop":
-        updated_aad_message += "[AAD - Web scrape]\n"
+    updated_aad_message += get_instance_text("AAD")
     updated_aad_message += "    Updated: " + updated_aad.modified_date.strftime("%m-%d-%y %H:%M") + "\n"
     if discourse:
         updated_aad_message += "    Status: " + get_status_text(updated_aad.status) + "\n"
@@ -263,8 +264,7 @@ def get_updated_aad_text(updated_aad, discourse):
 
 def get_new_tc_text(new_tc, discourse):
     new_tc_message = "***" + str(new_tc.project_name) + ", " + str(new_tc.case_number) + "***\n"
-    if settings.DEVELOP_INSTANCE == "Develop":
-        new_tc_message += "[TC - Web scrape]\n"
+    new_tc_message += get_instance_text("TCC")
     if discourse:
         new_tc_message += "    Status: " + get_status_text(new_tc.status) + "\n"
     else:
@@ -276,8 +276,7 @@ def get_new_tc_text(new_tc, discourse):
 
 def get_updated_tc_text(updated_tc, discourse):
     updated_tc_message = "***" + str(updated_tc.project_name) + ", " + str(updated_tc.case_number) + "***\n"
-    if settings.DEVELOP_INSTANCE == "Develop":
-        updated_tc_message += "[TC - Web scrape]\n"
+    updated_tc_message += get_instance_text("TCC")
     updated_tc_message += "    Updated: " + updated_tc.modified_date.strftime("%m-%d-%y %H:%M") + "\n"
     if discourse:
         updated_tc_message += "    Status: " + get_status_text(updated_tc.status) + "\n"
