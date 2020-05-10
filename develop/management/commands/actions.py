@@ -91,7 +91,8 @@ def fields_are_same(object_item, api_or_web_scrape_item):
         return object_item == api_or_web_scrape_item
     except:
         n = datetime.datetime.now()
-        logger.info(n.strftime("%H:%M %m-%d-%y") + ": Error comparing object_item, " + str(object_item) + ", with json_item, " + str(api_or_web_scrape_item))
+        logger.info(n.strftime("%H:%M %m-%d-%y") + ": Error comparing object_item, " + str(object_item) +
+                    ", with json_item, " + str(api_or_web_scrape_item))
 
 
 def get_status_legend_text():
@@ -134,7 +135,8 @@ def api_object_is_different(known_object, item_json):
     if isinstance(known_object, Development):
         for field in list_of_Development_fields_to_compare:
             if not fields_are_same(str(getattr(known_object, field)), str(item_json[field])):
-                logger.info(n.strftime("%H:%M %m-%d-%y") + ": Difference found with " + str(field) + " on Development " + str(known_object))
+                logger.info(n.strftime("%H:%M %m-%d-%y") + ": Difference found with " + str(field) +
+                            " on Development " + str(known_object))
                 logger.info("Known_object: " +
                             str(getattr(known_object, field)) +
                             " (" + str(type(getattr(known_object, field))) + ")" +
@@ -160,11 +162,13 @@ def api_object_is_different(known_object, item_json):
             # special case for CAC as it has a different name
             if field == "advisory_committee_areas":
                 if not fields_are_same(str(known_object.cac), str(item_json["advisory_committee_areas"])):
-                    logger.info(n.strftime("%H:%M %m-%d-%y") + ": Difference found with " + str(field) + " on zoning case " + str(known_object))
+                    logger.info(n.strftime("%H:%M %m-%d-%y") + ": Difference found with " + str(field) +
+                                " on zoning case " + str(known_object))
                     return True
             else:
                 if not fields_are_same(str(getattr(known_object, field)), str(item_json[field])):
-                    logger.info(n.strftime("%H:%M %m-%d-%y") + ": Difference found with " + str(field) + " on zoning case " + str(known_object))
+                    logger.info(n.strftime("%H:%M %m-%d-%y") + ": Difference found with " + str(field) +
+                                " on zoning case " + str(known_object))
                     return True
 
     # Returning false here basically means no difference was found
@@ -259,7 +263,8 @@ def create_email_message(items_that_changed):
 
     # \\\ End Footer
 
-    message = email_header + new_devs_message + updated_devs_message + new_zons_message + updated_zons_message + email_footer
+    message = email_header + new_devs_message + updated_devs_message + new_zons_message + updated_zons_message + \
+              email_footer
 
     return message
 
