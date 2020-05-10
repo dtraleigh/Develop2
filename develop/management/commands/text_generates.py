@@ -150,7 +150,7 @@ def get_instance_text(model):
         return "[Develop - " + model + "]\n"
 
 
-def get_new_dev_text(new_dev, discourse):
+def get_new_dev_text(new_dev):
     if isinstance(new_dev, Development):
         new_devs_message = "***" + str(new_dev.plan_name) + ", " + str(new_dev.plan_number) + "***\n"
         new_devs_message += get_instance_text("DEV")
@@ -162,16 +162,13 @@ def get_new_dev_text(new_dev, discourse):
     if isinstance(new_dev, SiteReviewCases):
         new_devs_message = "***" + str(new_dev.project_name) + ", " + str(new_dev.case_number) + "***\n"
         new_devs_message += get_instance_text("SR")
-        if discourse:
-            new_devs_message += "    Status: " + get_status_text(new_dev.status) + "\n"
-        else:
-            new_devs_message += "    Status: " + str(new_dev.status) + str(discourse) + "\n"
+        new_devs_message += "    Status: " + str(new_dev.status) + "\n"
         new_devs_message += "    URL: " + str(new_dev.case_url) + "\n\n"
 
     return new_devs_message
 
 
-def get_updated_dev_text(updated_dev, discourse):
+def get_updated_dev_text(updated_dev):
     # Need to look at the history and compare the most recent update with the one before it.
     if isinstance(updated_dev, Development):
         updated_devs_message = "***" + str(updated_dev.plan_name) + ", " + str(updated_dev.plan_number) + "***\n"
@@ -185,10 +182,7 @@ def get_updated_dev_text(updated_dev, discourse):
         updated_devs_message = "***" + str(updated_dev.project_name) + ", " + str(updated_dev.case_number) + "***\n"
         updated_devs_message += get_instance_text("SR")
         updated_devs_message += "    Updated: " + updated_dev.modified_date.strftime("%m-%d-%y %H:%M") + "\n"
-        if discourse:
-            updated_devs_message += "    Status: " + get_status_text(updated_dev.status) + "\n"
-        else:
-            updated_devs_message += "    Status: " + str(updated_dev.status) + str(discourse) + "\n"
+        updated_devs_message += "    Status: " + str(updated_dev.status) + "\n"
         updated_devs_message += "    URL: " + str(updated_dev.case_url) + "\n\n"
         updated_devs_message += "  *UPDATES*\n"
         updated_devs_message += difference_email_output(updated_dev)
@@ -233,26 +227,20 @@ def get_updated_zon_text(updated_zon):
     return updated_zon_message
 
 
-def get_new_aad_text(new_aad, discourse):
+def get_new_aad_text(new_aad):
     new_aad_message = "***" + str(new_aad.project_name) + ", " + str(new_aad.case_number) + "***\n"
     new_aad_message += get_instance_text("AAD")
-    if discourse:
-        new_aad_message += "    Status: " + get_status_text(new_aad.status) + "\n"
-    else:
-        new_aad_message += "    Status: " + str(new_aad.status) + str(discourse) + "\n"
+    new_aad_message += "    Status: " + str(new_aad.status) + "\n"
     new_aad_message += "    URL: " + str(new_aad.case_url) + "\n\n"
 
     return new_aad_message
 
 
-def get_updated_aad_text(updated_aad, discourse):
+def get_updated_aad_text(updated_aad):
     updated_aad_message = "***" + str(updated_aad.project_name) + ", " + str(updated_aad.case_number) + "***\n"
     updated_aad_message += get_instance_text("AAD")
     updated_aad_message += "    Updated: " + updated_aad.modified_date.strftime("%m-%d-%y %H:%M") + "\n"
-    if discourse:
-        updated_aad_message += "    Status: " + get_status_text(updated_aad.status) + "\n"
-    else:
-        updated_aad_message += "    Status: " + str(updated_aad.status) + str(discourse) + "\n"
+    updated_aad_message += "    Status: " + str(updated_aad.status) + "\n"
     updated_aad_message += "    URL: " + str(updated_aad.case_url) + "\n\n"
     updated_aad_message += "  *UPDATES*\n"
     updated_aad_message += difference_email_output(updated_aad)
@@ -262,26 +250,20 @@ def get_updated_aad_text(updated_aad, discourse):
     return updated_aad_message
 
 
-def get_new_tc_text(new_tc, discourse):
+def get_new_tc_text(new_tc):
     new_tc_message = "***" + str(new_tc.project_name) + ", " + str(new_tc.case_number) + "***\n"
     new_tc_message += get_instance_text("TCC")
-    if discourse:
-        new_tc_message += "    Status: " + get_status_text(new_tc.status) + "\n"
-    else:
-        new_tc_message += "    Status: " + str(new_tc.status) + str(discourse) + "\n"
+    new_tc_message += "    Status: " + str(new_tc.status) + "\n"
     new_tc_message += "    URL: " + str(new_tc.case_url) + "\n\n"
 
     return new_tc_message
 
 
-def get_updated_tc_text(updated_tc, discourse):
+def get_updated_tc_text(updated_tc):
     updated_tc_message = "***" + str(updated_tc.project_name) + ", " + str(updated_tc.case_number) + "***\n"
     updated_tc_message += get_instance_text("TCC")
     updated_tc_message += "    Updated: " + updated_tc.modified_date.strftime("%m-%d-%y %H:%M") + "\n"
-    if discourse:
-        updated_tc_message += "    Status: " + get_status_text(updated_tc.status) + "\n"
-    else:
-        updated_tc_message += "    Status: " + str(updated_tc.status) + str(discourse) + "\n"
+    updated_tc_message += "    Status: " + str(updated_tc.status) + "\n"
     updated_tc_message += "    URL: " + str(updated_tc.case_url) + "\n\n"
     updated_tc_message += "  *UPDATES*\n"
     updated_tc_message += difference_email_output(updated_tc)
