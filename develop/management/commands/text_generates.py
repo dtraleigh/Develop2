@@ -150,6 +150,17 @@ def get_instance_text(model):
         return "[Develop - " + model + "]\n"
 
 
+def add_debug_text(item):
+    # Additional text to help with debugging. Only add this if the instance is Develop
+    if settings.DEVELOP_INSTANCE == "Develop":
+        try:
+            text = "    [DEBUG] CAC: " + item.cac + "\n"
+            text += "    [DEBUG] CAC Override: " + item.cac_override + "\n"
+            return text
+        except:
+            return None
+
+
 def get_new_dev_text(new_dev):
     if isinstance(new_dev, Development):
         new_devs_message = "***" + str(new_dev.plan_name) + ", " + str(new_dev.plan_number) + "***\n"
@@ -159,11 +170,13 @@ def get_new_dev_text(new_dev):
         new_devs_message += "    Status: " + str(new_dev.status) + "\n"
         new_devs_message += "    Major Street: " + str(new_dev.major_street) + "\n"
         new_devs_message += "    URL: " + str(new_dev.planurl) + "\n\n"
+        new_devs_message += add_debug_text(new_dev)
     if isinstance(new_dev, SiteReviewCases):
         new_devs_message = "***" + str(new_dev.project_name) + ", " + str(new_dev.case_number) + "***\n"
         new_devs_message += get_instance_text("SR")
         new_devs_message += "    Status: " + str(new_dev.status) + "\n"
         new_devs_message += "    URL: " + str(new_dev.case_url) + "\n\n"
+        new_devs_message += add_debug_text(new_dev)
 
     return new_devs_message
 
@@ -176,6 +189,7 @@ def get_updated_dev_text(updated_dev):
         updated_devs_message += "    Updated: " + string_output_unix_datetime(updated_dev.updated) + "\n"
         updated_devs_message += "    Status: " + str(updated_dev.status) + "\n"
         updated_devs_message += "    URL: " + str(updated_dev.planurl) + "\n\n"
+        updated_devs_message += add_debug_text(updated_dev)
         updated_devs_message += "  *UPDATES*\n"
         updated_devs_message += difference_email_output(updated_dev)
     if isinstance(updated_dev, SiteReviewCases):
@@ -184,6 +198,7 @@ def get_updated_dev_text(updated_dev):
         updated_devs_message += "    Updated: " + updated_dev.modified_date.strftime("%m-%d-%y %H:%M") + "\n"
         updated_devs_message += "    Status: " + str(updated_dev.status) + "\n"
         updated_devs_message += "    URL: " + str(updated_dev.case_url) + "\n\n"
+        updated_devs_message += add_debug_text(updated_dev)
         updated_devs_message += "  *UPDATES*\n"
         updated_devs_message += difference_email_output(updated_dev)
 
@@ -198,6 +213,7 @@ def get_new_zon_text(new_zon):
     new_zon_message += "    Location: " + str(new_zon.location) + "\n"
     new_zon_message += "    Remarks: " + str(new_zon.remarks).strip() + "\n"
     new_zon_message += "    Status: " + str(new_zon.status) + "\n"
+    new_zon_message += add_debug_text(new_zon)
 
     if new_zon.plan_url:
         new_zon_message += "    Plan URL: " + str(new_zon.plan_url) + "\n"
@@ -213,6 +229,7 @@ def get_updated_zon_text(updated_zon):
     updated_zon_message += "    Location: " + str(updated_zon.location) + "\n"
     updated_zon_message += "    Remarks: " + str(updated_zon.remarks).strip() + "\n"
     updated_zon_message += "    Status: " + str(updated_zon.status) + "\n"
+    updated_zon_message += add_debug_text(updated_zon)
 
     if updated_zon.plan_url:
         updated_zon_message += "    Plan URL: " + str(updated_zon.plan_url) + "\n"
@@ -232,6 +249,7 @@ def get_new_aad_text(new_aad):
     new_aad_message += get_instance_text("AAD")
     new_aad_message += "    Status: " + str(new_aad.status) + "\n"
     new_aad_message += "    URL: " + str(new_aad.case_url) + "\n\n"
+    new_aad_message += add_debug_text(new_aad)
 
     return new_aad_message
 
@@ -242,6 +260,7 @@ def get_updated_aad_text(updated_aad):
     updated_aad_message += "    Updated: " + updated_aad.modified_date.strftime("%m-%d-%y %H:%M") + "\n"
     updated_aad_message += "    Status: " + str(updated_aad.status) + "\n"
     updated_aad_message += "    URL: " + str(updated_aad.case_url) + "\n\n"
+    updated_aad_message += add_debug_text(updated_aad)
     updated_aad_message += "  *UPDATES*\n"
     updated_aad_message += difference_email_output(updated_aad)
 
