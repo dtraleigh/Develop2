@@ -50,7 +50,8 @@ def get_page_content(page_link):
     if page_response.status_code == 200:
         return BeautifulSoup(page_response.content, "html.parser")
     else:
-        # Future: Send email alert saying that we could not reach the development page, did not get 200
+        message = "scrape.get_page_content did not return 200 at " + n.strftime("%H:%M %m-%d-%y")
+        send_email_notice(message, email_admins())
         return None
 
 
