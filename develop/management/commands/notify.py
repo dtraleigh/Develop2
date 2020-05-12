@@ -22,8 +22,9 @@ def get_everything_that_changed():
     # Get everything that has changed in the last hour
     everything_that_changed = []
 
-    devs_that_changed = Development.objects.filter(modified_date__range=[timezone.now() - timedelta(hours=1),
-                                                                         timezone.now()])
+    # Let's exclude Development changes for now as we need to review the API content due to possible changes.
+    # devs_that_changed = Development.objects.filter(modified_date__range=[timezone.now() - timedelta(hours=1),
+    #                                                                      timezone.now()])
     SRs_that_changed = SiteReviewCases.objects.filter(modified_date__range=[timezone.now() - timedelta(hours=1),
                                                                             timezone.now()])
     zons_that_changed = Zoning.objects.filter(modified_date__range=[timezone.now() - timedelta(hours=1),
@@ -35,8 +36,8 @@ def get_everything_that_changed():
                                                                             timedelta(hours=1),
                                                                             timezone.now()])
 
-    for dev in devs_that_changed:
-        everything_that_changed.append(dev)
+    # for dev in devs_that_changed:
+    #     everything_that_changed.append(dev)
     for SR in SRs_that_changed:
         everything_that_changed.append(SR)
     for AAD in AADs_that_changed:
