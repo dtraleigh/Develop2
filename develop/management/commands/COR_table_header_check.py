@@ -37,6 +37,7 @@ class Command(BaseCommand):
         aad_page_link = "https://raleighnc.gov/SupportPages/administrative-alternate-design-cases"
         zon_page_link = "https://raleighnc.gov/SupportPages/zoning-cases"
         tc_page_link = "https://raleighnc.gov/SupportPages/text-change-cases"
+        message = ""
 
         # scrape the target websites and verify that the table headers are what we expect.
 
@@ -52,14 +53,13 @@ class Command(BaseCommand):
             for header in thead_row:
                 sr_actual.append(header.get_text().strip())
 
-            if sr_actual != sr_expected:
+            if sr_actual == sr_expected:
                 pass
             else:
                 message = "SR Table has changed.\n"
                 x.add_row(sr_actual)
                 x.add_row(sr_expected)
-                message += x
-                send_email_notice(message, email_admins())
+                message += str(x)
 
         # AAD tables
         aad_expected = ['Case Number', 'Project Name/Location/Description', 'CAC', 'Status*', 'Contact']
@@ -80,7 +80,6 @@ class Command(BaseCommand):
                 x.add_row(aad_actual)
                 x.add_row(aad_expected)
                 message += x
-                send_email_notice(message, email_admins())
 
         # TCC tables
         tcc_expected = ['Case Number', 'Project Name/Location/Description', 'Status*', 'Contact']
@@ -101,7 +100,6 @@ class Command(BaseCommand):
                 x.add_row(tcc_actual)
                 x.add_row(tcc_expected)
                 message += x
-                send_email_notice(message, email_admins())
 
         # Zoning tables
         zon_expected = ['Case NumberMaster Plan Number			(Date uploaded)', 'Location/Status',
@@ -123,4 +121,6 @@ class Command(BaseCommand):
                 x.add_row(zon_actual)
                 x.add_row(zon_expected)
                 message += x
-                send_email_notice(message, email_admins())
+
+        if message:
+            send_email_notice(message, email_admins())
