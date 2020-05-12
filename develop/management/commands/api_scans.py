@@ -114,10 +114,10 @@ def development_api_scan():
                         # If we don't know about it, we need to add it
                         except Development.DoesNotExist:
                             # cac might be None so let's try and figure it out
-                            cac_override = None
-
                             if not dev_info_from_json["cac"]:
                                 cac_override = cac_lookup(dev_info_from_json["major_street"])
+                            else:
+                                cac_override = None
 
                             Development.objects.create(OBJECTID=dev_info_from_json["OBJECTID"],
                                                        devplan_id=dev_info_from_json["devplan_id"],
