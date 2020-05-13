@@ -155,12 +155,11 @@ def get_instance_text(model):
 def add_debug_text(item):
     # Additional text to help with debugging. Only add this if the instance is Develop
     if settings.DEVELOP_INSTANCE == "Develop":
-        try:
-            text = "    [DEBUG] CAC: " + item.cac + "\n"
-            text += "    [DEBUG] CAC Override: " + item.cac_override + "\n"
-            return text
-        except:
-            return None
+        text = "    [DEBUG] CAC: " + item.cac + "\n"
+        text += "    [DEBUG] CAC Override: " + item.cac_override + "\n"
+        return text
+    else:
+        return ""
 
 
 def get_new_dev_text(new_dev, discourse):
