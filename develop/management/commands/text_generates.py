@@ -148,6 +148,8 @@ def difference_email_output(item):
 def get_instance_text(model):
     if settings.DEVELOP_INSTANCE == "Develop":
         return "[Develop - " + model + "]\n"
+    else:
+        return ""
 
 
 def add_debug_text(item):
