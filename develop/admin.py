@@ -43,7 +43,7 @@ class SubscriberAdmin(admin.ModelAdmin):
 
 
 class DevelopmentsAdmin(SimpleHistoryAdmin):
-    list_display = ("OBJECTID", "devplan_id", "updated_date", "submitted_yr", "status", "major_street", "cac", "cac_override",
+    list_display = ("OBJECTID", "plan_type", "updated_date", "submitted_yr", "status", "major_street", "cac", "cac_override",
                     "plan_name", "plan_number", "modified_date", "created_date")
     history_list_display = ["status"]
     list_filter = (CACStatusFilter,)
